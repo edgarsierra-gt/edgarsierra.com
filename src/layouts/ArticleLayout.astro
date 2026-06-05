@@ -1,0 +1,207 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import PillarTag from '../components/PillarTag.astro';
+import Card from '../components/Card.astro';
+import { readingTime, formatDate } from '../lib/utils';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  relatedPosts?: CollectionEntry<'blog'>[];
+}
+
+const { post, relatedPosts = [] } = Astro.props;
+const { title, pillar, publishedAt, updatedAt, excerpt } = post.data;
+
+const body: string = (post as unknown as { body?: string }).body ?? '';
+const rt = readingTime(body);
+const dateStr = formatDate(publishedAt);
+
+// Article JSON-LD
+const articleLD = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description: excerpt,
+  url: new URL(`/blog/${post.id}/`, Astro.site).href,
+  datePublished: publishedAt.toISOString(),
+  dateModified: (updatedAt ?? publishedAt).toISOString(),
+  author: {
+    '@type': 'Person',
+    name: 'Edgar Sierra',
+    url: new URL('/sobre-mi', Astro.site).href,
+  },
+  publisher: {
+    '@type': 'Person',
+    name: 'Edgar Sierra',
+    url: Astro.site?.href ?? 'https://edgarsierra.com',
+  },
+};
+---
+
+<BaseLayout title={title} description={excerpt} ogType="article" jsonLd={[articleLD]}>
+  <article class="article">
+    <header class="article-header">
+      <PillarTag pillar={pillar} />
+      <h1 class="article-title">{title}</h1>
+      <p class="article-meta">
+        <time datetime={publishedAt.toISOString()}>{dateStr}</time>
+        <span aria-hidden="true">·</span>
+        <span>{rt} min de lectura</span>
+      </p>
+    </header>
+
+    <div class="prose">
+      <slot />
+    </div>
+
+    <footer class="article-footer">
+      <div class="author-bio">
+        <strong class="bio-name">Edgar Sierra</strong>
+        <p class="bio-desc">
+          Head of BI & Data Science. Estadística rigurosa, ingeniería GCP e IA
+          aplicada a problemas reales de Guatemala y Centroamérica.
+        </p>
+      </div>
+
+      <div class="newsletter-cta">
+        <p>¿Te resultó útil? Recibí un artículo como este cada mes.</p>
+        <a href="/newsletter" class="cta-link">Suscribirme al newsletter →</a>
+      </div>
+
+      {relatedPosts.length > 0 && (
+        <section class="related">
+          <h2 class="related-heading">Artículos relacionados</h2>
+          <div class="related-grid">
+            {relatedPosts.map(p => <Card post={p} />)}
+          </div>
+        </section>
+      )}
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .article {
+    max-width: var(--reading);
+    margin-inline: auto;
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-12);
+  }
+
+  /* ── Header ─────────────────────────────── */
+  .article-header {
+    margin-bottom: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .article-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    line-height: var(--leading-tight);
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  .article-meta {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+
+  /* ── Footer ─────────────────────────────── */
+  .article-footer {
+    margin-top: var(--space-12);
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .author-bio {
+    padding: var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .bio-name {
+    display: block;
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: var(--space-1);
+  }
+
+  .bio-desc {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+
+  .newsletter-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    padding: var(--space-4) var(--space-5);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+  }
+
+  .newsletter-cta p {
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    color: var(--ink);
+  }
+
+  .cta-link {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .cta-link:hover {
+    text-decoration: underline;
+  }
+
+  .related-heading {
+    font-family: var(--font-ui);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: var(--space-4);
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-4);
+  }
+
+  @media (max-width: 640px) {
+    .article-title {
+      font-size: var(--text-2xl);
+    }
+
+    .newsletter-cta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

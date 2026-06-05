@@ -1,0 +1,481 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CHARLAS } from '../data/charlas';
+
+const personLD = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Edgar Sierra',
+  givenName: 'Edgar',
+  familyName: 'Sierra',
+  jobTitle: 'Head of BI & Data Science',
+  url: 'https://edgarsierra.com/sobre-mi',
+  sameAs: [
+    'https://github.com/edgarsierra-gt',
+    'https://www.linkedin.com/in/edgarsierra/',  // actualizar con URL real
+    'https://medium.com/@edgarsierra',            // actualizar con URL real
+  ],
+};
+
+const stackCategories = [
+  {
+    label: 'Ingeniería de datos',
+    items: ['Python', 'BigQuery', 'Apache Airflow', 'dbt', 'Pub/Sub', 'Pandas'],
+  },
+  {
+    label: 'Infraestructura GCP',
+    items: ['Cloud Run', 'Firestore', 'Secret Manager', 'GitHub Actions', 'WIF', 'Docker'],
+  },
+  {
+    label: 'Estadística y ML',
+    items: ['scikit-learn', 'PyMC', 'statsmodels', 'NumPy', 'SciPy'],
+  },
+  {
+    label: 'BI y visualización',
+    items: ['Looker Studio', 'Power BI', 'Matplotlib', 'Plotly'],
+  },
+  {
+    label: 'Este sitio',
+    items: ['Astro', 'MDX', 'FastAPI', 'Claude Code'],
+  },
+];
+
+const timeline = [
+  {
+    year: '2026',
+    items: [
+      'Tesis de maestría aceptada en la Revista Científica USAC (en prensa)',
+      'Lanzamiento de edgarsierra.com',
+    ],
+  },
+  {
+    year: '2024',
+    items: [
+      'Taller de Análisis de Datos y Series de Tiempo — Congreso Regional de Ingeniería, CUNOR-USAC',
+    ],
+  },
+  {
+    year: 'Presente',
+    items: ['Head of BI & Data Science en Aumenta Intelligence'],
+  },
+];
+---
+
+<BaseLayout
+  title="Sobre mí — Edgar Sierra"
+  description="Edgar Sierra: Head of BI & Data Science. Estadística rigurosa, ingeniería GCP e IA aplicada a problemas reales de Guatemala y Centroamérica."
+  jsonLd={[personLD]}
+>
+  <div class="sobre-page">
+
+    <!-- ── Bio ───────────────────────────────── -->
+    <section class="bio-section">
+      <div class="bio-content">
+        <div class="avatar-placeholder" aria-hidden="true">
+          {/* foto: agregar /public/images/edgar-sierra.jpg */}
+          <span class="avatar-initials">ES</span>
+        </div>
+        <div class="bio-text">
+          <h1 class="bio-name">Edgar Sierra</h1>
+          <p class="bio-role">Head of BI & Data Science · Aumenta Intelligence</p>
+
+          {/* Placeholder bio — Edgar edita directamente */}
+          <p>
+            Trabajo en la intersección de la estadística rigurosa, la ingeniería de
+            datos y la inteligencia artificial aplicada a problemas reales de Guatemala
+            y Centroamérica.
+          </p>
+          <p>
+            En Aumenta Intelligence lidero el área de BI & Data Science: desde el
+            diseño de arquitecturas de datos en GCP hasta modelos predictivos en
+            producción para múltiples industrias.
+          </p>
+          <p>
+            Tengo formación de posgrado en la Universidad de San Carlos de Guatemala
+            (USAC). Mi tesis, próxima a publicarse en la Revista Científica USAC 2026,
+            aplica métodos estadísticos a [área — Edgar completa].
+          </p>
+          <p>
+            Este sitio lo construí con Astro y Claude Code: es a la vez mi base de
+            publicación y un case study de ingeniería GCP.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Stack ─────────────────────────────── -->
+    <section class="stack-section">
+      <h2 class="section-title">Stack en producción</h2>
+      <div class="stack-grid">
+        {stackCategories.map(cat => (
+          <div class="stack-category">
+            <h3 class="cat-label">{cat.label}</h3>
+            <div class="tech-chips">
+              {cat.items.map(tech => (
+                <span class="tech-chip">{tech}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── Timeline ───────────────────────────── -->
+    <section class="timeline-section">
+      <h2 class="section-title">Línea de tiempo</h2>
+      <div class="timeline">
+        {timeline.map(entry => (
+          <div class="timeline-entry">
+            <span class="tl-year">{entry.year}</span>
+            <ul class="tl-items">
+              {entry.items.map(item => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── Charlas embebidas ───────────────────── -->
+    <section class="charlas-section">
+      <h2 class="section-title">Charlas</h2>
+      <div class="charlas-list">
+        {CHARLAS.map(charla => (
+          <article class="charla-item">
+            <div class="charla-meta">
+              <span class="charla-year">{charla.year}</span>
+              <span class="charla-type">{charla.type}</span>
+            </div>
+            <h3 class="charla-title">{charla.title}</h3>
+            <p class="charla-event">{charla.event} — {charla.organization}</p>
+          </article>
+        ))}
+      </div>
+      <a href="/charlas" class="ver-mas">Ver todas las charlas →</a>
+    </section>
+
+    <!-- ── CTAs ───────────────────────────────── -->
+    <section class="cta-section">
+      <div class="cta-grid">
+        <a href="/newsletter" class="cta-card cta-primary">
+          <strong>Newsletter mensual</strong>
+          <p>Análisis de datos, GCP e IA aplicados a Centroamérica. Sin spam.</p>
+        </a>
+        <a href="/contacto" class="cta-card cta-secondary">
+          <strong>Contacto</strong>
+          <p>¿Proyecto, consulta o propuesta de charla? Escribime.</p>
+        </a>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .sobre-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-12);
+    max-width: var(--reading);
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  /* ── Secciones ───────────────────────────── */
+  .section-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── Bio ─────────────────────────────────── */
+  .bio-content {
+    display: flex;
+    gap: var(--space-6);
+    align-items: flex-start;
+  }
+
+  .avatar-placeholder {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--code-bg);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .avatar-initials {
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: var(--text-xl);
+    color: var(--accent);
+    user-select: none;
+  }
+
+  .bio-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .bio-name {
+    font-family: var(--font-ui);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  .bio-role {
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    color: var(--ink-muted);
+    margin-top: calc(-1 * var(--space-2));
+  }
+
+  .bio-text p {
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    color: var(--ink);
+  }
+
+  /* ── Stack grid ──────────────────────────── */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .stack-category {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .cat-label {
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-2);
+  }
+
+  .tech-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .tech-chip {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) / 2);
+    padding: 0.2em var(--space-2);
+    color: var(--ink-muted);
+  }
+
+  /* ── Timeline ────────────────────────────── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-left: 2px solid var(--border);
+    padding-left: var(--space-5);
+    margin-left: var(--space-2);
+  }
+
+  .timeline-entry {
+    position: relative;
+    padding-bottom: var(--space-5);
+  }
+
+  .timeline-entry::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * var(--space-5) - 5px);
+    top: 0.45em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 1.5px var(--accent);
+  }
+
+  .tl-year {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: var(--space-1);
+  }
+
+  .tl-items {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .tl-items li {
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  /* ── Charlas embebidas ───────────────────── */
+  .charlas-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+
+  .charla-item {
+    padding: var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .charla-meta {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  .charla-year {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .charla-type {
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    padding: 0.2em var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) / 2);
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .charla-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .charla-event {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+
+  .ver-mas {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .ver-mas:hover { text-decoration: underline; }
+
+  /* ── CTAs ────────────────────────────────── */
+  .cta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .cta-card {
+    padding: var(--space-5);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .cta-card:hover {
+    text-decoration: none;
+    box-shadow: 0 2px 12px rgba(0, 114, 178, 0.08);
+  }
+
+  .cta-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .cta-primary strong,
+  .cta-primary p {
+    color: #fff;
+  }
+
+  .cta-secondary {
+    background: var(--surface);
+  }
+
+  .cta-secondary strong {
+    color: var(--ink);
+  }
+
+  .cta-secondary p {
+    color: var(--ink-muted);
+  }
+
+  .cta-card strong {
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    font-weight: 600;
+  }
+
+  .cta-card p {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+  }
+
+  /* ── Mobile ──────────────────────────────── */
+  @media (max-width: 640px) {
+    .bio-content {
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .stack-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

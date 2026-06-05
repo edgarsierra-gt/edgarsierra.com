@@ -1,0 +1,372 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogType?: 'website' | 'article';
+  ogImage?: string;
+  jsonLd?: object[];
+}
+
+const {
+  title = 'Edgar Sierra — Head of BI & Data Science',
+  description = 'Blog de análisis de datos, proyectos de ingeniería GCP e investigación estadística aplicada a Guatemala y Centroamérica.',
+  ogType = 'website',
+  ogImage,
+  jsonLd = [],
+} = Astro.props;
+
+const siteOrigin = Astro.site?.origin ?? 'https://edgarsierra.com';
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
+const ogImageURL = ogImage ? new URL(ogImage, Astro.site).href : undefined;
+
+// BreadcrumbList — computed from pathname
+const SEGMENT_NAMES: Record<string, string> = {
+  blog:          'Blog',
+  proyectos:     'Proyectos',
+  investigacion: 'Investigación',
+  'sobre-mi':    'Sobre mí',
+  charlas:       'Charlas',
+  contacto:      'Contacto',
+  newsletter:    'Newsletter',
+};
+
+const segments = Astro.url.pathname.split('/').filter(Boolean);
+const breadcrumbLD = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Edgar Sierra', item: siteOrigin + '/' },
+    ...segments.map((seg, i) => ({
+      '@type': 'ListItem',
+      position: i + 2,
+      name: SEGMENT_NAMES[seg] ?? (seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, ' ')),
+      item: siteOrigin + '/' + segments.slice(0, i + 1).join('/') + '/',
+    })),
+  ],
+};
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="Edgar Sierra" />
+    <meta property="og:locale" content="es_GT" />
+    {ogImageURL && <meta property="og:image" content={ogImageURL} />}
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/rss+xml" title="Edgar Sierra — Blog" href="/rss.xml" />
+
+    <!-- Schema.org: BreadcrumbList -->
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLD)} />
+
+    <!-- Schema.org: página-específico (Person, Article, etc.) -->
+    {jsonLd.map(ld => (
+      <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    ))}
+  </head>
+  <body>
+    <header class="site-header" id="site-header">
+      <div class="header-inner">
+        <a href="/" class="wordmark">Edgar Sierra</a>
+        <button
+          class="nav-toggle"
+          id="nav-toggle"
+          aria-label="Abrir menú"
+          aria-expanded="false"
+          aria-controls="site-nav"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <nav class="site-nav" id="site-nav" aria-label="Navegación principal">
+          <a href="/blog">Blog</a>
+          <a href="/proyectos">Proyectos</a>
+          <a href="/investigacion">Investigación</a>
+          <a href="/sobre-mi">Sobre mí</a>
+          <a href="/newsletter" class="nav-cta">Newsletter</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <div class="container">
+        <slot />
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-group">
+          <p class="footer-label">Navegar</p>
+          <nav aria-label="Navegar">
+            <a href="/blog">Blog</a>
+            <a href="/proyectos">Proyectos</a>
+            <a href="/investigacion">Investigación</a>
+            <a href="/sobre-mi">Sobre mí</a>
+          </nav>
+        </div>
+        <div class="footer-group">
+          <p class="footer-label">Conectar</p>
+          <nav aria-label="Redes sociales">
+            <a href="#" rel="noopener noreferrer">LinkedIn</a>
+            <a href="https://github.com/edgarsierra-gt" rel="noopener noreferrer">GitHub</a>
+            <a href="#" rel="noopener noreferrer">Medium</a>
+            <a href="#" rel="noopener noreferrer">X</a>
+            <a href="mailto:edgar@edgarsierra.com">Email</a>
+          </nav>
+        </div>
+        <div class="footer-group">
+          <p class="footer-label">Recursos</p>
+          <nav aria-label="Recursos">
+            <a href="/newsletter">Newsletter</a>
+            <a href="/rss.xml">RSS</a>
+            <a href="/charlas">Charlas</a>
+          </nav>
+        </div>
+      </div>
+      <div class="footer-meta">
+        <p>© 2026 Edgar Sierra · Hecho con Astro + GCP</p>
+      </div>
+    </footer>
+
+    <script>
+      const header = document.getElementById('site-header');
+      window.addEventListener('scroll', () => {
+        header?.classList.toggle('scrolled', window.scrollY > 4);
+      }, { passive: true });
+
+      const toggle = document.getElementById('nav-toggle');
+      const nav = document.getElementById('site-nav');
+      toggle?.addEventListener('click', () => {
+        const open = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!open));
+        toggle.setAttribute('aria-label', open ? 'Abrir menú' : 'Cerrar menú');
+        nav?.classList.toggle('is-open', !open);
+      });
+    </script>
+
+    <!-- Cloudflare Web Analytics — pegá el token del dashboard:
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "CF_ANALYTICS_TOKEN"}'></script>
+    -->
+  </body>
+</html>
+
+<style>
+  /* ── Header ─────────────────────────────────────────────── */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--bg);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  .site-header.scrolled {
+    border-bottom-color: var(--border);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-4);
+  }
+
+  .wordmark {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: var(--text-base);
+    color: var(--ink);
+    text-decoration: none;
+    flex-shrink: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .wordmark:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* ── Nav ─────────────────────────────────────────────────── */
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .site-nav a {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .site-nav a:hover {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-cta {
+    background-color: var(--accent);
+    color: #fff !important;
+    padding: calc(var(--space-1) * 0.75) var(--space-3);
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: opacity 0.15s !important;
+  }
+
+  .nav-cta:hover {
+    opacity: 0.88;
+    color: #fff !important;
+  }
+
+  /* ── Hamburger ───────────────────────────────────────────── */
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-1);
+    flex-shrink: 0;
+  }
+
+  .nav-toggle span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: var(--ink);
+    border-radius: 2px;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+
+  /* ── Main / Container ────────────────────────────────────── */
+  #main-content {
+    min-height: 60vh;
+  }
+
+  .container {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding-inline: var(--space-4);
+  }
+
+  /* ── Footer ──────────────────────────────────────────────── */
+  .site-footer {
+    margin-top: var(--space-12);
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-6);
+  }
+
+  .footer-inner {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding-inline: var(--space-4);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+
+  .footer-label {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--ink);
+    margin-bottom: var(--space-2);
+  }
+
+  .footer-group nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .footer-group nav a {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .footer-group nav a:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .footer-meta {
+    max-width: var(--container);
+    margin: var(--space-6) auto 0;
+    padding-inline: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+
+  /* ── Mobile ──────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .nav-toggle {
+      display: flex;
+    }
+
+    .site-nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background-color: var(--bg);
+      flex-direction: column;
+      align-items: flex-start;
+      padding: var(--space-3) var(--space-4) var(--space-4);
+      border-bottom: 1px solid var(--border);
+      gap: var(--space-2);
+    }
+
+    .site-nav.is-open {
+      display: flex;
+    }
+
+    .nav-cta {
+      align-self: flex-start;
+    }
+
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+  }
+</style>

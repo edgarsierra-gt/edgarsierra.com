@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog');
+  return allPosts.map(post => ({
+    params: { slug: post.id },
+    props: { post, allPosts },
+  }));
+}
+
+type Props = Awaited<ReturnType<typeof getStaticPaths>>[number]['props'];
+const { post, allPosts } = Astro.props;
+
+const { Content } = await render(post);
+
+const related = allPosts
+  .filter(
+    p =>
+      p.id !== post.id &&
+      p.data.pillar === post.data.pillar &&
+      (import.meta.env.PROD ? !p.data.draft : true)
+  )
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .slice(0, 2);
+---
+
+<ArticleLayout post={post} relatedPosts={related}>
+  <Content />
+</ArticleLayout>

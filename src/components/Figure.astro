@@ -1,0 +1,44 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  caption: string;
+  wide?: boolean;
+}
+
+const { src, alt, caption, wide = false } = Astro.props;
+---
+
+<figure class:list={['article-figure', { 'figure-wide': wide }]}>
+  <img src={src} alt={alt} loading="lazy" decoding="async" />
+  <figcaption>{caption}</figcaption>
+</figure>
+
+<style>
+  .article-figure {
+    margin: var(--space-6) 0;
+  }
+
+  .article-figure img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: block;
+  }
+
+  .article-figure figcaption {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    margin-top: var(--space-2);
+    line-height: 1.5;
+  }
+
+  /* Expands beyond the reading column (--measure) up to --figure-wide */
+  .figure-wide {
+    max-width: var(--figure-wide);
+    width: 100%;
+    margin-inline: auto;
+  }
+</style>

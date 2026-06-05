@@ -1,0 +1,185 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Newsletter — Edgar Sierra"
+  description="Newsletter mensual sobre análisis de datos, ingeniería GCP e IA aplicada a Guatemala y Centroamérica. Sin spam."
+>
+  <div class="newsletter-page">
+    <header class="page-header">
+      <h1 class="page-title">Newsletter</h1>
+      <p class="page-subtitle">
+        Un artículo al mes. Sin spam. Podés darte de baja cuando quieras.
+      </p>
+    </header>
+
+    <!-- ── Pitch ──────────────────────────────── -->
+    <section class="pitch-section">
+      <div class="pitch-grid">
+        <div class="pitch-item">
+          <span class="pitch-icon" aria-hidden="true">📊</span>
+          <h3>Análisis de datos</h3>
+          <p>
+            Casos reales de BI, estadística aplicada y decisiones basadas
+            en datos, con el rigor que la disciplina merece.
+          </p>
+        </div>
+        <div class="pitch-item">
+          <span class="pitch-icon" aria-hidden="true">☁️</span>
+          <h3>Ingeniería GCP</h3>
+          <p>
+            Patrones de arquitectura en Google Cloud Platform: pipelines,
+            APIs, deploy sin llaves y seguridad sin over-engineering.
+          </p>
+        </div>
+        <div class="pitch-item">
+          <span class="pitch-icon" aria-hidden="true">🧠</span>
+          <h3>IA aplicada</h3>
+          <p>
+            Modelos que resuelven problemas reales en Centroamérica, con
+            sentido común sobre cuándo no usar IA.
+          </p>
+        </div>
+      </div>
+
+      <div class="pitch-details">
+        <div class="detail-item">
+          <strong>Cadencia:</strong> un envío mensual.
+        </div>
+        <div class="detail-item">
+          <strong>Formato:</strong> artículo de fondo (8-12 min de lectura) más
+          3-4 links curados.
+        </div>
+        <div class="detail-item">
+          <strong>Sin spam.</strong> Solo escribo cuando tengo algo que vale la
+          pena leer.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Formulario de suscripción ──────────── -->
+    <section class="subscribe-section">
+      <h2 class="subscribe-title">Suscribirse</h2>
+
+      <!-- BEEHIIV_EMBED -->
+
+      <p class="embed-note">
+        ¿Problemas con el formulario? Escribime a{' '}
+        <a href="mailto:edgar@edgarsierra.com">edgar@edgarsierra.com</a>.
+      </p>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .newsletter-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-12);
+    max-width: var(--reading);
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+  }
+
+  .page-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .page-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  .page-subtitle {
+    font-size: var(--text-lg);
+    color: var(--ink-muted);
+    line-height: var(--leading-body);
+  }
+
+  /* ── Pitch ───────────────────────────────── */
+  .pitch-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  .pitch-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .pitch-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .pitch-item h3 {
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .pitch-item p {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+
+  .pitch-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--code-bg);
+    border-radius: var(--radius);
+  }
+
+  .detail-item {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+
+  .detail-item strong {
+    color: var(--ink);
+  }
+
+  /* ── Subscribe ───────────────────────────── */
+  .subscribe-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: var(--space-4);
+  }
+
+  .embed-note {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    margin-top: var(--space-4);
+  }
+
+  @media (max-width: 640px) {
+    .pitch-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

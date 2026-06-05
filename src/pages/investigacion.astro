@@ -1,0 +1,273 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const publications = await getCollection('investigacion');
+const thesis = publications.find(p => p.data.type === 'thesis');
+const papers = publications.filter(p => p.data.type === 'paper');
+---
+
+<BaseLayout
+  title="Investigación — Edgar Sierra"
+  description="Publicaciones académicas de Edgar Arnoldo Sierra: tesis de maestría y trabajos de investigación estadística aplicada."
+>
+  <div class="investigacion-page">
+    <header class="page-header">
+      <h1 class="page-title">Investigación</h1>
+      <p class="page-subtitle">
+        Publicaciones académicas de <strong>Edgar Arnoldo Sierra</strong>.
+        Estadística aplicada con rigor metodológico.
+      </p>
+    </header>
+
+    {thesis && (
+      <section class="thesis-featured">
+        <div class="thesis-header">
+          <span class="thesis-badge">Tesis de maestría</span>
+          {thesis.data.status === 'in-press' && (
+            <span class="status-badge">En prensa</span>
+          )}
+        </div>
+
+        <h2 class="thesis-title">{thesis.data.title}</h2>
+
+        <div class="thesis-meta">
+          <span class="thesis-author">{thesis.data.authors}</span>
+          <span class="meta-sep" aria-hidden="true">·</span>
+          <span>
+            {thesis.data.status === 'in-press'
+              ? `En prensa — ${thesis.data.venue}, ${thesis.data.year}`
+              : `${thesis.data.venue}, ${thesis.data.year}`}
+          </span>
+        </div>
+
+        <div class="abstract">
+          <h3 class="abstract-heading">Abstract</h3>
+          <p class="abstract-text">{thesis.data.abstract}</p>
+        </div>
+
+        <div class="thesis-actions">
+          {thesis.data.link ? (
+            <a href={thesis.data.link} class="action-link action-primary" rel="noopener noreferrer">
+              Leer publicación →
+            </a>
+          ) : (
+            <span class="action-pending">Enlace disponible al publicarse</span>
+          )}
+          {thesis.data.pdfUrl && (
+            <a href={thesis.data.pdfUrl} class="action-link" rel="noopener noreferrer">
+              Descargar PDF →
+            </a>
+          )}
+        </div>
+      </section>
+    )}
+
+    {papers.length > 0 && (
+      <section class="papers-section">
+        <h2 class="section-heading">Otros trabajos</h2>
+        <div class="papers-list">
+          {papers.map(paper => (
+            <article class="paper-item">
+              <h3 class="paper-title">{paper.data.title}</h3>
+              <p class="paper-meta">
+                <span>{paper.data.authors}</span>
+                <span class="meta-sep" aria-hidden="true">·</span>
+                <span>{paper.data.venue}, {paper.data.year}</span>
+              </p>
+              <p class="paper-abstract">{paper.data.abstract}</p>
+              {paper.data.link && (
+                <a href={paper.data.link} class="action-link" rel="noopener noreferrer">
+                  Leer →
+                </a>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .investigacion-page {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-12);
+    max-width: var(--reading);
+    margin-inline: auto;
+  }
+
+  .page-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .page-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-3);
+  }
+
+  .page-subtitle {
+    font-size: var(--text-lg);
+    color: var(--ink-muted);
+    line-height: var(--leading-body);
+  }
+
+  /* ── Thesis featured ─────────────────────── */
+  .thesis-featured {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .thesis-header {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .thesis-badge,
+  .status-badge {
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    padding: 0.25em var(--space-2);
+    border-radius: calc(var(--radius) / 2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .thesis-badge {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .status-badge {
+    background: var(--c-orange);
+    color: #fff;
+  }
+
+  .thesis-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.01em;
+  }
+
+  .thesis-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+
+  .thesis-author {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .meta-sep { color: var(--border); }
+
+  /* ── Abstract ────────────────────────────── */
+  .abstract {
+    background: var(--code-bg);
+    border-radius: calc(var(--radius) / 2);
+    padding: var(--space-4);
+  }
+
+  .abstract-heading {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: var(--space-2);
+  }
+
+  .abstract-text {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--ink);
+    line-height: var(--leading-body);
+  }
+
+  /* ── Actions ─────────────────────────────── */
+  .thesis-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .action-link {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .action-link:hover { text-decoration: underline; }
+
+  .action-pending {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  /* ── Papers list ─────────────────────────── */
+  .papers-section {
+    margin-top: var(--space-8);
+  }
+
+  .section-heading {
+    font-family: var(--font-ui);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: var(--space-4);
+  }
+
+  .paper-item {
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .paper-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .paper-meta {
+    display: flex;
+    gap: var(--space-2);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+  }
+
+  .paper-abstract {
+    font-size: var(--text-base);
+    color: var(--ink-muted);
+    line-height: var(--leading-body);
+  }
+</style>

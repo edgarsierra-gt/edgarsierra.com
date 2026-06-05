@@ -1,0 +1,236 @@
+/* Design tokens */
+@import './tokens.css';
+
+/* IBM Plex Sans — UI / headings */
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-sans/700.css';
+
+/* IBM Plex Serif — body text */
+@import '@fontsource/ibm-plex-serif/400.css';
+@import '@fontsource/ibm-plex-serif/600.css';
+
+/* IBM Plex Mono — code */
+@import '@fontsource/ibm-plex-mono/400.css';
+
+/* KaTeX math rendering */
+@import 'katex/dist/katex.min.css';
+
+/* Minimal reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Base */
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background-color: var(--bg);
+  line-height: var(--leading-body);
+  font-size: var(--text-base);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-ui);
+  line-height: var(--leading-tight);
+}
+
+a {
+  color: var(--accent);
+  text-decoration-skip-ink: auto;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, pre {
+  font-family: var(--font-mono);
+  background-color: var(--code-bg);
+}
+
+pre {
+  overflow-x: auto;
+  padding: var(--space-3);
+  border-radius: var(--radius);
+}
+
+code {
+  padding: 0.15em 0.35em;
+  border-radius: calc(var(--radius) / 2);
+}
+
+pre code {
+  padding: 0;
+  background: none;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Prose — estilos del cuerpo de artículo ──────────────── */
+.prose {
+  max-width: var(--measure);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  color: var(--ink);
+  counter-reset: figure-counter;
+}
+
+.prose > * + * {
+  margin-top: var(--space-4);
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--ink);
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-2);
+}
+
+.prose h2 { font-size: var(--text-2xl); }
+.prose h3 { font-size: var(--text-xl); }
+.prose h4 { font-size: var(--text-lg); }
+
+.prose p { margin-bottom: 0; }
+
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-skip-ink: auto;
+}
+
+/* Inline code */
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--code-bg);
+  padding: 0.15em 0.4em;
+  border-radius: calc(var(--radius) / 2);
+  border: 1px solid var(--border);
+}
+
+/* Code blocks (Shiki) */
+.prose pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  background: var(--code-bg) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+/* Blockquote */
+.prose blockquote {
+  border-left: 3px solid var(--border);
+  padding-left: var(--space-4);
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+/* Lists */
+.prose ul {
+  list-style: disc;
+  padding-left: var(--space-4);
+}
+
+.prose ol {
+  list-style: decimal;
+  padding-left: var(--space-4);
+}
+
+.prose li + li {
+  margin-top: var(--space-1);
+}
+
+/* Tables — Plex Mono, números alineados a la derecha */
+.prose table {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  border-collapse: collapse;
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+.prose th {
+  font-family: var(--font-ui);
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  padding: var(--space-1) var(--space-3);
+  color: var(--ink);
+}
+
+.prose td {
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-1) var(--space-3);
+  color: var(--ink-muted);
+}
+
+.prose tr:nth-child(even) td {
+  background: var(--code-bg);
+}
+
+.prose td:not(:first-child),
+.prose th:not(:first-child) {
+  text-align: right;
+}
+
+/* Figures — auto-numeración vía CSS counter */
+.prose figure {
+  counter-increment: figure-counter;
+  margin: var(--space-6) 0;
+}
+
+.prose figcaption {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  margin-top: var(--space-2);
+  line-height: 1.5;
+}
+
+.prose figcaption::before {
+  content: "Figura " counter(figure-counter) ". ";
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Footnotes (generadas por remark-gfm) */
+.prose .footnotes {
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.prose .footnotes ol {
+  padding-left: var(--space-4);
+}
+
+/* KaTeX display math */
+.prose .math-display {
+  overflow-x: auto;
+  padding: var(--space-2) 0;
+}

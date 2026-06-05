@@ -1,0 +1,14 @@
+---
+title: "El backend de edgarsierra.com"
+summary: "API REST en FastAPI desplegada en Cloud Run con CI/CD via Workload Identity Federation (sin llaves JSON en el repositorio). Endpoints de suscripción a newsletter y contacto, con almacenamiento en Firestore."
+stack: ["FastAPI", "Python", "Cloud Run", "Firestore", "GCP", "GitHub Actions", "WIF"]
+role: "Autor"
+links:
+  - label: "Repositorio"
+    url: "https://github.com/edgarsierra-gt/edgarsierra.com"
+featured: false
+order: 3
+caseStudy: true
+---
+
+El backend de este sitio es intencionalmente un case study de ingeniería GCP. Demuestra el patrón de deploy con Workload Identity Federation: las GitHub Actions se autentican ante GCP sin almacenar llaves JSON, usando tokens OIDC efímeros que GCP valida directamente contra el repositorio autorizado.

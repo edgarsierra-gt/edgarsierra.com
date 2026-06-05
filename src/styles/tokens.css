@@ -1,0 +1,75 @@
+/* tokens.css — sistema de diseño de edgarsierra.com
+   Única fuente de verdad para color, tipografía, escala y layout.
+   Dark mode: valores definidos bajo [data-theme="dark"] pero NO activado en junio (D6).
+   Activación futura = setear data-theme="dark" en <html> (toggle). Sin refactor. */
+
+:root {
+  /* Tipografía */
+  --font-ui:   'IBM Plex Sans', system-ui, sans-serif;
+  --font-body: 'IBM Plex Serif', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Escala tipográfica (modular ~1.2, base 18px) */
+  --text-xs:   0.79rem;
+  --text-sm:   0.889rem;
+  --text-base: 1.125rem;
+  --text-lg:   1.266rem;
+  --text-xl:   1.6rem;
+  --text-2xl:  2.027rem;
+  --text-3xl:  2.566rem;
+  --text-hero: clamp(2.2rem, 6vw, 3.247rem);
+
+  --leading-body:  1.7;
+  --leading-tight: 1.2;
+  --measure: 68ch;
+
+  /* Espaciado (múltiplos de 8px) */
+  --space-1:  0.5rem;   /* 8  */
+  --space-2:  1rem;     /* 16 */
+  --space-3:  1.5rem;   /* 24 */
+  --space-4:  2rem;     /* 32 */
+  --space-6:  3rem;     /* 48 */
+  --space-8:  4rem;     /* 64 */
+  --space-12: 6rem;     /* 96 */
+
+  /* Layout */
+  --container:   1120px;
+  --reading:     720px;
+  --figure-wide: 920px;
+  --radius:      8px;
+
+  /* Neutros — LIGHT (modo de junio) */
+  --bg:        #FBFBF9;
+  --surface:   #FFFFFF;
+  --ink:       #18181B;
+  --ink-muted: #52525B;
+  --border:    #E7E5E0;
+  --code-bg:   #F4F4F1;
+
+  /* Acento + categóricos (Okabe-Ito, colorblind-safe) */
+  --accent:      #0072B2;
+  --accent-2:    #009E73;
+  --c-orange:    #E69F00;
+  --c-sky:       #56B4E9;
+  --c-vermilion: #D55E00;
+  --c-purple:    #CC79A7;
+  --c-yellow:    #F0E442;
+
+  /* Colores de pilar (señalética) */
+  --pillar-1: var(--c-vermilion); /* Política y datos    */
+  --pillar-2: var(--accent);      /* Marketing analytics */
+  --pillar-3: var(--accent-2);    /* Ingeniería GCP      */
+  --pillar-4: var(--c-purple);    /* IA aplicada         */
+  --pillar-5: var(--c-orange);    /* Estadística         */
+}
+
+/* Neutros — DARK. Definidos pero NO activados en junio (D6).
+   Para activar: setear <html data-theme="dark"> vía toggle. Cero refactor. */
+:root[data-theme="dark"] {
+  --bg:        #0F1115;
+  --surface:   #16181D;
+  --ink:       #E8E8E6;
+  --ink-muted: #9CA3AF;
+  --border:    #262A31;
+  --code-bg:   #1B1E24;
+}

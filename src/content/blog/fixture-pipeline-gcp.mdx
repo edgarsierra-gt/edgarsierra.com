@@ -1,0 +1,48 @@
+---
+title: "Pipeline de analítica en GCP: diseño e implementación"
+excerpt: "Exploramos el diseño de un pipeline de datos en Google Cloud Platform, desde la ingesta hasta BigQuery, con foco en reproducibilidad y control de costos."
+pillar: 3
+tags: ["GCP", "BigQuery", "Python", "ETL"]
+publishedAt: 2026-06-01
+draft: true
+---
+
+> **Nota:** Artículo de prueba para validar el render de MDX. No publicar.
+
+## Arquitectura de referencia
+
+Un pipeline de datos en GCP bien diseñado separa claramente las capas de ingesta, procesamiento y consulta[^1]. Esta separación facilita la escalabilidad y el control de costos independientes por capa.
+
+<figure>
+  <div style="background: var(--code-bg); height: 160px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border)">
+    <span style="font-family: var(--font-ui); color: var(--ink-muted); font-size: 0.889rem">[ Figura de prueba — reemplazar con diagrama real ]</span>
+  </div>
+  <figcaption>Flujo conceptual del pipeline: ingesta → procesamiento → almacenamiento → consulta.</figcaption>
+</figure>
+
+## Consulta de agregación diaria
+
+La consulta que alimenta los reportes de usuarios activos en los últimos 30 días:
+
+```sql
+SELECT
+  DATE(event_ts)            AS fecha,
+  event_type,
+  COUNT(*)                  AS total_eventos,
+  COUNT(DISTINCT user_id)   AS usuarios_unicos
+FROM `proyecto.dataset.eventos`
+WHERE DATE(event_ts) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+                         AND CURRENT_DATE()
+GROUP BY 1, 2
+ORDER BY 1 DESC, total_eventos DESC
+```
+
+## Estimación de costo
+
+El costo mensual de BigQuery bajo el modelo *on-demand* es función de los bytes escaneados. Para $n$ consultas con un promedio de $d$ GB por ejecución:
+
+$$C_{\text{BQ}} = \frac{5 \cdot n \cdot d}{1024} \text{ USD}$$
+
+Para un equipo con $n = 500$ consultas/mes y $d = 2\,\text{GB}$ promedio, $C_{\text{BQ}} \approx 0.005$ USD. El modelo serverless convierte los costos fijos de infraestructura en costos variables y directamente observables por query.
+
+[^1]: Las arquitecturas de referencia de GCP documentan los patrones de pipeline para analítica a escala en [cloud.google.com/architecture](https://cloud.google.com/architecture).

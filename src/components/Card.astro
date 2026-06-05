@@ -1,0 +1,85 @@
+---
+import PillarTag from './PillarTag.astro';
+import { readingTime, formatDate } from '../lib/utils';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, excerpt, publishedAt, pillar } = post.data;
+
+const body: string = (post as unknown as { body?: string }).body ?? '';
+const rt = readingTime(body);
+const dateStr = formatDate(publishedAt);
+---
+
+<article class="card">
+  <a href={`/blog/${post.id}`} class="card-link">
+    <div class="card-inner">
+      <PillarTag pillar={pillar} />
+      <h2 class="card-title">{title}</h2>
+      <p class="card-excerpt">{excerpt}</p>
+      <footer class="card-meta">
+        <time datetime={publishedAt.toISOString()}>{dateStr}</time>
+        <span aria-hidden="true">·</span>
+        <span>{rt} min de lectura</span>
+      </footer>
+    </div>
+  </a>
+</article>
+
+<style>
+  .card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 2px 12px rgba(0, 114, 178, 0.08);
+  }
+
+  .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  .card-inner {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    height: 100%;
+  }
+
+  .card-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    line-height: var(--leading-tight);
+    color: var(--ink);
+  }
+
+  .card-excerpt {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.55;
+    flex: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+    margin-top: var(--space-2);
+  }
+</style>
