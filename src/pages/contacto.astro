@@ -1,5 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const apiBase =
+  (import.meta.env.PUBLIC_API_URL as string | undefined) ??
+  'https://edgarsierra-api-36437889250.us-central1.run.app';
 ---
 
 <BaseLayout
@@ -21,8 +25,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <section class="form-section">
         <h2 class="form-title">Formulario</h2>
 
-        {/* TODO: wire to POST /contact en Fase 2 */}
-        <form class="contact-form" id="contact-form" novalidate>
+        <form class="contact-form" id="contact-form" data-api-base={apiBase} novalidate>
+
           <div class="field">
             <label for="nombre">Nombre</label>
             <input
@@ -58,10 +62,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             ></textarea>
           </div>
 
-          <button type="submit" class="submit-btn" disabled>
-            Enviar mensaje
-            <span class="btn-note">(disponible en breve)</span>
-          </button>
+          <!-- Honeypot — invisible for humans, visible to bots -->
+          <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+            <label for="website">Website</label>
+            <input
+              type="text"
+              id="website"
+              name="website"
+              tabindex="-1"
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-footer">
+            <button type="submit" class="submit-btn" id="submit-btn">
+              Enviar mensaje
+            </button>
+            <div id="form-status" class="form-status" role="status" aria-live="polite"></div>
+          </div>
+
         </form>
       </section>
 
@@ -97,6 +116,72 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
   </div>
 </BaseLayout>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const statusEl = document.getElementById('form-status') as HTMLElement | null;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+
+  if (form && statusEl && submitBtn) {
+    const API_BASE: string =
+      form.dataset.apiBase ?? 'https://edgarsierra-api-36437889250.us-central1.run.app';
+
+    function setLoading(loading: boolean): void {
+      submitBtn!.disabled = loading;
+      submitBtn!.textContent = loading ? 'Enviando…' : 'Enviar mensaje';
+    }
+
+    function showStatus(type: 'success' | 'error' | '', message: string): void {
+      statusEl!.className = type ? `form-status form-status--${type}` : 'form-status';
+      statusEl!.textContent = message;
+    }
+
+    form.addEventListener('submit', async (e: Event) => {
+      e.preventDefault();
+
+      const nombre  = (form.elements.namedItem('nombre')  as HTMLInputElement).value.trim();
+      const email   = (form.elements.namedItem('email')   as HTMLInputElement).value.trim();
+      const mensaje = (form.elements.namedItem('mensaje') as HTMLTextAreaElement).value.trim();
+      const website = (form.elements.namedItem('website') as HTMLInputElement)?.value ?? '';
+
+      if (!nombre || !email || !mensaje) {
+        showStatus('error', 'Por favor completá todos los campos.');
+        return;
+      }
+
+      setLoading(true);
+      showStatus('', '');
+
+      try {
+        const res = await fetch(`${API_BASE}/contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: nombre, email, message: mensaje, website }),
+        });
+        const json = await res.json().catch(() => ({})) as Record<string, unknown>;
+        if (!res.ok) {
+          throw new Error(
+            typeof json.detail === 'string' ? json.detail : 'Error al enviar el mensaje.'
+          );
+        }
+        showStatus(
+          'success',
+          typeof json.message === 'string' && json.message
+            ? json.message
+            : 'Mensaje recibido. Te respondo pronto.'
+        );
+        form.reset();
+      } catch (err) {
+        showStatus(
+          'error',
+          err instanceof Error ? err.message : 'Error al enviar. Intentá de nuevo.'
+        );
+      } finally {
+        setLoading(false);
+      }
+    });
+  }
+</script>
 
 <style>
   .contacto-page {
@@ -192,26 +277,59 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     line-height: var(--leading-body);
   }
 
+  /* ── Form footer (button + status) ──────── */
+  .form-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+
   .submit-btn {
     font-family: var(--font-ui);
     font-size: var(--text-base);
     font-weight: 500;
-    padding: var(--space-2) var(--space-4);
+    padding: var(--space-2) var(--space-5);
     border-radius: var(--radius);
-    border: 2px solid var(--border);
-    background: var(--surface);
-    color: var(--ink-muted);
-    cursor: not-allowed;
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    opacity: 0.65;
-    align-self: flex-start;
+    border: 2px solid var(--accent);
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.15s;
   }
 
-  .btn-note {
-    font-size: var(--text-xs);
-    font-style: italic;
+  .submit-btn:hover:not(:disabled) {
+    opacity: 0.85;
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ── Status messages ─────────────────────── */
+  .form-status {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    min-height: 1.5em;
+    width: 100%;
+  }
+
+  .form-status--success {
+    padding: var(--space-2) var(--space-3);
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+    border-radius: var(--radius);
+  }
+
+  .form-status--error {
+    padding: var(--space-2) var(--space-3);
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    border-radius: var(--radius);
   }
 
   /* ── Direct section ──────────────────────── */

@@ -23,5 +23,13 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
+# api backend secrets
+api/.env
+
+# python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
 # planning docs — never publish (private)
 _planning/
