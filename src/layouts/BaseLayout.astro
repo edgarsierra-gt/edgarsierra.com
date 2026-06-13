@@ -57,6 +57,12 @@ const breadcrumbLD = {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- Marca JS disponible antes del primer paint → habilita el revelado
+         por scroll sin parpadeo y mantiene todo visible si no hay JS. -->
+    <script is:inline>
+      document.documentElement.classList.add('has-js');
+    </script>
+
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
@@ -167,8 +173,30 @@ const breadcrumbLD = {
         const open = toggle.getAttribute('aria-expanded') === 'true';
         toggle.setAttribute('aria-expanded', String(!open));
         toggle.setAttribute('aria-label', open ? 'Abrir menú' : 'Cerrar menú');
+        toggle.classList.toggle('is-open', !open);
         nav?.classList.toggle('is-open', !open);
       });
+
+      // Revelado al hacer scroll. Si el usuario pide menos movimiento o el
+      // navegador no soporta IntersectionObserver, todo se muestra de una.
+      const reveals = document.querySelectorAll('[data-reveal]');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !('IntersectionObserver' in window)) {
+        reveals.forEach((el) => el.classList.add('is-visible'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                obs.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -10% 0px', threshold: 0.1 }
+        );
+        reveals.forEach((el) => io.observe(el));
+      }
     </script>
 
     <!-- Cloudflare Web Analytics — pegá el token del dashboard:
@@ -270,7 +298,20 @@ const breadcrumbLD = {
     height: 2px;
     background-color: var(--ink);
     border-radius: 2px;
-    transition: transform 0.2s, opacity 0.2s;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+
+  /* Hamburguesa → "X" al abrir el menú */
+  .nav-toggle.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .nav-toggle.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-toggle.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   /* ── Main / Container ────────────────────────────────────── */

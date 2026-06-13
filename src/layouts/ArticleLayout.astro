@@ -55,7 +55,7 @@ const articleLD = {
       <slot />
     </div>
 
-    <footer class="article-footer">
+    <footer class="article-footer" data-reveal>
       <div class="author-bio">
         <strong class="bio-name">Edgar Sierra</strong>
         <p class="bio-desc">
@@ -95,6 +95,18 @@ const articleLD = {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .article-header { animation: es-fade-up 0.6s ease both; }
+  }
+
+  .newsletter-cta {
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .newsletter-cta:hover {
+    box-shadow: 0 8px 24px rgba(0, 114, 178, 0.08);
   }
 
   .article-title {

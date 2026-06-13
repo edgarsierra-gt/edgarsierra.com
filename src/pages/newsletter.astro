@@ -7,7 +7,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   description="Newsletter mensual sobre análisis de datos, ingeniería GCP e IA aplicada a Guatemala y Centroamérica. Sin spam."
 >
   <div class="newsletter-page">
-    <header class="page-header">
+    <header class="page-header" data-reveal>
       <h1 class="page-title">Newsletter</h1>
       <p class="page-subtitle">
         Un artículo al mes. Sin spam. Podés darte de baja cuando quieras.
@@ -17,7 +17,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <!-- ── Pitch ──────────────────────────────── -->
     <section class="pitch-section">
       <div class="pitch-grid">
-        <div class="pitch-item">
+        <div class="pitch-item" data-reveal>
           <span class="pitch-icon" aria-hidden="true">📊</span>
           <h3>Análisis de datos</h3>
           <p>
@@ -25,7 +25,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             en datos, con el rigor que la disciplina merece.
           </p>
         </div>
-        <div class="pitch-item">
+        <div class="pitch-item" data-reveal style="--reveal-delay: 90ms">
           <span class="pitch-icon" aria-hidden="true">☁️</span>
           <h3>Ingeniería GCP</h3>
           <p>
@@ -33,7 +33,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             APIs, deploy sin llaves y seguridad sin over-engineering.
           </p>
         </div>
-        <div class="pitch-item">
+        <div class="pitch-item" data-reveal style="--reveal-delay: 180ms">
           <span class="pitch-icon" aria-hidden="true">🧠</span>
           <h3>IA aplicada</h3>
           <p>
@@ -43,7 +43,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
       </div>
 
-      <div class="pitch-details">
+      <div class="pitch-details" data-reveal>
         <div class="detail-item">
           <strong>Cadencia:</strong> un envío mensual.
         </div>
@@ -59,7 +59,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </section>
 
     <!-- ── Formulario de suscripción ──────────── -->
-    <section class="subscribe-section">
+    <section class="subscribe-section" data-reveal>
       <h2 class="subscribe-title">Suscribirse</h2>
 
       <!-- BEEHIIV_EMBED -->
@@ -120,11 +120,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .pitch-item:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(24, 24, 27, 0.06);
   }
 
   .pitch-icon {
     font-size: 1.5rem;
     line-height: 1;
+    transition: transform 0.25s ease;
+  }
+
+  .pitch-item:hover .pitch-icon {
+    transform: scale(1.12);
   }
 
   .pitch-item h3 {

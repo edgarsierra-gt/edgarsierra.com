@@ -8,7 +8,7 @@ import { CHARLAS } from '../data/charlas';
   description="Ponencias y talleres de Edgar Sierra sobre análisis de datos, estadística y GCP."
 >
   <div class="charlas-page">
-    <header class="page-header">
+    <header class="page-header" data-reveal>
       <h1 class="page-title">Charlas</h1>
       <p class="page-subtitle">
         Talleres y ponencias sobre datos, estadística e ingeniería GCP.
@@ -18,8 +18,8 @@ import { CHARLAS } from '../data/charlas';
     </header>
 
     <div class="charlas-list">
-      {CHARLAS.map(charla => (
-        <article class="charla-item">
+      {CHARLAS.map((charla, i) => (
+        <article class="charla-item" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
           <div class="charla-meta">
             <span class="charla-year">{charla.year}</span>
             <span class="charla-type">{charla.type}</span>

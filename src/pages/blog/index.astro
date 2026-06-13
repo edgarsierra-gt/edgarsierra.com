@@ -21,7 +21,7 @@ const pillars = Object.entries(PILLARS) as [string, { name: string; color: strin
   description="Artículos sobre análisis de datos, ingeniería GCP, estadística e IA aplicada a problemas reales de Guatemala y Centroamérica."
 >
   <div class="blog-page">
-    <header class="blog-header">
+    <header class="blog-header" data-reveal>
       <h1 class="blog-title">Blog</h1>
       <p class="blog-subtitle">
         Análisis de datos, ingeniería GCP, estadística e IA aplicada.
@@ -48,8 +48,13 @@ const pillars = Object.entries(PILLARS) as [string, { name: string; color: strin
       <p class="empty-state">No hay artículos publicados todavía.</p>
     ) : (
       <div class="posts-grid" id="posts-grid">
-        {posts.map(post => (
-          <div class="post-item" data-pillar={String(post.data.pillar)}>
+        {posts.map((post, i) => (
+          <div
+            class="post-item"
+            data-pillar={String(post.data.pillar)}
+            data-reveal
+            style={`--reveal-delay: ${i * 60}ms`}
+          >
             <Card post={post} />
           </div>
         ))}
@@ -61,6 +66,7 @@ const pillars = Object.entries(PILLARS) as [string, { name: string; color: strin
 <script>
   const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
   const items = document.querySelectorAll<HTMLElement>('.post-item');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
@@ -72,6 +78,13 @@ const pillars = Object.entries(PILLARS) as [string, { name: string; color: strin
       items.forEach(item => {
         const show = filter === 'all' || item.dataset.pillar === filter;
         item.style.display = show ? '' : 'none';
+        // Re-trigger an entrance animation on the cards that remain visible.
+        if (show && !reduce) {
+          item.classList.add('is-visible');
+          item.classList.remove('filter-in');
+          void item.offsetWidth; // force reflow so the animation restarts
+          item.classList.add('filter-in');
+        }
       });
     });
   });
@@ -156,6 +169,13 @@ const pillars = Object.entries(PILLARS) as [string, { name: string; color: strin
 
   .post-item > * {
     flex: 1;
+  }
+
+  /* Reanimación al cambiar de filtro */
+  @media (prefers-reduced-motion: no-preference) {
+    .post-item.filter-in {
+      animation: es-fade-up 0.4s ease both;
+    }
   }
 
   .empty-state {

@@ -12,7 +12,7 @@ const apiBase =
   description="Contacto directo con Edgar Sierra. Proyectos, consultas o propuestas de charla."
 >
   <div class="contacto-page">
-    <header class="page-header">
+    <header class="page-header" data-reveal>
       <h1 class="page-title">Contacto</h1>
       <p class="page-subtitle">
         ¿Proyecto, consulta técnica o propuesta de charla?
@@ -23,7 +23,7 @@ const apiBase =
     <div class="contacto-layout">
 
       <!-- ── Formulario ──────────────────────── -->
-      <section class="form-section">
+      <section class="form-section" data-reveal>
         <h2 class="form-title">Formulario</h2>
 
         <form class="contact-form" id="contact-form" data-api-base={apiBase} novalidate>
@@ -86,7 +86,7 @@ const apiBase =
       </section>
 
       <!-- ── Contacto directo ────────────────── -->
-      <aside class="direct-section">
+      <aside class="direct-section" data-reveal style="--reveal-delay: 90ms">
         <h2 class="direct-title">Contacto directo</h2>
 
         <div class="contact-item">

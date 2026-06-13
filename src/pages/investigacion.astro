@@ -12,7 +12,7 @@ const papers = publications.filter(p => p.data.type === 'paper');
   description="Publicaciones académicas de Edgar Arnoldo Sierra: tesis de maestría y trabajos de investigación estadística aplicada."
 >
   <div class="investigacion-page">
-    <header class="page-header">
+    <header class="page-header" data-reveal>
       <h1 class="page-title">Investigación</h1>
       <p class="page-subtitle">
         Publicaciones académicas de <strong>Edgar Arnoldo Sierra</strong>.
@@ -20,7 +20,7 @@ const papers = publications.filter(p => p.data.type === 'paper');
       </p>
     </header>
 
-    <p class="page-intro">
+    <p class="page-intro" data-reveal>
       Mi trabajo de investigación parte de una sola idea aplicada a contextos distintos:
       usar métodos estadísticos rigurosos para responder preguntas concretas del entorno
       guatemalteco. Empezó en el laboratorio —calidad del café, descontaminación de agua
@@ -31,7 +31,7 @@ const papers = publications.filter(p => p.data.type === 'paper');
     </p>
 
     {thesis && (
-      <section class="thesis-featured">
+      <section class="thesis-featured" data-reveal>
         <div class="thesis-header">
           <span class="thesis-badge">Tesis de maestría</span>
           {thesis.data.status === 'in-press' && (
@@ -75,10 +75,10 @@ const papers = publications.filter(p => p.data.type === 'paper');
 
     {papers.length > 0 && (
       <section class="papers-section">
-        <h2 class="section-heading">Investigación experimental (CUNOR–DIGI)</h2>
+        <h2 class="section-heading" data-reveal>Investigación experimental (CUNOR–DIGI)</h2>
         <div class="papers-list">
-          {papers.map(paper => (
-            <article class="paper-item">
+          {papers.map((paper, i) => (
+            <article class="paper-item" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
               <h3 class="paper-title">{paper.data.title}</h3>
               <p class="paper-meta">
                 <span>{paper.data.authors}</span>

@@ -11,7 +11,7 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
   description="Trabajo técnico en producción: pipelines ETL, infraestructura GCP y el backend de este sitio como case study de ingeniería."
 >
   <div class="projects-page">
-    <header class="page-header">
+    <header class="page-header" data-reveal>
       <h1 class="page-title">Proyectos</h1>
       <p class="page-subtitle">
         Trabajo técnico en producción, documentado con rigor. Pipelines, APIs e
@@ -20,8 +20,12 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
     </header>
 
     <div class="projects-grid">
-      {projects.map(project => (
-        <article class:list={['project-card', { 'card-featured': project.data.featured }]}>
+      {projects.map((project, i) => (
+        <article
+          class:list={['project-card', { 'card-featured': project.data.featured }]}
+          data-reveal
+          style={`--reveal-delay: ${i * 70}ms`}
+        >
           <div class="card-badges">
             {project.data.featured && (
               <span class="badge badge-featured">Destacado</span>
@@ -106,6 +110,16 @@ const projects = allProjects.sort((a, b) => a.data.order - b.data.order);
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    transition:
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  .project-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 8px 24px rgba(0, 114, 178, 0.10);
+    transform: translateY(-2px);
   }
 
   .card-featured {

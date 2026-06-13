@@ -71,7 +71,7 @@ const timeline = [
   <div class="sobre-page">
 
     <!-- ── Bio ───────────────────────────────── -->
-    <section class="bio-section">
+    <section class="bio-section" data-reveal>
       <div class="bio-content">
         <div class="avatar-wrap">
           <img
@@ -105,10 +105,10 @@ const timeline = [
 
     <!-- ── Stack ─────────────────────────────── -->
     <section class="stack-section">
-      <h2 class="section-title">Stack en producción</h2>
+      <h2 class="section-title" data-reveal>Stack en producción</h2>
       <div class="stack-grid">
-        {stackCategories.map(cat => (
-          <div class="stack-category">
+        {stackCategories.map((cat, i) => (
+          <div class="stack-category" data-reveal style={`--reveal-delay: ${i * 60}ms`}>
             <h3 class="cat-label">{cat.label}</h3>
             <div class="tech-chips">
               {cat.items.map(tech => (
@@ -122,8 +122,8 @@ const timeline = [
 
     <!-- ── Timeline ───────────────────────────── -->
     <section class="timeline-section">
-      <h2 class="section-title">Línea de tiempo</h2>
-      <div class="timeline">
+      <h2 class="section-title" data-reveal>Línea de tiempo</h2>
+      <div class="timeline" data-reveal>
         {timeline.map(entry => (
           <div class="timeline-entry">
             <span class="tl-year">{entry.year}</span>
@@ -139,10 +139,10 @@ const timeline = [
 
     <!-- ── Charlas embebidas ───────────────────── -->
     <section class="charlas-section">
-      <h2 class="section-title">Charlas</h2>
+      <h2 class="section-title" data-reveal>Charlas</h2>
       <div class="charlas-list">
-        {CHARLAS.map(charla => (
-          <article class="charla-item">
+        {CHARLAS.map((charla, i) => (
+          <article class="charla-item" data-reveal style={`--reveal-delay: ${i * 70}ms`}>
             <div class="charla-meta">
               <span class="charla-year">{charla.year}</span>
               <span class="charla-type">{charla.type}</span>
@@ -156,7 +156,7 @@ const timeline = [
     </section>
 
     <!-- ── CTAs ───────────────────────────────── -->
-    <section class="cta-section">
+    <section class="cta-section" data-reveal>
       <div class="cta-grid">
         <a href="/newsletter" class="cta-card cta-primary">
           <strong>Newsletter mensual</strong>
@@ -291,9 +291,29 @@ const timeline = [
     display: flex;
     flex-direction: column;
     gap: 0;
-    border-left: 2px solid var(--border);
+    position: relative;
     padding-left: var(--space-5);
     margin-left: var(--space-2);
+  }
+
+  /* Línea vertical — se dibuja al entrar en vista (sólo con JS) */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+    transform-origin: top;
+  }
+
+  .has-js .timeline::before {
+    transform: scaleY(0);
+  }
+
+  .timeline.is-visible::before {
+    transform: scaleY(1);
   }
 
   .timeline-entry {
@@ -312,6 +332,31 @@ const timeline = [
     background: var(--accent);
     border: 2px solid var(--bg);
     box-shadow: 0 0 0 1.5px var(--accent);
+  }
+
+  /* La línea crece y los puntos aparecen en secuencia */
+  @media (prefers-reduced-motion: no-preference) {
+    .has-js .timeline::before {
+      transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+    }
+
+    .has-js .timeline .timeline-entry::before {
+      opacity: 0;
+      transform: scale(0);
+    }
+
+    .timeline.is-visible .timeline-entry::before {
+      animation: tl-dot 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .timeline.is-visible .timeline-entry:nth-child(1)::before { animation-delay: 0.35s; }
+    .timeline.is-visible .timeline-entry:nth-child(2)::before { animation-delay: 0.55s; }
+    .timeline.is-visible .timeline-entry:nth-child(3)::before { animation-delay: 0.75s; }
+  }
+
+  @keyframes tl-dot {
+    from { opacity: 0; transform: scale(0); }
+    to   { opacity: 1; transform: scale(1); }
   }
 
   .tl-year {
@@ -418,12 +463,13 @@ const timeline = [
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
   }
 
   .cta-card:hover {
     text-decoration: none;
-    box-shadow: 0 2px 12px rgba(0, 114, 178, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 114, 178, 0.12);
+    transform: translateY(-3px);
   }
 
   .cta-primary {

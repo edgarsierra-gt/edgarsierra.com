@@ -1,29 +1,142 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroViz from '../components/HeroViz.astro';
+import Card from '../components/Card.astro';
+
+// Latest published posts for the home feed.
+const allPosts = await getCollection('blog', ({ data }) =>
+  import.meta.env.PROD ? !data.draft : true
+);
+const latestPosts = allPosts
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .slice(0, 3);
+
+// Content pillars with a one-line description each.
+const pillars = [
+  {
+    n: 1,
+    name: 'Política y datos',
+    color: 'var(--pillar-1)',
+    desc: 'Medición empírica de fenómenos políticos: publicidad electoral, opinión y comportamiento.',
+  },
+  {
+    n: 2,
+    name: 'Marketing analytics',
+    color: 'var(--pillar-2)',
+    desc: 'Atribución, experimentación y modelos de medición para decisiones de marketing.',
+  },
+  {
+    n: 3,
+    name: 'Ingeniería GCP',
+    color: 'var(--pillar-3)',
+    desc: 'Pipelines, APIs e infraestructura de datos en Google Cloud, del notebook a producción.',
+  },
+  {
+    n: 4,
+    name: 'IA aplicada',
+    color: 'var(--pillar-4)',
+    desc: 'Modelos que resuelven problemas reales, con criterio sobre cuándo —y cuándo no— usarlos.',
+  },
+  {
+    n: 5,
+    name: 'Estadística',
+    color: 'var(--pillar-5)',
+    desc: 'Inferencia, diseño experimental y métodos rigurosos aplicados al contexto local.',
+  },
+];
 ---
 
 <BaseLayout
   title="Edgar Sierra — Head of BI & Data Science"
   description="Estadística rigurosa e IA aplicadas a problemas reales de Guatemala y Centroamérica. Blog, proyectos y newsletter."
 >
+  <!-- ── Hero ──────────────────────────────────────────────── -->
   <section class="hero">
-    <h1 class="hero-title">
-      Estadística rigurosa e IA aplicadas a problemas reales de Guatemala y Centroamérica.
-    </h1>
-    <p class="hero-subtitle">
-      Análisis de datos, ingeniería en GCP e investigación con rigor estadístico.
-      Contenido pensado para profesionales de datos en la región.
-    </p>
-    <div class="hero-actions">
-      <a href="/blog" class="btn btn-primary">Leer el blog</a>
-      <a href="/newsletter" class="btn btn-secondary">Suscribirse</a>
+    <div class="hero-text">
+      <h1 class="hero-title">
+        Estadística rigurosa e IA aplicadas a problemas reales de Guatemala y
+        Centroamérica.
+      </h1>
+      <p class="hero-subtitle">
+        Análisis de datos, ingeniería en GCP e investigación con rigor
+        estadístico. Contenido pensado para profesionales de datos en la región.
+      </p>
+      <div class="hero-actions">
+        <a href="/blog" class="btn btn-primary">Leer el blog</a>
+        <a href="/newsletter" class="btn btn-secondary">Suscribirse</a>
+      </div>
+      <div class="pillar-chips">
+        <span class="chip chip-1">Política y datos</span>
+        <span class="chip chip-2">Marketing analytics</span>
+        <span class="chip chip-3">Ingeniería GCP</span>
+        <span class="chip chip-4">IA aplicada</span>
+        <span class="chip chip-5">Estadística</span>
+      </div>
     </div>
-    <div class="pillar-chips">
-      <span class="chip chip-1">Política y datos</span>
-      <span class="chip chip-2">Marketing analytics</span>
-      <span class="chip chip-3">Ingeniería GCP</span>
-      <span class="chip chip-4">IA aplicada</span>
-      <span class="chip chip-5">Estadística</span>
+    <div class="hero-figure" aria-hidden="false">
+      <HeroViz />
+      <p class="hero-figure-caption">
+        Regresión por mínimos cuadrados sobre datos simulados, con banda de
+        confianza.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Pilares de contenido ──────────────────────────────── -->
+  <section class="section">
+    <header class="section-head" data-reveal>
+      <h2 class="section-title">Sobre qué escribo</h2>
+      <p class="section-lead">
+        Cinco líneas de trabajo, una misma obsesión: medir bien lo que casi nadie
+        mide en la región.
+      </p>
+    </header>
+    <div class="pillars-grid">
+      {pillars.map((p, i) => (
+        <article
+          class="pillar-card"
+          style={`--card-color: ${p.color}; --reveal-delay: ${i * 70}ms`}
+          data-reveal
+        >
+          <span class="pillar-num">{String(p.n).padStart(2, '0')}</span>
+          <h3 class="pillar-name">{p.name}</h3>
+          <p class="pillar-desc">{p.desc}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- ── Últimos artículos ─────────────────────────────────── -->
+  {latestPosts.length > 0 && (
+    <section class="section">
+      <header class="section-head section-head--row" data-reveal>
+        <h2 class="section-title">Últimos artículos</h2>
+        <a href="/blog" class="section-link">Ver todo el blog →</a>
+      </header>
+      <div class="posts-grid">
+        {latestPosts.map((post, i) => (
+          <div data-reveal style={`--reveal-delay: ${i * 80}ms`}>
+            <Card post={post} />
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- ── CTA Newsletter ────────────────────────────────────── -->
+  <section class="section">
+    <div class="home-cta" data-reveal>
+      <div class="home-cta-text">
+        <h2 class="home-cta-title">Un artículo de fondo al mes</h2>
+        <p class="home-cta-desc">
+          Análisis de datos, GCP e IA aplicados a Centroamérica, más links
+          curados. Sin spam.
+        </p>
+      </div>
+      <a href="/newsletter" class="btn btn-primary home-cta-btn">
+        Suscribirme
+      </a>
     </div>
   </section>
 </BaseLayout>
@@ -31,9 +144,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <style>
   /* ── Hero ────────────────────────────────────────────────── */
   .hero {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--space-8);
+    align-items: center;
     padding-top: var(--space-12);
-    padding-bottom: var(--space-8);
-    max-width: var(--reading);
+    padding-bottom: var(--space-12);
+  }
+
+  .hero-text {
+    max-width: 38rem;
   }
 
   .hero-title {
@@ -44,6 +164,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     color: var(--ink);
     margin-bottom: var(--space-4);
     letter-spacing: -0.02em;
+    text-wrap: balance;
   }
 
   .hero-subtitle {
@@ -52,6 +173,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     line-height: var(--leading-body);
     margin-bottom: var(--space-6);
     max-width: 54ch;
+  }
+
+  .hero-figure {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .hero-figure-caption {
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+    line-height: 1.5;
+    text-align: center;
+    max-width: 38ch;
+    margin-inline: auto;
   }
 
   /* ── Buttons ─────────────────────────────────────────────── */
@@ -71,12 +208,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     border-radius: var(--radius);
     text-decoration: none;
     border: 2px solid var(--accent);
-    transition: opacity 0.15s;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
   }
 
   .btn:hover {
-    opacity: 0.85;
     text-decoration: none;
+    transform: translateY(-2px);
+  }
+
+  .btn:active {
+    transform: translateY(0);
   }
 
   .btn-primary {
@@ -84,9 +225,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     color: #fff;
   }
 
+  .btn-primary:hover {
+    box-shadow: 0 6px 18px rgba(0, 114, 178, 0.25);
+  }
+
   .btn-secondary {
     background-color: transparent;
     color: var(--accent);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--accent);
+    color: #fff;
   }
 
   /* ── Pillar chips ────────────────────────────────────────── */
@@ -113,20 +263,203 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .chip-4 { color: var(--pillar-4); }
   .chip-5 { color: var(--pillar-5); }
 
-  /* ── Mobile ──────────────────────────────────────────────── */
-  @media (max-width: 640px) {
+  /* On-load entrance for hero content. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-title    { animation: es-fade-up 0.7s ease both; }
+    .hero-subtitle { animation: es-fade-up 0.7s ease 0.1s both; }
+    .hero-actions  { animation: es-fade-up 0.7s ease 0.2s both; }
+    .pillar-chips  { animation: es-fade-up 0.7s ease 0.3s both; }
+    .hero-figure   { animation: es-fade-in 1s ease 0.15s both; }
+  }
+
+  /* ── Secciones genéricas ─────────────────────────────────── */
+  .section {
+    padding-block: var(--space-8);
+    border-top: 1px solid var(--border);
+  }
+
+  .section-head {
+    margin-bottom: var(--space-6);
+    max-width: var(--reading);
+  }
+
+  .section-head--row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    max-width: none;
+  }
+
+  .section-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .section-lead {
+    font-size: var(--text-lg);
+    color: var(--ink-muted);
+    line-height: var(--leading-body);
+    margin-top: var(--space-2);
+  }
+
+  .section-link {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .section-link:hover { text-decoration: underline; }
+
+  /* ── Pilares ─────────────────────────────────────────────── */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .pillar-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    overflow: hidden;
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  /* Señalética: barra de color del pilar arriba */
+  .pillar-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: var(--card-color);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+
+  .pillar-card:hover {
+    border-color: var(--card-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(24, 24, 27, 0.07);
+  }
+
+  .pillar-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .pillar-num {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--card-color);
+  }
+
+  .pillar-name {
+    font-family: var(--font-ui);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--ink);
+    line-height: var(--leading-tight);
+    margin-top: var(--space-1);
+    margin-bottom: var(--space-2);
+  }
+
+  .pillar-desc {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.55;
+  }
+
+  /* ── Posts grid ──────────────────────────────────────────── */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .posts-grid > div {
+    display: flex;
+  }
+
+  .posts-grid > div > * {
+    flex: 1;
+  }
+
+  /* ── CTA ─────────────────────────────────────────────────── */
+  .home-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+    padding: var(--space-6);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+  }
+
+  .home-cta-title {
+    font-family: var(--font-ui);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: var(--space-1);
+  }
+
+  .home-cta-desc {
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    color: var(--ink-muted);
+    line-height: 1.55;
+    max-width: 52ch;
+  }
+
+  .home-cta-btn {
+    flex-shrink: 0;
+  }
+
+  /* ── Responsive ──────────────────────────────────────────── */
+  @media (max-width: 880px) {
     .hero {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
       padding-top: var(--space-8);
     }
 
+    .hero-figure {
+      order: -1;
+      max-width: 440px;
+      margin-inline: auto;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 640px) {
     .hero-actions {
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
     }
 
     .btn {
       width: 100%;
       text-align: center;
+    }
+
+    .home-cta {
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 </style>
