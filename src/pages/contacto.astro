@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { SOCIALS } from '../data/socials';
 
 const apiBase =
   (import.meta.env.PUBLIC_API_URL as string | undefined) ??
@@ -90,24 +91,24 @@ const apiBase =
 
         <div class="contact-item">
           <span class="contact-label">Email</span>
-          <a href="mailto:edgar@edgarsierra.com" class="contact-value">
-            edgar@edgarsierra.com
+          <a href={`mailto:${SOCIALS.email}`} class="contact-value">
+            {SOCIALS.email}
           </a>
         </div>
 
         <div class="social-links">
           <h3 class="social-title">Redes</h3>
           <nav aria-label="Redes sociales">
-            <a href="https://github.com/edgarsierra-gt" rel="noopener noreferrer" class="social-link">
+            <a href={SOCIALS.github} rel="noopener noreferrer" class="social-link">
               GitHub
             </a>
-            <a href="#" rel="noopener noreferrer" class="social-link">
+            <a href={SOCIALS.linkedin} rel="noopener noreferrer" class="social-link">
               LinkedIn
             </a>
-            <a href="#" rel="noopener noreferrer" class="social-link">
+            <a href={SOCIALS.medium} rel="noopener noreferrer" class="social-link">
               Medium
             </a>
-            <a href="#" rel="noopener noreferrer" class="social-link">
+            <a href={SOCIALS.twitter} rel="noopener noreferrer" class="social-link">
               X
             </a>
           </nav>

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { SOCIALS } from '../data/socials';
 
 interface Props {
   title?: string;
@@ -71,6 +72,8 @@ const breadcrumbLD = {
 
     <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@NoyoMeDicen" />
+    <meta name="twitter:creator" content="@NoyoMeDicen" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
@@ -131,11 +134,11 @@ const breadcrumbLD = {
         <div class="footer-group">
           <p class="footer-label">Conectar</p>
           <nav aria-label="Redes sociales">
-            <a href="#" rel="noopener noreferrer">LinkedIn</a>
-            <a href="https://github.com/edgarsierra-gt" rel="noopener noreferrer">GitHub</a>
-            <a href="#" rel="noopener noreferrer">Medium</a>
-            <a href="#" rel="noopener noreferrer">X</a>
-            <a href="mailto:edgar@edgarsierra.com">Email</a>
+            <a href={SOCIALS.linkedin} rel="noopener noreferrer">LinkedIn</a>
+            <a href={SOCIALS.github} rel="noopener noreferrer">GitHub</a>
+            <a href={SOCIALS.medium} rel="noopener noreferrer">Medium</a>
+            <a href={SOCIALS.twitter} rel="noopener noreferrer">X</a>
+            <a href={`mailto:${SOCIALS.email}`}>Email</a>
           </nav>
         </div>
         <div class="footer-group">

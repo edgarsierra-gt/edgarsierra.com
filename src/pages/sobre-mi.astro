@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { CHARLAS } from '../data/charlas';
+import { SOCIALS } from '../data/socials';
 
 const personLD = {
   '@context': 'https://schema.org',
@@ -11,9 +12,10 @@ const personLD = {
   jobTitle: 'Head of BI & Data Science',
   url: 'https://edgarsierra.com/sobre-mi',
   sameAs: [
-    'https://github.com/edgarsierra-gt',
-    'https://www.linkedin.com/in/edgarsierra/',  // actualizar con URL real
-    'https://medium.com/@edgarsierra',            // actualizar con URL real
+    SOCIALS.github,
+    SOCIALS.linkedin,
+    SOCIALS.medium,
+    SOCIALS.twitter,
   ],
 };
 
@@ -44,7 +46,7 @@ const timeline = [
   {
     year: '2026',
     items: [
-      'Tesis de maestría aceptada en la Revista Científica USAC (en prensa)',
+      'Tesis de maestría en proceso de publicación — Revista de la Escuela de Estudios de Postgrado, USAC',
       'Lanzamiento de edgarsierra.com',
     ],
   },
@@ -71,33 +73,31 @@ const timeline = [
     <!-- ── Bio ───────────────────────────────── -->
     <section class="bio-section">
       <div class="bio-content">
-        <div class="avatar-placeholder" aria-hidden="true">
-          {/* foto: agregar /public/images/edgar-sierra.jpg */}
-          <span class="avatar-initials">ES</span>
+        <div class="avatar-wrap">
+          <img
+            src="/images/edgar-sierra.jpg"
+            alt="Foto de Edgar Sierra"
+            class="avatar-img"
+            width="80"
+            height="80"
+          />
         </div>
         <div class="bio-text">
           <h1 class="bio-name">Edgar Sierra</h1>
           <p class="bio-role">Head of BI & Data Science · Aumenta Intelligence</p>
 
-          {/* Placeholder bio — Edgar edita directamente */}
           <p>
-            Trabajo en la intersección de la estadística rigurosa, la ingeniería de
-            datos y la inteligencia artificial aplicada a problemas reales de Guatemala
-            y Centroamérica.
-          </p>
-          <p>
-            En Aumenta Intelligence lidero el área de BI & Data Science: desde el
-            diseño de arquitecturas de datos en GCP hasta modelos predictivos en
-            producción para múltiples industrias.
-          </p>
-          <p>
-            Tengo formación de posgrado en la Universidad de San Carlos de Guatemala
-            (USAC). Mi tesis, próxima a publicarse en la Revista Científica USAC 2026,
-            aplica métodos estadísticos a [área — Edgar completa].
-          </p>
-          <p>
-            Este sitio lo construí con Astro y Claude Code: es a la vez mi base de
-            publicación y un case study de ingeniería GCP.
+            Soy Edgar Sierra, estadístico aplicado y Head of BI & Data Science en una
+            agencia de marketing digital en Guatemala. Construyo modelos de machine
+            learning y arquitecturas de datos en GCP que llegan a producción, no que
+            se quedan en un notebook. Me obsesiona aplicar estadística rigurosa a
+            problemas reales del contexto centroamericano: política, marketing y
+            economía local. Hice una maestría en Estadística Aplicada (Cum Laude) con
+            una tesis sobre la eficiencia de la publicidad política en Meta durante las
+            elecciones de Guatemala 2023, en proceso de publicación en la Revista de la
+            Escuela de Estudios de Postgrado de la USAC. Acá escribo sobre lo que
+            aprendo midiendo cosas que a casi nadie más se le ocurre medir en esta
+            región.
           </p>
         </div>
       </div>
@@ -202,24 +202,21 @@ const timeline = [
     align-items: flex-start;
   }
 
-  .avatar-placeholder {
+  .avatar-wrap {
     flex-shrink: 0;
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: var(--code-bg);
+    overflow: hidden;
     border: 2px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: var(--code-bg);
   }
 
-  .avatar-initials {
-    font-family: var(--font-ui);
-    font-weight: 700;
-    font-size: var(--text-xl);
-    color: var(--accent);
-    user-select: none;
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .bio-text {

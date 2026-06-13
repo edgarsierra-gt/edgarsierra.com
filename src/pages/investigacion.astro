@@ -20,6 +20,16 @@ const papers = publications.filter(p => p.data.type === 'paper');
       </p>
     </header>
 
+    <p class="page-intro">
+      Mi trabajo de investigación parte de una sola idea aplicada a contextos distintos:
+      usar métodos estadísticos rigurosos para responder preguntas concretas del entorno
+      guatemalteco. Empezó en el laboratorio —calidad del café, descontaminación de agua
+      con residuos agroindustriales—, donde el diseño experimental y el análisis de
+      varianza eran las herramientas; y hoy continúa en los datos digitales —publicidad
+      política, comportamiento de plataformas—, donde el instrumental es más amplio pero
+      la lógica es la misma.
+    </p>
+
     {thesis && (
       <section class="thesis-featured">
         <div class="thesis-header">
@@ -65,7 +75,7 @@ const papers = publications.filter(p => p.data.type === 'paper');
 
     {papers.length > 0 && (
       <section class="papers-section">
-        <h2 class="section-heading">Otros trabajos</h2>
+        <h2 class="section-heading">Investigación experimental (CUNOR–DIGI)</h2>
         <div class="papers-list">
           {papers.map(paper => (
             <article class="paper-item">
@@ -98,6 +108,13 @@ const papers = publications.filter(p => p.data.type === 'paper');
   }
 
   .page-header {
+    margin-bottom: var(--space-4);
+  }
+
+  .page-intro {
+    font-size: var(--text-base);
+    color: var(--ink-muted);
+    line-height: var(--leading-body);
     margin-bottom: var(--space-8);
   }
 
