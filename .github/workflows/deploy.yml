@@ -1,0 +1,68 @@
+name: Deploy API to Cloud Run
+
+# Deploy the FastAPI backend to Cloud Run on changes to api/.
+# Auth uses Workload Identity Federation (OIDC) — no JSON service-account keys.
+# The frontend is deployed by Vercel, so this pipeline only runs for backend changes.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'api/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch: {}
+
+env:
+  PROJECT_ID: edgarsierra-prod
+  REGION: us-central1
+  SERVICE: edgarsierra-api
+  RUNTIME_SA: edgarsierra-api@edgarsierra-prod.iam.gserviceaccount.com
+  IMAGE: us-central1-docker.pkg.dev/edgarsierra-prod/edgarsierra/api
+  WIF_PROVIDER: projects/36437889250/locations/global/workloadIdentityPools/github/providers/github-provider
+  DEPLOYER_SA: github-deployer@edgarsierra-prod.iam.gserviceaccount.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # id-token: write is required for the OIDC token used by Workload Identity Federation.
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud (WIF — no keys)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.DEPLOYER_SA }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+      - name: Build and push image
+        run: |
+          docker build -t "${IMAGE}:${GITHUB_SHA}" -t "${IMAGE}:latest" ./api
+          docker push "${IMAGE}:${GITHUB_SHA}"
+          docker push "${IMAGE}:latest"
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "${SERVICE}" \
+            --image "${IMAGE}:${GITHUB_SHA}" \
+            --region "${REGION}" \
+            --service-account "${RUNTIME_SA}" \
+            --set-env-vars "PROJECT_ID=edgarsierra-prod,BEEHIIV_PUBLICATION_ID=pub_2f3c7024-6b7a-43ca-bf79-468dd4685fee,ALLOWED_ORIGINS=https://edgarsierra.com" \
+            --set-secrets "BEEHIIV_API_KEY=beehiiv-api-key:latest" \
+            --allow-unauthenticated \
+            --min-instances 0 \
+            --max-instances 3
+
+      - name: Smoke test /health
+        run: curl -fsS https://api.edgarsierra.com/health
