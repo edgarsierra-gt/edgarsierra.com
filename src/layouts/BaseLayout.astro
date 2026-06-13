@@ -14,13 +14,13 @@ const {
   title = 'Edgar Sierra — Head of BI & Data Science',
   description = 'Blog de análisis de datos, proyectos de ingeniería GCP e investigación estadística aplicada a Guatemala y Centroamérica.',
   ogType = 'website',
-  ogImage,
+  ogImage = '/og/site.png',
   jsonLd = [],
 } = Astro.props;
 
 const siteOrigin = Astro.site?.origin ?? 'https://edgarsierra.com';
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
-const ogImageURL = ogImage ? new URL(ogImage, Astro.site).href : undefined;
+const ogImageURL = new URL(ogImage, Astro.site).href;
 
 // BreadcrumbList — computed from pathname
 const SEGMENT_NAMES: Record<string, string> = {
@@ -74,7 +74,9 @@ const breadcrumbLD = {
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content="Edgar Sierra" />
     <meta property="og:locale" content="es_GT" />
-    {ogImageURL && <meta property="og:image" content={ogImageURL} />}
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -82,7 +84,7 @@ const breadcrumbLD = {
     <meta name="twitter:creator" content="@NoyoMeDicen" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    {ogImageURL && <meta name="twitter:image" content={ogImageURL} />}
+    <meta name="twitter:image" content={ogImageURL} />
 
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="Edgar Sierra — Blog" href="/rss.xml" />

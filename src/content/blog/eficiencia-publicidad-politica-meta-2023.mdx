@@ -1,0 +1,89 @@
+---
+title: "Quién compró mejor el voto digital: eficiencia publicitaria en Meta durante las elecciones de Guatemala 2023"
+excerpt: "Analicé 7,828 anuncios de los 16 candidatos presidenciales. La diferencia de eficiencia entre el primero y el último fue de 9 a 1. Esto es lo que revela el dato."
+pillar: 1
+tags: ["Política y datos", "Meta Ads", "Elecciones 2023", "Guatemala", "Transparencia algorítmica"]
+publishedAt: 2026-06-13
+draft: true
+seo:
+  metaTitle: "Eficiencia publicitaria en Meta — Elecciones Guatemala 2023"
+  metaDescription: "Un análisis de 7,828 anuncios políticos en Facebook e Instagram durante la primera vuelta presidencial de Guatemala 2023."
+  keywords: ["publicidad política", "Meta Ad Library", "elecciones Guatemala", "eficiencia publicitaria", "targeting digital"]
+---
+
+{/* Borrador generado para revisión de Edgar. Editar a tu voz y poner draft: false antes de publicar. Reemplazar las figuras placeholder por gráficos reales. */}
+
+En la primera vuelta presidencial de 2023, los candidatos guatemaltecos gastaron como nunca antes en Facebook e Instagram. No hubo, en cambio, ninguna autoridad electoral que auditara una pregunta básica: ¿ese dinero estaba comprando atención de forma eficiente, o se estaba evaporando en un sistema que casi nadie entiende?
+
+Esa pregunta fue el punto de partida de mi tesis de maestría. Descargué de la **Meta Ad Library** los **7,828 anuncios** publicados por los **16 candidatos presidenciales** entre abril y junio de 2023, y medí algo que suena simple pero que rara vez se mira en campaña: cuánta gente alcanzó cada quetzal invertido. La respuesta corta es que la diferencia entre el candidato más eficiente y el menos eficiente fue de **9 a 1**. La respuesta larga es más interesante.
+
+## Qué significa "eficiencia" cuando hablamos de anuncios
+
+La métrica que importa aquí no es cuánto gastó cada quien, sino qué obtuvo a cambio. Defino eficiencia como impresiones obtenidas por unidad de inversión:
+
+$$
+\text{eficiencia} = \frac{\text{impresiones}}{\text{quetzales invertidos}}
+$$
+
+Dos campañas pueden gastar lo mismo y terminar con audiencias de tamaños radicalmente distintos. La Ad Library no entrega cifras exactas —reporta rangos de gasto y de impresiones—, así que el trabajo estadístico consistió en gran parte en estimar con rigor a partir de datos censurados por intervalos, en vez de tomar los números al pie de la letra.
+
+<figure>
+  <div style="background: var(--code-bg); height: 200px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border)">
+    <span style="font-family: var(--font-ui); color: var(--ink-muted); font-size: 0.889rem">[ Figura 1 — distribución de eficiencia por candidato (brecha 9:1) ]</span>
+  </div>
+  <figcaption>Figura 1. Eficiencia mediana por candidato. El más eficiente obtuvo cerca de nueve veces más impresiones por quetzal que el menos eficiente.</figcaption>
+</figure>
+
+## Hallazgo 1: una brecha de 9 a 1
+
+La brecha de eficiencia entre campañas fue enorme. No se explica por el tamaño del presupuesto —algunos candidatos con mucho dinero fueron de los más ineficientes—, sino por *cómo* se compró: la segmentación, los formatos, la plataforma y el momento. En publicidad digital, gastar más no garantiza llegar a más gente; garantiza, a lo sumo, la oportunidad de hacerlo bien o mal.
+
+Para un país donde el financiamiento de campañas es un tema sensible, esto tiene una lectura incómoda: el gasto reportado no es un buen indicador del alcance real. Dos campañas con la misma inversión declarada pueden haber tenido impactos de audiencia completamente distintos.
+
+## Hallazgo 2: el dinero rinde menos a partir de cierto punto
+
+Usando regresión con **splines cúbicos** —que permiten que la relación entre gasto y resultado se curve en lugar de asumir una línea recta— encontré rendimientos decrecientes claros. Más allá de unos **Q223 por anuncio**, cada quetzal adicional compraba menos impresiones que el anterior.
+
+La implicación práctica es directa: concentrar mucho presupuesto en pocos anuncios caros es menos eficiente que distribuirlo en más piezas dentro del rango donde el rendimiento todavía es alto. Varias campañas hicieron exactamente lo contrario.
+
+<figure>
+  <div style="background: var(--code-bg); height: 200px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border)">
+    <span style="font-family: var(--font-ui); color: var(--ink-muted); font-size: 0.889rem">[ Figura 2 — curva de rendimientos decrecientes (spline cúbico) ]</span>
+  </div>
+  <figcaption>Figura 2. Impresiones por quetzal en función del gasto por anuncio. El rendimiento marginal cae de forma notable a partir de ~Q223.</figcaption>
+</figure>
+
+## Hallazgo 3: Instagram costó mucho más caro que Facebook
+
+Con modelos **OLS con efectos fijos** por candidato —para comparar manzanas con manzanas y aislar el efecto de la plataforma— el mismo tipo de anuncio rindió en promedio un **64 % menos de impresiones por quetzal en Instagram que en Facebook**. Para el electorado y el momento analizados, Facebook fue sencillamente el canal más barato para alcanzar gente.
+
+Esto no significa que Instagram sea "peor": significa que las campañas que volcaron presupuesto ahí sin ajustar expectativas pagaron una prima considerable, muchas veces sin saberlo.
+
+## Hallazgo 4: tres formas de apuntar al votante
+
+La segmentación demográfica que cada campaña configuró —combinaciones de edad, género y geografía— no fue aleatoria. Midiendo cuán distintas eran esas distribuciones entre sí con la **divergencia de Jensen-Shannon** y agrupando los resultados, emergieron **tres arquetipos de targeting**: campañas de alcance amplio sin gran diferenciación, campañas inclinadas hacia segmentos jóvenes, y campañas con sesgo regional marcado. Cada arquetipo es, en el fondo, una apuesta distinta sobre dónde está el voto decisivo.
+
+## Hallazgo 5: se movilizó mucho más de lo que se atacó
+
+Clasifiqué el contenido de los anuncios por tema usando **procesamiento de lenguaje natural**. El resultado contradice la intuición de que la política digital es sobre todo ataque: los mensajes de **movilización** —llamados a votar, a asistir a un evento, a participar— dominaron con **41.6 %**, mientras que el contenido **negativo** o de ataque directo fue apenas **0.7 %** del total.
+
+Al menos en la publicidad pagada y rastreable de esta elección, la guerra sucia no vivió en Meta. Eso no quiere decir que no existiera; quiere decir que, si existió, ocurrió en espacios que ninguna biblioteca de anuncios documenta.
+
+<figure>
+  <div style="background: var(--code-bg); height: 200px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border)">
+    <span style="font-family: var(--font-ui); color: var(--ink-muted); font-size: 0.889rem">[ Figura 3 — composición temática de los mensajes (movilización vs. negativo) ]</span>
+  </div>
+  <figcaption>Figura 3. Distribución temática de los 7,828 anuncios. La movilización domina; el contenido negativo es marginal.</figcaption>
+</figure>
+
+## Por qué esto importa más allá de 2023
+
+El hilo que conecta los cinco hallazgos es la **opacidad**. Las plataformas deciden, con algoritmos que no publican, a quién mostrarle cada anuncio y a qué costo. Eso convierte la eficiencia publicitaria en una variable que ninguna campaña controla del todo y que ninguna autoridad mide. En una democracia donde el dinero en política ya es un problema, sumar una capa de distribución algorítmica invisible no es un detalle técnico: es un punto ciego en la rendición de cuentas electoral.
+
+No propongo que Guatemala regule Meta. Propongo algo más modesto y más alcanzable: que la **transparencia de la distribución algorítmica** —no solo del gasto, sino de a quién llegó y con qué eficiencia— entre en la conversación sobre fiscalización electoral. Los datos para empezar esa conversación ya existen y son públicos. Lo que falta es mirarlos.
+
+---
+
+Este artículo es la versión divulgativa de mi tesis de maestría. La versión completa —con la metodología detallada, las especificaciones de los modelos y los resultados con sus intervalos— está en la sección de [Investigación](/investigacion).
+
+{/* Publicado originalmente en Medium: <enlace canónico — agregar al hacer cross-post> */}

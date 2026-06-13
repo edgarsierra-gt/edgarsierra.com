@@ -39,7 +39,13 @@ const articleLD = {
 };
 ---
 
-<BaseLayout title={title} description={excerpt} ogType="article" jsonLd={[articleLD]}>
+<BaseLayout
+  title={title}
+  description={excerpt}
+  ogType="article"
+  ogImage={`/og/blog/${post.id}.png`}
+  jsonLd={[articleLD]}
+>
   <article class="article">
     <header class="article-header">
       <PillarTag pillar={pillar} />
