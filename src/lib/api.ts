@@ -5,7 +5,7 @@ export interface ApiResult {
 
 const API_BASE =
   (import.meta.env.PUBLIC_API_URL as string | undefined) ??
-  "https://edgarsierra-api-36437889250.us-central1.run.app";
+  "https://api.edgarsierra.com";
 
 export async function sendContact(data: {
   name: string;

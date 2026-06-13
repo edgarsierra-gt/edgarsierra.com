@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const apiBase =
   (import.meta.env.PUBLIC_API_URL as string | undefined) ??
-  'https://edgarsierra-api-36437889250.us-central1.run.app';
+  'https://api.edgarsierra.com';
 ---
 
 <BaseLayout
@@ -124,7 +124,7 @@ const apiBase =
 
   if (form && statusEl && submitBtn) {
     const API_BASE: string =
-      form.dataset.apiBase ?? 'https://edgarsierra-api-36437889250.us-central1.run.app';
+      form.dataset.apiBase ?? 'https://api.edgarsierra.com';
 
     function setLoading(loading: boolean): void {
       submitBtn!.disabled = loading;
