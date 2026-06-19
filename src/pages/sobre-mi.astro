@@ -22,51 +22,94 @@ const personLD = {
 const stackCategories = [
   {
     label: 'Ingeniería de datos',
-    items: ['Python', 'BigQuery', 'Apache Airflow', 'dbt', 'Pub/Sub', 'Pandas'],
+    items: ['Python', 'SQL', 'BigQuery', 'Apache Airflow', 'dbt', 'Cloud Functions', 'Cloud Tasks', 'Cloud Scheduler'],
   },
   {
     label: 'Infraestructura GCP',
-    items: ['Cloud Run', 'Firestore', 'Secret Manager', 'GitHub Actions', 'WIF', 'Docker'],
+    items: ['Cloud Run', 'Firestore', 'Cloud Storage', 'Secret Manager', 'WIF', 'GitHub Actions', 'Docker'],
   },
   {
     label: 'Estadística y ML',
-    items: ['scikit-learn', 'PyMC', 'statsmodels', 'NumPy', 'SciPy'],
+    items: ['scikit-learn', 'PyMC', 'statsmodels', 'OpenAI API', 'NumPy', 'SciPy'],
   },
   {
-    label: 'BI y visualización',
-    items: ['Looker Studio', 'Power BI', 'Matplotlib', 'Plotly'],
+    label: 'BI e integración API',
+    items: ['Looker Studio', 'Power BI', 'Meta Graph API', 'Google Ads API', 'TikTok API'],
   },
   {
     label: 'Este sitio',
-    items: ['Astro', 'MDX', 'FastAPI', 'Claude Code'],
+    items: ['Astro', 'MDX', 'FastAPI', 'Next.js', 'TypeScript', 'Claude Code'],
   },
 ];
 
 const timeline = [
   {
-    year: 'Presente',
-    items: ['Head of BI & Data Science en Aumenta Intelligence'],
+    year: 'dic. 2025 - actualidad',
+    role: 'Head of BI & Data Science',
+    company: 'Aumenta Intelligence',
+    items: [
+      'Lidero el departamento de Business Intelligence y Ciencia de Datos dentro del área de tecnología, reportando al CTO.',
+      'Diseño y arquitectura de la infraestructura de datos multicliente en Google Cloud (GCP). El modelo de outsourcing de la agencia me ha permitido estructurar pipelines y almacenes analíticos para diversas industrias de Centroamérica.',
+      'Liderazgo técnico de proyectos estratégicos, definición de OKRs del área y gestión directa de clientes y stakeholders corporativos.',
+      'Implementación de soluciones de IA generativa (OpenAI API) aplicadas a la optimización de procesos de negocio.'
+    ]
   },
   {
-    year: '2026',
+    year: 'ene. 2025 - dic. 2025',
+    role: 'Lead of Data Science',
+    company: 'Aumenta Intelligence',
     items: [
-      'Tesis de maestría en proceso de publicación — Revista de la Escuela de Estudios de Postgrado, USAC',
-      'Lanzamiento de edgarsierra.com',
-    ],
+      'Supervisión y desarrollo técnico de un equipo analítico en el ciclo integral de proyectos predictivos.',
+      'Automatización de flujos complejos de ETL e integraciones de datos de marketing mediante Cloud Functions, Cloud Scheduler y BigQuery.',
+      'Arquitectura de monitoreo analítico avanzado con Looker Studio y Power BI.'
+    ]
   },
   {
-    year: '2024',
+    year: 'sept. 2024 - dic. 2024',
+    role: 'Analista de Inteligencia de Negocio',
+    company: 'Ingenio Magdalena (Campo Para Crecer)',
     items: [
-      'Taller de Análisis de Datos y Series de Tiempo — Congreso Regional de Ingeniería, CUNOR-USAC',
-    ],
+      'Modelado de datos y desarrollo de dashboards analíticos enfocados en el rendimiento de operaciones agrícolas e industriales, agilizando la toma de decisiones directivas.'
+    ]
   },
   {
-    year: '2021',
+    year: 'nov. 2022 - sept. 2024',
+    role: 'Analista de Datos',
+    company: 'Aumenta Intelligence',
     items: [
-      'Auxiliar de Investigación II en la Dirección General de Investigación (DIGI-USAC)',
-      'Coautoría y análisis estadístico en 3 investigaciones publicadas sobre adsorbentes orgánicos y optimización de café',
-    ],
+      'Creación y mantenimiento de más de 300 dashboards interactivos en Power BI y Looker Studio, incrementando la eficiencia del análisis interno en un 60%.',
+      'Desarrollo de algoritmos en Python para el análisis de grandes volúmenes de información, optimizando en un 70% los tiempos de tareas repetitivas.',
+      'Implementación de modelos de Machine Learning (Regresiones, Clasificación, Isolation Forest y Redes Neuronales) para la optimización de pauta publicitaria.'
+    ]
   },
+  {
+    year: 'feb. 2020 - ene. 2022',
+    role: 'Investigador / Auxiliar de Investigación II',
+    company: 'Universidad de San Carlos de Guatemala',
+    items: [
+      'Liderazgo y soporte analítico en proyectos de investigación científica de la DIGI-USAC en ciencia de materiales y optimización industrial.',
+      'Aplicación de modelado estadístico avanzado y técnicas de diseño de experimentos (ANOVA, Tukey, Taguchi L9) para optimización de variables químicas.',
+      'Coautor de publicaciones en revistas científicas indexadas y ponente en congresos científicos nacionales.'
+    ]
+  },
+  {
+    year: 'jun. 2019 - dic. 2019',
+    role: 'Ingeniero de Procesos / Prácticas',
+    company: 'Aurora Studio Project (España) / Beneficio de Café',
+    items: [
+      'Supervisión del proceso de producción y exportación del primer contenedor de café tostado de especialidad en Guatemala.',
+      'Estandarización de procesos de beneficiado húmedo y obtención de la certificación Rainforest Alliance.',
+      'Diseño experimental de variaciones de fermentación húmeda, resultando en una reducción del 25% en tiempos de proceso y un incremento de 3 puntos de catación Q-Grader.'
+    ]
+  },
+  {
+    year: 'abr. 2016 - abr. 2018',
+    role: 'Catedrático Ad Honorem de Cursos Libres',
+    company: 'CUNOR - USAC',
+    items: [
+      'Impartición de cursos libres de ciencias exactas: Matemática II, Cálculo Multivariable, Electromagnetismo e Introducción a la Mecánica Cuántica.'
+    ]
+  }
 ];
 ---
 
@@ -94,17 +137,16 @@ const timeline = [
           <p class="bio-role">Head of BI & Data Science · Aumenta Intelligence</p>
 
           <p>
-            Soy Edgar Sierra, estadístico aplicado y Head of BI & Data Science en una
-            agencia de marketing digital en Guatemala. Construyo modelos de machine
-            learning y arquitecturas de datos en GCP que llegan a producción, no que
-            se quedan en un notebook. Me obsesiona aplicar estadística rigurosa a
-            problemas reales del contexto centroamericano: política, marketing y
-            economía local. Hice una maestría en Estadística Aplicada (Cum Laude) con
-            una tesis sobre la eficiencia de la publicidad política en Meta durante las
-            elecciones de Guatemala 2023, en proceso de publicación en la Revista de la
-            Escuela de Estudios de Postgrado de la USAC. Acá escribo sobre lo que
-            aprendo midiendo cosas que a casi nadie más se le ocurre medir en esta
-            región.
+            Soy Edgar Sierra, estadístico aplicado, ingeniero y Head of BI & Data Science en Aumenta Intelligence. Mi trabajo se centra en construir el puente entre la teoría estadística rigurosa, la ingeniería de datos en la nube (GCP) y el impacto real de negocio.
+          </p>
+          <p>
+            Liderar el departamento de BI y Ciencia de Datos en **Aumenta** —una firma de outsourcing de tecnología y marketing digital— me ha permitido diseñar arquitecturas y flujos analíticos para una gran variedad de industrias en Centroamérica (desde consumo masivo y banca, hasta retail y pauta digital). Trabajar con este enfoque de consultoría y outsourcing multicliente me ha dado una perspectiva profunda sobre cómo estructurar pipelines de datos y modelos predictivos que se adaptan a distintos niveles de madurez analítica y resuelven problemas reales del negocio.
+          </p>
+          <p>
+            Mi trayectoria combina la ejecución técnica con el rigor científico. Cuento con una maestría en Estadística Aplicada (*Cum Laude*) de la Universidad de San Carlos de Guatemala (USAC), donde también me desempeñé como investigador y auxiliar de investigación en proyectos de optimización química y materiales ecológicos. Mi tesis de maestría —un análisis de la eficiencia de la publicidad política de las elecciones generales de 2023 usando la Meta Ad Library— está en proceso de publicación académica.
+          </p>
+          <p>
+            Creo firmemente que los datos solo son valiosos cuando optimizan una decisión o un proceso de producción. Lo he verificado tanto en la nube escalando almacenes de datos, como en el campo reduciendo un 25% los tiempos de procesamiento de café de exportación mediante experimentos de fermentación controlada.
           </p>
         </div>
       </div>
@@ -134,6 +176,10 @@ const timeline = [
         {timeline.map(entry => (
           <div class="timeline-entry">
             <span class="tl-year">{entry.year}</span>
+            <div class="tl-header">
+              <strong class="tl-role">{entry.role}</strong>
+              <span class="tl-company">{entry.company}</span>
+            </div>
             <ul class="tl-items">
               {entry.items.map(item => (
                 <li>{item}</li>
@@ -373,6 +419,27 @@ const timeline = [
     font-weight: 600;
     color: var(--accent);
     margin-bottom: var(--space-1);
+  }
+
+  .tl-header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--space-2);
+  }
+
+  .tl-role {
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--ink);
+    line-height: var(--leading-tight);
+  }
+
+  .tl-company {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    margin-top: 1px;
   }
 
   .tl-items {
