@@ -11,6 +11,21 @@ const personLD = {
   familyName: 'Sierra',
   jobTitle: 'Head of BI & Data Science',
   url: 'https://edgarsierra.com/sobre-mi',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Guatemala',
+    addressCountry: 'GT',
+  },
+  alumniOf: {
+    '@type': 'EducationalOrganization',
+    name: 'Universidad de San Carlos de Guatemala',
+    sameAs: 'https://es.wikipedia.org/wiki/Universidad_de_San_Carlos_de_Guatemala',
+  },
+  worksFor: {
+    '@type': 'Organization',
+    name: 'Aumenta',
+    url: 'https://aumenta.do',
+  },
   sameAs: [
     SOCIALS.github,
     SOCIALS.linkedin,
