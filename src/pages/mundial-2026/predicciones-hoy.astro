@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MatchPredictionCard from '../../components/worldcup/MatchPredictionCard.astro';
+import UncertaintyNote from '../../components/worldcup/UncertaintyNote.astro';
+import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
+import { getPredictionsToday } from '../../lib/worldcup/data';
+import { formatDateEs, groupMatchesByDate } from '../../lib/worldcup/format';
+
+const predictions = getPredictionsToday();
+const groupedMatches = groupMatchesByDate(predictions.matches);
+const firstDate = groupedMatches[0]?.date;
+
+const title = 'Predicciones Mundial 2026 hoy: probabilidades de los partidos';
+const description =
+  'Predicciones de los partidos del Mundial 2026 de hoy con probabilidades 1X2, goles esperados y marcadores más probables generados por un modelo estadístico.';
+---
+
+<BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png">
+  <div class="predictions-page">
+    <header class="page-header" data-reveal>
+      <p class="eyebrow">Predicciones de hoy</p>
+      <h1>
+        {firstDate ? `Predicciones de los partidos del ${formatDateEs(firstDate)}` : 'Predicciones de los partidos del Mundial 2026'}
+      </h1>
+      <p>
+        Estas predicciones muestran probabilidades, no certezas. El modelo estima la probabilidad de victoria, empate o derrota usando datos recientes de selecciones, goles esperados y una matriz probabilística de marcadores.
+      </p>
+      <nav aria-label="Navegación del laboratorio">
+        <a href="/mundial-2026">Laboratorio</a>
+        <a href="/mundial-2026/metodologia">Metodología</a>
+      </nav>
+    </header>
+
+    {groupedMatches.length > 0 ? (
+      groupedMatches.map((group) => (
+        <section class="date-section" data-reveal>
+          <div class="date-header">
+            <h2>{formatDateEs(group.date)}</h2>
+            <p>{group.matches.length} partidos programados</p>
+          </div>
+          <div class="match-grid">
+            {group.matches.map((match) => <MatchPredictionCard match={match} />)}
+          </div>
+        </section>
+      ))
+    ) : (
+      <p class="empty-state">
+        No hay partidos próximos cargados en este momento. El modelo se actualizará cuando existan partidos programados.
+      </p>
+    )}
+
+    <UncertaintyNote />
+    <WorldCupCTA />
+  </div>
+</BaseLayout>
+
+<style>
+  .predictions-page {
+    display: grid;
+    gap: var(--space-8);
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-12);
+  }
+
+  .page-header {
+    max-width: var(--reading);
+  }
+
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-3);
+  }
+
+  .page-header p,
+  .date-header p {
+    color: var(--ink-muted);
+  }
+
+  .page-header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  .page-header nav a {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .date-section {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .date-header {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    align-items: baseline;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--space-2);
+  }
+
+  h2 {
+    font-size: var(--text-2xl);
+  }
+
+  .match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .empty-state {
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 640px) {
+    .predictions-page {
+      padding-top: var(--space-5);
+    }
+
+    .date-header {
+      display: block;
+    }
+  }
+</style>
+

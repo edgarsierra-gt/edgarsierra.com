@@ -1,0 +1,146 @@
+---
+import ExpectedGoalsBox from './ExpectedGoalsBox.astro';
+import ProbabilityBar from './ProbabilityBar.astro';
+import TopScoresList from './TopScoresList.astro';
+import { formatDateShort, getPredictionLabel } from '../../lib/worldcup/format';
+import type { MatchPrediction } from '../../lib/worldcup/types';
+
+interface Props {
+  match: MatchPrediction;
+}
+
+const { match } = Astro.props;
+const predictionLabel = getPredictionLabel(
+  match.predicted_result,
+  match.team_a.name,
+  match.team_b.name,
+);
+---
+
+<article class="match-card">
+  <header class="match-header">
+    <p class="match-meta">
+      {match.group && <span>Grupo {match.group}</span>}
+      <span>{formatDateShort(match.date)}</span>
+      {match.time_local && <span>{match.time_local}</span>}
+    </p>
+    <h3>{match.team_a.name} <span>vs</span> {match.team_b.name}</h3>
+    {match.venue && <p class="venue">{match.venue}</p>}
+  </header>
+
+  <ProbabilityBar
+    teamAWin={match.probabilities.team_a_win}
+    draw={match.probabilities.draw}
+    teamBWin={match.probabilities.team_b_win}
+    teamAName={match.team_a.name}
+    teamBName={match.team_b.name}
+  />
+
+  <div class="prediction-row">
+    <div>
+      <span>Lectura del modelo</span>
+      <strong>{predictionLabel}</strong>
+    </div>
+    <div>
+      <span>Confianza</span>
+      <strong>{match.confidence_label}</strong>
+    </div>
+  </div>
+
+  <ExpectedGoalsBox
+    teamAName={match.team_a.name}
+    teamBName={match.team_b.name}
+    teamAXg={match.expected_goals.team_a}
+    teamBXg={match.expected_goals.team_b}
+  />
+
+  <TopScoresList scores={match.top_scores} limit={3} />
+
+  {match.notes && <p class="match-note">{match.notes}</p>}
+</article>
+
+<style>
+  .match-card {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .match-header {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .match-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+
+  .match-meta span + span::before {
+    content: "· ";
+  }
+
+  h3 {
+    font-family: var(--font-ui);
+    font-size: var(--text-xl);
+    color: var(--ink);
+  }
+
+  h3 span {
+    font-weight: 400;
+    color: var(--ink-muted);
+  }
+
+  .venue {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.45;
+  }
+
+  .prediction-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .prediction-row div {
+    padding: var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .prediction-row span {
+    display: block;
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+
+  .prediction-row strong {
+    display: block;
+    margin-top: 0.2rem;
+    font-family: var(--font-ui);
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+
+  .match-note {
+    font-size: var(--text-sm);
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 520px) {
+    .prediction-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+

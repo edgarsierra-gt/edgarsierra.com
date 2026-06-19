@@ -43,6 +43,11 @@ const pages: Record<string, OGEntry> = {
     description: 'Head of BI & Data Science · Estadística, ingeniería GCP e IA aplicada',
     color: ACCENT,
   },
+  'mundial-2026': {
+    title: 'Laboratorio Mundial 2026',
+    description: 'Predicciones probabilísticas por Edgar Sierra',
+    color: ACCENT,
+  },
 };
 for (const post of posts) {
   const pillar = post.data.pillar as PillarKey;

@@ -1,0 +1,122 @@
+---
+import { formatNumber } from '../../lib/worldcup/format';
+import type { TeamPowerRanking as Ranking } from '../../lib/worldcup/types';
+
+interface Props {
+  ranking: Ranking;
+  limit?: number;
+}
+
+const { ranking, limit = 12 } = Astro.props;
+const teams = ranking.teams.slice(0, limit);
+---
+
+<section class="ranking-section" data-reveal>
+  <div class="section-header">
+    <p class="eyebrow">Modelo</p>
+    <h2>Ranking inicial de fuerza del modelo</h2>
+    <p>
+      Una lectura agregada de ataque, defensa y forma reciente. No es una probabilidad de título.
+    </p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Equipo</th>
+          <th>Grupo</th>
+          <th>Ataque</th>
+          <th>Defensa</th>
+          <th>GF pond.</th>
+          <th>GC pond.</th>
+        </tr>
+      </thead>
+      <tbody>
+        {teams.map((team) => (
+          <tr>
+            <th scope="row">{team.name}</th>
+            <td>{team.group ?? 'ND'}</td>
+            <td>{formatNumber(team.attack_index, 2)}</td>
+            <td>{formatNumber(team.defense_index, 2)}</td>
+            <td>{formatNumber(team.weighted_goals_for_pg, 2)}</td>
+            <td>{formatNumber(team.weighted_goals_against_pg, 2)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  .ranking-section {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .section-header {
+    max-width: var(--reading);
+  }
+
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+  }
+
+  h2 {
+    font-size: var(--text-2xl);
+    color: var(--ink);
+    margin-bottom: var(--space-2);
+  }
+
+  .section-header p:last-child {
+    color: var(--ink-muted);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  th,
+  td {
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
+
+  thead th {
+    font-family: var(--font-ui);
+    color: var(--ink);
+    background: var(--code-bg);
+  }
+
+  tbody th {
+    font-family: var(--font-ui);
+    font-weight: 600;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+</style>
+

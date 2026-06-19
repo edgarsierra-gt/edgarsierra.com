@@ -1,0 +1,100 @@
+---
+import { formatGeneratedAt } from '../../lib/worldcup/format';
+import type { ModelMetadata as Metadata } from '../../lib/worldcup/types';
+
+interface Props {
+  metadata: Metadata;
+}
+
+const { metadata } = Astro.props;
+---
+
+<section class="metadata" data-reveal>
+  <h2>Estado del modelo</h2>
+  <dl>
+    <div>
+      <dt>Versión</dt>
+      <dd>{metadata.model_version}</dd>
+    </div>
+    <div>
+      <dt>Modo</dt>
+      <dd>{metadata.model_mode}</dd>
+    </div>
+    <div>
+      <dt>Actualizado</dt>
+      <dd>{formatGeneratedAt(metadata.generated_at)}</dd>
+    </div>
+  </dl>
+  {metadata.limitations.length > 0 && (
+    <div class="limitations">
+      <h3>Limitaciones actuales</h3>
+      <ul>
+        {metadata.limitations.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+  )}
+</section>
+
+<style>
+  .metadata {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  dl div {
+    padding: var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  dt {
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+
+  dd {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+
+  .limitations {
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  h3 {
+    font-size: var(--text-base);
+    margin-bottom: var(--space-2);
+  }
+
+  ul {
+    padding-left: var(--space-3);
+    color: var(--ink-muted);
+  }
+
+  li + li {
+    margin-top: var(--space-1);
+  }
+
+  @media (max-width: 720px) {
+    dl {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+

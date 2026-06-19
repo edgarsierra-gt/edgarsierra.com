@@ -1,0 +1,59 @@
+---
+import { formatNumber } from '../../lib/worldcup/format';
+
+interface Props {
+  teamAName: string;
+  teamBName: string;
+  teamAXg: number;
+  teamBXg: number;
+}
+
+const { teamAName, teamBName, teamAXg, teamBXg } = Astro.props;
+---
+
+<div class="xg-box">
+  <p class="box-label">Goles esperados del modelo</p>
+  <div class="xg-row">
+    <span>{teamAName}</span>
+    <strong>{formatNumber(teamAXg)}</strong>
+  </div>
+  <div class="xg-row">
+    <span>{teamBName}</span>
+    <strong>{formatNumber(teamBXg)}</strong>
+  </div>
+</div>
+
+<style>
+  .xg-box {
+    padding: var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--code-bg);
+  }
+
+  .box-label {
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+    margin-bottom: var(--space-1);
+  }
+
+  .xg-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+  }
+
+  .xg-row span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .xg-row strong {
+    font-family: var(--font-mono);
+    color: var(--ink);
+  }
+</style>
+

@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MatchPredictionCard from '../../components/worldcup/MatchPredictionCard.astro';
+import MethodologySummary from '../../components/worldcup/MethodologySummary.astro';
+import ModelMetadata from '../../components/worldcup/ModelMetadata.astro';
+import TeamPowerRanking from '../../components/worldcup/TeamPowerRanking.astro';
+import UncertaintyNote from '../../components/worldcup/UncertaintyNote.astro';
+import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
+import WorldCupHero from '../../components/worldcup/WorldCupHero.astro';
+import { getModelMetadata, getPredictionsToday, getTeamPowerRanking } from '../../lib/worldcup/data';
+import { formatDateEs, getFirstDateMatches } from '../../lib/worldcup/format';
+
+const predictions = getPredictionsToday();
+const ranking = getTeamPowerRanking();
+const metadata = getModelMetadata();
+const todayMatches = getFirstDateMatches(predictions.matches);
+const firstDate = todayMatches[0]?.date;
+
+const title = 'Predicciones Mundial 2026: probabilidades y modelo estadístico';
+const description =
+  'Predicciones, probabilidades y estadísticas del Mundial 2026 con un modelo estadístico propio de Edgar Sierra. Goles esperados, marcadores probables y metodología transparente.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Predicciones Mundial 2026',
+    description:
+      'Predicciones, probabilidades y estadísticas del Mundial 2026 con un modelo estadístico propio.',
+    author: {
+      '@type': 'Person',
+      name: 'Edgar Sierra',
+    },
+  },
+];
+---
+
+<BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png" jsonLd={jsonLd}>
+  <div class="worldcup-page">
+    <WorldCupHero generatedAt={predictions.generated_at} modelVersion={predictions.model_version} />
+
+    <section class="section" id="predicciones" data-reveal>
+      <div class="section-header">
+        <p class="eyebrow">Predicciones</p>
+        <h2>{firstDate ? `Partidos del ${formatDateEs(firstDate)}` : 'Partidos próximos'}</h2>
+        <p>
+          Probabilidades 1X2, goles esperados y marcadores más probables generados por el modelo.
+        </p>
+      </div>
+
+      {todayMatches.length > 0 ? (
+        <div class="match-grid">
+          {todayMatches.map((match) => <MatchPredictionCard match={match} />)}
+        </div>
+      ) : (
+        <p class="empty-state">
+          No hay partidos próximos cargados en este momento. El modelo se actualizará cuando existan partidos programados.
+        </p>
+      )}
+
+      <div class="section-link">
+        <a href="/mundial-2026/predicciones-hoy">Ver todos los partidos próximos</a>
+      </div>
+    </section>
+
+    <TeamPowerRanking ranking={ranking} />
+    <MethodologySummary />
+    <UncertaintyNote />
+    <ModelMetadata metadata={metadata} />
+    <WorldCupCTA />
+  </div>
+</BaseLayout>
+
+<style>
+  .worldcup-page {
+    display: grid;
+    gap: var(--space-8);
+    padding-bottom: var(--space-12);
+  }
+
+  .section {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .section-header {
+    max-width: var(--reading);
+  }
+
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+  }
+
+  h2 {
+    font-size: var(--text-2xl);
+    color: var(--ink);
+    margin-bottom: var(--space-2);
+  }
+
+  .section-header p {
+    color: var(--ink-muted);
+  }
+
+  .match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .empty-state {
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--ink-muted);
+  }
+
+  .section-link a {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    color: var(--accent);
+  }
+</style>
+

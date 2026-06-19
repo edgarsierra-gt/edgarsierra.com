@@ -1,0 +1,134 @@
+---
+import { formatGeneratedAt } from '../../lib/worldcup/format';
+
+interface Props {
+  generatedAt: string;
+  modelVersion: string;
+}
+
+const { generatedAt, modelVersion } = Astro.props;
+---
+
+<section class="worldcup-hero" data-reveal>
+  <div class="hero-copy">
+    <p class="eyebrow">Laboratorio público</p>
+    <h1>Laboratorio Mundial 2026</h1>
+    <p class="hero-lede">
+      Predicciones, probabilidades y estadísticas del Mundial 2026 con un modelo estadístico propio.
+    </p>
+    <p class="hero-note">
+      No adivina el futuro: estima escenarios, mide incertidumbre y se audita después de cada partido.
+    </p>
+    <div class="hero-actions">
+      <a href="/mundial-2026/predicciones-hoy" class="button-primary">Ver predicciones</a>
+      <a href="/mundial-2026/metodologia" class="button-secondary">Cómo funciona</a>
+    </div>
+  </div>
+  <aside class="hero-panel" aria-label="Estado del modelo">
+    <p>Última actualización</p>
+    <strong>{formatGeneratedAt(generatedAt)}</strong>
+    <p>Versión del modelo</p>
+    <strong>{modelVersion}</strong>
+  </aside>
+</section>
+
+<style>
+  .worldcup-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: var(--space-5);
+    align-items: end;
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+  }
+
+  h1 {
+    font-size: var(--text-hero);
+    color: var(--ink);
+    max-width: 12ch;
+  }
+
+  .hero-lede {
+    max-width: 62ch;
+    margin-top: var(--space-3);
+    font-size: var(--text-lg);
+    color: var(--ink-muted);
+  }
+
+  .hero-note {
+    max-width: 62ch;
+    margin-top: var(--space-2);
+    color: var(--ink);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+  }
+
+  .button-primary,
+  .button-secondary {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: var(--radius);
+    padding: 0.7rem var(--space-2);
+  }
+
+  .button-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .button-secondary {
+    color: var(--accent);
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .hero-panel {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .hero-panel p {
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+
+  .hero-panel strong {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--ink);
+    margin-bottom: var(--space-1);
+  }
+
+  @media (max-width: 760px) {
+    .worldcup-hero {
+      grid-template-columns: 1fr;
+      padding-top: var(--space-5);
+    }
+
+    h1 {
+      max-width: none;
+    }
+  }
+</style>
+

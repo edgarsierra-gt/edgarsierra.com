@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModelMetadata from '../../components/worldcup/ModelMetadata.astro';
+import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
+import { getModelMetadata } from '../../lib/worldcup/data';
+
+const metadata = getModelMetadata();
+
+const title = 'Cómo funciona el modelo de predicciones del Mundial 2026';
+const description =
+  'Metodología del modelo de predicciones del Mundial 2026: datos, goles esperados, Poisson, Dixon-Coles y auditoría probabilística.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'Cómo funciona el modelo de predicciones del Mundial 2026',
+    author: {
+      '@type': 'Person',
+      name: 'Edgar Sierra',
+    },
+  },
+];
+---
+
+<BaseLayout title={title} description={description} ogType="article" ogImage="/og/mundial-2026.png" jsonLd={jsonLd}>
+  <article class="methodology-page">
+    <header class="page-header" data-reveal>
+      <p class="eyebrow">Metodología</p>
+      <h1>Cómo funciona el modelo de predicciones del Mundial 2026</h1>
+      <p>
+        Este modelo no intenta adivinar el futuro. Intenta estimar probabilidades razonables para cada partido del Mundial 2026.
+      </p>
+    </header>
+
+    <div class="prose method-prose" data-reveal>
+      <h2>Qué intenta predecir</h2>
+      <p>
+        La salida principal no es el marcador exacto, sino la distribución de escenarios:
+        victoria de cada equipo, empate, goles esperados y marcadores más probables.
+      </p>
+
+      <h2>Qué datos usa</h2>
+      <p>
+        La primera versión usa resultados y estadísticas del Mundial actual, más una base
+        histórica de los últimos 20 partidos de cada selección clasificada. Cada equipo se
+        normaliza con un identificador estable para evitar mezclar nombres, idiomas o códigos.
+      </p>
+
+      <h2>Cómo estima goles esperados</h2>
+      <p>
+        El pipeline calcula índices de ataque y defensa a partir de goles recientes,
+        ponderados por recencia y tipo de partido. Esos índices se combinan para producir
+        lambdas de goles esperados para cada equipo.
+      </p>
+
+      <h2>Cómo convierte goles en probabilidades</h2>
+      <p>
+        Con los goles esperados se arma una matriz de marcadores usando una distribución
+        Poisson. Al sumar todos los marcadores donde gana el equipo A, empatan o gana el
+        equipo B, se obtienen las probabilidades 1X2.
+      </p>
+
+      <h2>Dixon-Coles</h2>
+      <p>
+        La arquitectura deja preparado un ajuste Dixon-Coles para marcadores bajos. En esta
+        versión el parámetro está neutralizado, porque no debe fijarse por intuición sino con
+        backtesting o calibración.
+      </p>
+
+      <h2>Auditoría</h2>
+      <p>
+        Una predicción útil no solo se publica: se audita. Después de cada partido, el modelo
+        debe compararse contra el resultado real usando métricas como accuracy 1X2, Brier
+        score, log loss y error de goles. Eso permite saber si las probabilidades estaban bien
+        calibradas, no solo si el favorito ganó.
+      </p>
+
+      <h2>Limitaciones actuales</h2>
+      <ul>
+        <li>El fútbol tiene alta varianza.</li>
+        <li>Un equipo con 70% de probabilidad todavía pierde 3 de cada 10 veces.</li>
+        <li>El marcador exacto tiene baja probabilidad individual.</li>
+        <li>Lesiones, rotaciones y decisiones tácticas pueden cambiar el partido.</li>
+        <li>El modelo inicial prioriza trazabilidad sobre complejidad.</li>
+      </ul>
+
+      <h2>Qué viene después</h2>
+      <p>
+        Las siguientes fases incorporarán simulación completa del torneo, probabilidades por
+        grupo, auditoría acumulada y comparación contra baselines como Elo puro o ranking FIFA.
+      </p>
+    </div>
+
+    <ModelMetadata metadata={metadata} />
+    <WorldCupCTA />
+  </article>
+</BaseLayout>
+
+<style>
+  .methodology-page {
+    display: grid;
+    gap: var(--space-8);
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-12);
+  }
+
+  .page-header {
+    max-width: var(--reading);
+  }
+
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-3);
+  }
+
+  .page-header p {
+    color: var(--ink-muted);
+    font-size: var(--text-lg);
+  }
+
+  .method-prose {
+    max-width: var(--reading);
+  }
+
+  @media (max-width: 640px) {
+    .methodology-page {
+      padding-top: var(--space-5);
+    }
+  }
+</style>
+
