@@ -1,0 +1,144 @@
+---
+import { formatPercent } from '../../lib/worldcup/format';
+import type { GroupProbabilities } from '../../lib/worldcup/types';
+
+interface Props {
+  probabilities: GroupProbabilities;
+  limitGroups?: number;
+}
+
+const { probabilities, limitGroups } = Astro.props;
+const groups = typeof limitGroups === 'number' ? probabilities.groups.slice(0, limitGroups) : probabilities.groups;
+---
+
+<section class="group-section" data-reveal>
+  <div class="section-header">
+    <p class="eyebrow">Simulacion</p>
+    <h2>Probabilidad de avanzar por grupo</h2>
+    <p>
+      El modelo simula la fase de grupos con resultados reales ya cargados y partidos pendientes. Clasifican dos equipos por grupo y los ocho mejores terceros.
+    </p>
+  </div>
+
+  <div class="groups-grid">
+    {groups.map((group) => (
+      <article class="group-block">
+        <h3>Grupo {group.group}</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Equipo</th>
+                <th>Pts</th>
+                <th>Avanza</th>
+                <th>1ro</th>
+                <th>2do</th>
+                <th>3ro clas.</th>
+              </tr>
+            </thead>
+            <tbody>
+              {group.teams.map((team) => (
+                <tr>
+                  <th scope="row">{team.name}</th>
+                  <td>{team.points}</td>
+                  <td>{formatPercent(team.prob_advance, 0)}</td>
+                  <td>{formatPercent(team.prob_group_winner, 0)}</td>
+                  <td>{formatPercent(team.prob_group_runner_up, 0)}</td>
+                  <td>{formatPercent(team.prob_qualified_as_third, 0)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .group-section {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .section-header {
+    max-width: var(--reading);
+  }
+
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+  }
+
+  h2 {
+    font-size: var(--text-2xl);
+    color: var(--ink);
+    margin-bottom: var(--space-2);
+  }
+
+  .section-header p {
+    color: var(--ink-muted);
+  }
+
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .group-block {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    color: var(--ink);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  th,
+  td {
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
+
+  thead th {
+    font-family: var(--font-ui);
+    color: var(--ink);
+    background: var(--code-bg);
+  }
+
+  tbody th {
+    font-family: var(--font-ui);
+    font-weight: 600;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+</style>

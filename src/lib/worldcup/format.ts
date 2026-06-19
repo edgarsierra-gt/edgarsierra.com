@@ -4,6 +4,11 @@ export function formatPercent(value: number, decimals = 0): string {
   return `${(value * 100).toFixed(decimals)}%`;
 }
 
+export function formatPercentOptional(value: number | null | undefined, decimals = 0): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return 'ND';
+  return formatPercent(value, decimals);
+}
+
 export function formatNumber(value: number | null | undefined, decimals = 2): string {
   if (value === null || value === undefined || Number.isNaN(value)) return 'ND';
   return value.toFixed(decimals);
@@ -35,6 +40,11 @@ export function formatGeneratedAt(value: string): string {
   }).format(new Date(value));
 }
 
+export function formatBracketMode(value: string): string {
+  if (value === 'approximate_stable_seed') return 'Bracket aproximado';
+  return value;
+}
+
 export function getPredictionLabel(result: string, teamA: string, teamB: string): string {
   if (result === 'team_a_win') return `Gana ${teamA}`;
   if (result === 'team_b_win') return `Gana ${teamB}`;
@@ -61,4 +71,3 @@ export function getFirstDateMatches(matches: MatchPrediction[]): MatchPrediction
   const first = [...matches].sort((a, b) => a.date.localeCompare(b.date))[0]?.date;
   return first ? matches.filter((match) => match.date === first) : [];
 }
-

@@ -1,18 +1,36 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ChampionOddsTable from '../../components/worldcup/ChampionOddsTable.astro';
+import GroupProbabilityTable from '../../components/worldcup/GroupProbabilityTable.astro';
 import MatchPredictionCard from '../../components/worldcup/MatchPredictionCard.astro';
 import MethodologySummary from '../../components/worldcup/MethodologySummary.astro';
 import ModelMetadata from '../../components/worldcup/ModelMetadata.astro';
+import ModelAuditPanel from '../../components/worldcup/ModelAuditPanel.astro';
+import RoundPathTable from '../../components/worldcup/RoundPathTable.astro';
 import TeamPowerRanking from '../../components/worldcup/TeamPowerRanking.astro';
 import UncertaintyNote from '../../components/worldcup/UncertaintyNote.astro';
 import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
 import WorldCupHero from '../../components/worldcup/WorldCupHero.astro';
-import { getModelMetadata, getPredictionsToday, getTeamPowerRanking } from '../../lib/worldcup/data';
+import {
+  getChampionOdds,
+  getGroupProbabilities,
+  getModelAudit,
+  getModelCalibration,
+  getModelMetadata,
+  getPredictionsToday,
+  getRoundProbabilities,
+  getTeamPowerRanking,
+} from '../../lib/worldcup/data';
 import { formatDateEs, getFirstDateMatches } from '../../lib/worldcup/format';
 
 const predictions = getPredictionsToday();
 const ranking = getTeamPowerRanking();
 const metadata = getModelMetadata();
+const groupProbabilities = getGroupProbabilities();
+const roundProbabilities = getRoundProbabilities();
+const championOdds = getChampionOdds();
+const modelAudit = getModelAudit();
+const modelCalibration = getModelCalibration();
 const todayMatches = getFirstDateMatches(predictions.matches);
 const firstDate = todayMatches[0]?.date;
 
@@ -63,6 +81,10 @@ const jsonLd = [
       </div>
     </section>
 
+    <GroupProbabilityTable probabilities={groupProbabilities} />
+    <ChampionOddsTable odds={championOdds} />
+    <RoundPathTable probabilities={roundProbabilities} />
+    <ModelAuditPanel audit={modelAudit} calibration={modelCalibration} />
     <TeamPowerRanking ranking={ranking} />
     <MethodologySummary />
     <UncertaintyNote />
@@ -124,4 +146,3 @@ const jsonLd = [
     color: var(--accent);
   }
 </style>
-
