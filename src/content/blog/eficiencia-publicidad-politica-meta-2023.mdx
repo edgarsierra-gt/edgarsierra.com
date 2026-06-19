@@ -1,89 +1,151 @@
 ---
-title: "Quién compró mejor el voto digital: eficiencia publicitaria en Meta durante las elecciones de Guatemala 2023"
-excerpt: "Analicé 7,828 anuncios de los 16 candidatos presidenciales. La diferencia de eficiencia entre el primero y el último fue de 9 a 1. Esto es lo que revela el dato."
+title: "Cómo medí la eficiencia publicitaria de Meta en la política guatemalteca"
+excerpt: "Analicé 7,828 anuncios políticos de la primera vuelta de 2023 con datos de la Meta Ad Library. Esto fue lo que encontré sobre cuánto rinde realmente cada quetzal invertido en Facebook e Instagram."
 pillar: 1
-tags: ["Política y datos", "Meta Ads", "Elecciones 2023", "Guatemala", "Transparencia algorítmica"]
-publishedAt: 2026-06-13
-draft: true
+tags: ["publicidad política", "Meta Ad Library", "elecciones Guatemala 2023", "estadística aplicada", "marketing político"]
+publishedAt: 2026-06-27
+draft: false
 seo:
-  metaTitle: "Eficiencia publicitaria en Meta — Elecciones Guatemala 2023"
-  metaDescription: "Un análisis de 7,828 anuncios políticos en Facebook e Instagram durante la primera vuelta presidencial de Guatemala 2023."
-  keywords: ["publicidad política", "Meta Ad Library", "elecciones Guatemala", "eficiencia publicitaria", "targeting digital"]
+  metaTitle: "Eficiencia publicitaria de Meta en política guatemalteca | Edgar Sierra"
+  metaDescription: "Análisis cuantitativo de 7,828 anuncios políticos en Facebook e Instagram durante la primera vuelta de Guatemala 2023: rendimientos decrecientes, eficiencia por partido y contenido."
+  keywords: ["publicidad meta politica guatemala", "eficiencia publicitaria politica", "analisis cuantitativo politica guatemala", "meta ad library guatemala"]
 ---
 
-{/* Borrador generado para revisión de Edgar. Editar a tu voz y poner draft: false antes de publicar. Reemplazar las figuras placeholder por gráficos reales. */}
+import Figure from '../../components/Figure.astro';
 
-En la primera vuelta presidencial de 2023, los candidatos guatemaltecos gastaron como nunca antes en Facebook e Instagram. No hubo, en cambio, ninguna autoridad electoral que auditara una pregunta básica: ¿ese dinero estaba comprando atención de forma eficiente, o se estaba evaporando en un sistema que casi nadie entiende?
+En la primera vuelta presidencial de 2023, las campañas guatemaltecas gastaron alrededor de **Q8.9 millones** en anuncios de Facebook e Instagram y generaron más de **1,236 millones de impresiones**. Es la primera vez que una elección en Guatemala se libra a esta escala dentro de plataformas que deciden, mediante algoritmos de subasta que nadie fuera de Meta puede auditar, quién ve qué anuncio y a qué precio.
 
-Esa pregunta fue el punto de partida de mi tesis de maestría. Descargué de la **Meta Ad Library** los **7,828 anuncios** publicados por los **16 candidatos presidenciales** entre abril y junio de 2023, y medí algo que suena simple pero que rara vez se mira en campaña: cuánta gente alcanzó cada quetzal invertido. La respuesta corta es que la diferencia entre el candidato más eficiente y el menos eficiente fue de **9 a 1**. La respuesta larga es más interesante.
+El Tribunal Supremo Electoral no tenía —y todavía no tiene— herramientas para responder una pregunta básica: ¿cuánto rinde realmente cada quetzal que una campaña invierte en estas plataformas? No el gasto declarado, sino la **eficiencia**: cuántas impresiones obtiene cada partido por cada quetzal, y por qué unos obtienen muchas más que otros con la misma plata.
 
-## Qué significa "eficiencia" cuando hablamos de anuncios
+Dediqué mi tesis de maestría a medir exactamente eso. Descargué los 7,828 anuncios políticos que los binomios presidenciales de los 16 partidos políticos publicaron entre abril y junio de 2023, los modelé con regresión multivariada, y encontré patrones que vale la pena que cualquier persona interesada en la política guatemalteca conozca. Esta es la versión accesible de ese trabajo.
 
-La métrica que importa aquí no es cuánto gastó cada quien, sino qué obtuvo a cambio. Defino eficiencia como impresiones obtenidas por unidad de inversión:
+## Qué significa "eficiencia publicitaria" y por qué no es lo obvio
 
-$$
-\text{eficiencia} = \frac{\text{impresiones}}{\text{quetzales invertidos}}
-$$
+Cuando se habla de pauta política en redes, la conversación casi siempre se queda en cuánto gastó cada quien. Es la métrica fácil porque la Meta Ad Library la reporta. Pero el gasto total dice poco: es como evaluar a un equipo solo por su presupuesto, ignorando cuántos partidos ganó.
 
-Dos campañas pueden gastar lo mismo y terminar con audiencias de tamaños radicalmente distintos. La Ad Library no entrega cifras exactas —reporta rangos de gasto y de impresiones—, así que el trabajo estadístico consistió en gran parte en estimar con rigor a partir de datos censurados por intervalos, en vez de tomar los números al pie de la letra.
+La métrica que de verdad importa es la **eficiencia**: las impresiones obtenidas por cada quetzal invertido (imp/GTQ). Dos campañas pueden gastar lo mismo y alcanzar audiencias de tamaños radicalmente distintos, porque el algoritmo de Meta no cobra igual por llegar a todos. Llegar a una audiencia muy disputada —donde muchos anunciantes pujan por los mismos ojos— cuesta más por impresión que llegar a una audiencia barata.
 
-<figure>
-  <div style="background: var(--code-bg); height: 200px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border)">
-    <span style="font-family: var(--font-ui); color: var(--ink-muted); font-size: 0.889rem">[ Figura 1 — distribución de eficiencia por candidato (brecha 9:1) ]</span>
-  </div>
-  <figcaption>Figura 1. Eficiencia mediana por candidato. El más eficiente obtuvo cerca de nueve veces más impresiones por quetzal que el menos eficiente.</figcaption>
-</figure>
+Acá hay que ser honesto con una distinción que casi nunca se hace: **eficiencia no es lo mismo que efectividad electoral.** Que un partido consiga muchas impresiones por quetzal no significa que esas impresiones se conviertan en votos. La eficiencia mide qué tan barato es *alcanzar gente*, no qué tan bien *persuade* ese alcance. Mi estudio mide lo primero, que es lo que los datos públicos permiten medir con rigor. Lo segundo —el efecto sobre el voto— requiere otros datos y lo dejo explícitamente fuera. Esa frontera importa, y vuelvo a ella al final.
 
-## Hallazgo 1: una brecha de 9 a 1
+## De dónde salen los datos (y qué les falta)
 
-La brecha de eficiencia entre campañas fue enorme. No se explica por el tamaño del presupuesto —algunos candidatos con mucho dinero fueron de los más ineficientes—, sino por *cómo* se compró: la segmentación, los formatos, la plataforma y el momento. En publicidad digital, gastar más no garantiza llegar a más gente; garantiza, a lo sumo, la oportunidad de hacerlo bien o mal.
+Todo viene de la **Meta Ad Library**, el repositorio público que Meta mantiene de los anuncios políticos publicados en sus plataformas. Es la fuente más completa disponible, pero tiene dos límites que conviene tener claros desde el inicio, porque condicionan todo lo que se puede afirmar:
 
-Para un país donde el financiamiento de campañas es un tema sensible, esto tiene una lectura incómoda: el gasto reportado no es un buen indicador del alcance real. Dos campañas con la misma inversión declarada pueden haber tenido impactos de audiencia completamente distintos.
+Primero, **Meta no reporta cifras exactas de gasto e impresiones, sino rangos.** Para cada anuncio adopté el punto medio del rango, que es el estándar en la literatura que usa esta fuente. Esto introduce imprecisión, sobre todo en los anuncios de menor presupuesto, donde el rango es más ancho en términos relativos.
 
-## Hallazgo 2: el dinero rinde menos a partir de cierto punto
+Segundo, **no hay desglose geográfico.** La Ad Library da totales nacionales por anuncio, pero no permite saber qué parte del alcance ocurrió en cada departamento o municipio. Para un país con la heterogeneidad territorial de Guatemala, es una limitación real, y la nombro sin rodeos.
 
-Usando regresión con **splines cúbicos** —que permiten que la relación entre gasto y resultado se curve en lugar de asumir una línea recta— encontré rendimientos decrecientes claros. Más allá de unos **Q223 por anuncio**, cada quetzal adicional compraba menos impresiones que el anterior.
+La muestra final fue de **7,828 anuncios de los binomios presidenciales de 16 partidos políticos** que inscribieron binomio ante el TSE, publicados entre el 1 de abril y el 25 de junio de 2023.
 
-La implicación práctica es directa: concentrar mucho presupuesto en pocos anuncios caros es menos eficiente que distribuirlo en más piezas dentro del rango donde el rendimiento todavía es alto. Varias campañas hicieron exactamente lo contrario.
+## El modelo, sin fórmulas pesadas
 
-<figure>
-  <div style="background: var(--code-bg); height: 200px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border)">
-    <span style="font-family: var(--font-ui); color: var(--ink-muted); font-size: 0.889rem">[ Figura 2 — curva de rendimientos decrecientes (spline cúbico) ]</span>
-  </div>
-  <figcaption>Figura 2. Impresiones por quetzal en función del gasto por anuncio. El rendimiento marginal cae de forma notable a partir de ~Q223.</figcaption>
-</figure>
+El objetivo era estimar qué factores se asocian con la eficiencia, controlando varios al mismo tiempo. La eficiencia publicitaria tiene una distribución muy sesgada —la mayoría de anuncios rinde modestamente y unos pocos rinden muchísimo—, así que trabajé sobre su logaritmo, que es la transformación estándar para corregir esa asimetría y poder hacer inferencia válida.
 
-## Hallazgo 3: Instagram costó mucho más caro que Facebook
+Usé tres herramientas, una por cada pregunta:
 
-Con modelos **OLS con efectos fijos** por candidato —para comparar manzanas con manzanas y aislar el efecto de la plataforma— el mismo tipo de anuncio rindió en promedio un **64 % menos de impresiones por quetzal en Instagram que en Facebook**. Para el electorado y el momento analizados, Facebook fue sencillamente el canal más barato para alcanzar gente.
+Para la relación entre **gasto y rendimiento**, usé regresión con *splines cúbicos*. En lugar de asumir que la relación es una línea recta (que sería decir "cada quetzal extra rinde igual sin importar cuánto lleves gastado"), los splines dejan que la curva cambie de pendiente en distintos tramos de inversión. Esto resultó clave, como verás.
 
-Esto no significa que Instagram sea "peor": significa que las campañas que volcaron presupuesto ahí sin ajustar expectativas pagaron una prima considerable, muchas veces sin saberlo.
+Para el **perfil demográfico** de cada partido, medí qué tan distintas son las audiencias entre sí usando distancia estadística entre distribuciones, y agrupé a los partidos con clustering jerárquico.
 
-## Hallazgo 4: tres formas de apuntar al votante
+Para el **contenido**, clasifiqué los 7,828 anuncios en seis categorías temáticas usando procesamiento de lenguaje natural con diccionarios construidos para el español electoral guatemalteco. Para confiar en esa clasificación, la validé contra un clasificador independiente (un SVM lineal): el acuerdo entre ambos fue de **κ = 0.954**, lo que en la escala estándar se considera "casi perfecto".
 
-La segmentación demográfica que cada campaña configuró —combinaciones de edad, género y geografía— no fue aleatoria. Midiendo cuán distintas eran esas distribuciones entre sí con la **divergencia de Jensen-Shannon** y agrupando los resultados, emergieron **tres arquetipos de targeting**: campañas de alcance amplio sin gran diferenciación, campañas inclinadas hacia segmentos jóvenes, y campañas con sesgo regional marcado. Cada arquetipo es, en el fondo, una apuesta distinta sobre dónde está el voto decisivo.
+El modelo principal explica alrededor del **41% de la variación** en eficiencia (R² = 0.41). Ese número merece una lectura honesta: significa que el 59% restante queda sin explicar por las variables observables. Y eso no es un defecto del modelo, sino el reflejo de algo más interesante —la parte del rendimiento que depende del algoritmo opaco de Meta, invisible para cualquier investigador externo. Volveré a esto.
 
-## Hallazgo 5: se movilizó mucho más de lo que se atacó
+## Los hallazgos
 
-Clasifiqué el contenido de los anuncios por tema usando **procesamiento de lenguaje natural**. El resultado contradice la intuición de que la política digital es sobre todo ataque: los mensajes de **movilización** —llamados a votar, a asistir a un evento, a participar— dominaron con **41.6 %**, mientras que el contenido **negativo** o de ataque directo fue apenas **0.7 %** del total.
+### 1. La diferencia entre partidos es enorme: una brecha de 9 a 1
 
-Al menos en la publicidad pagada y rastreable de esta elección, la guerra sucia no vivió en Meta. Eso no quiere decir que no existiera; quiere decir que, si existió, ocurrió en espacios que ninguna biblioteca de anuncios documenta.
+El primer resultado es el más contundente. La eficiencia no se reparte parejo: entre el partido más eficiente y el menos eficiente hay una **brecha de aproximadamente 9 a 1**. La prueba estadística (Kruskal-Wallis, H = 2,319.66, p < 0.001) confirma que estas diferencias no son ruido.
 
-<figure>
-  <div style="background: var(--code-bg); height: 200px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border)">
-    <span style="font-family: var(--font-ui); color: var(--ink-muted); font-size: 0.889rem">[ Figura 3 — composición temática de los mensajes (movilización vs. negativo) ]</span>
-  </div>
-  <figcaption>Figura 3. Distribución temática de los 7,828 anuncios. La movilización domina; el contenido negativo es marginal.</figcaption>
-</figure>
+<Figure
+  src="/images/blog/eficiencia-publicidad-politica-meta-2023/figura-1-eficiencia-partido.png"
+  alt="Distribución de eficiencia publicitaria por partido político en Meta"
+  caption="Figura 1. Eficiencia mediana por partido político en Meta. El partido más eficiente obtuvo cerca de nueve veces más impresiones por quetzal que el menos eficiente."
+  wide={true}
+/>
 
-## Por qué esto importa más allá de 2023
+El contraste más ilustrativo: el binomio del partido FCN-Nación alcanzó la eficiencia más alta del campo —cerca de 765 impresiones por quetzal— con apenas 96 anuncios. En el otro extremo, el partido UNE, la campaña que más anuncios publicó y más invirtió en total, obtuvo una de las eficiencias más bajas. Más plata compró más presencia, sí, pero no más eficiencia. De hecho, compró bastante menos por quetzal.
 
-El hilo que conecta los cinco hallazgos es la **opacidad**. Las plataformas deciden, con algoritmos que no publican, a quién mostrarle cada anuncio y a qué costo. Eso convierte la eficiencia publicitaria en una variable que ninguna campaña controla del todo y que ninguna autoridad mide. En una democracia donde el dinero en política ya es un problema, sumar una capa de distribución algorítmica invisible no es un detalle técnico: es un punto ciego en la rendición de cuentas electoral.
+Lo que **no** puedo afirmar es *por qué*. La diferencia podría venir de mejor contenido creativo, de mensajes que resuenan con audiencias más baratas, o de cómo el algoritmo de Meta decide a quién mostrar cada anuncio. Con datos observacionales no puedo separar esas causas, y no lo voy a fingir.
 
-No propongo que Guatemala regule Meta. Propongo algo más modesto y más alcanzable: que la **transparencia de la distribución algorítmica** —no solo del gasto, sino de a quién llegó y con qué eficiencia— entre en la conversación sobre fiscalización electoral. Los datos para empezar esa conversación ya existen y son públicos. Lo que falta es mirarlos.
+### 2. Gastar más no rinde proporcionalmente: hay un techo
+
+Acá es donde los splines cúbicos ganaron su lugar. Si la relación gasto-eficiencia fuera una línea recta, cada quetzal extra rendiría igual. No es así. La curva sube rápido al principio y luego se aplana, hasta que **invertir más empieza a rendir menos por quetzal**.
+
+<Figure
+  src="/images/blog/eficiencia-publicidad-politica-meta-2023/figura-2-rendimientos-decrecientes.png"
+  alt="Curva spline de rendimientos decrecientes de gasto por anuncio vs impresiones por quetzal"
+  caption="Figura 2. Impresiones por quetzal en función del gasto por anuncio. El rendimiento marginal cae de forma notable a partir de los Q223."
+  wide={true}
+/>
+
+Identifiqué dos umbrales operativos por anuncio:
+
+- **Alrededor de Q223 por anuncio**, el rendimiento marginal se vuelve bajo: cada quetzal adicional aporta cada vez menos.
+- **Alrededor de Q757 por anuncio**, la eficiencia *predicha* alcanza su pico y empieza a caer activamente. Más allá de ese punto, meterle más presupuesto al mismo anuncio se asocia con menos impresiones por quetzal, no más. Es saturación de audiencia.
+
+Esto tiene una lectura práctica directa: en este mercado, concentrar mucho presupuesto en pocos anuncios caros parece rendir peor que distribuirlo. El modelo lineal simple, que mucha gente usaría por defecto, asume una relación constante (su R² fue apenas 0.032) y se pierde por completo esta curva. La no linealidad *es* el hallazgo.
+
+### 3. Instagram rinde mucho menos que Facebook
+
+Controlando por partido político, gasto y momento de la campaña, los anuncios en **Instagram fueron ~64% menos eficientes** que los de Facebook. Es un diferencial grande y consistente.
+
+La explicación más probable no es que Instagram sea "peor", sino que su audiencia —más joven— es un segmento más disputado y por lo tanto más caro por impresión en la subasta de Meta. Es la misma lógica documentada internacionalmente: las audiencias más competidas cuestan más, sin importar la plataforma.
+
+También encontré que la eficiencia **decae con el tiempo**: alrededor de 1.7% por cada semana adicional de campaña, compatible con fatiga de audiencia conforme se satura el ecosistema cerca de la elección.
+
+### 4. El contenido importa, y el ataque casi no se usó
+
+Clasifiqué cada anuncio en seis temas. Dos hallazgos saltan:
+
+<Figure
+  src="/images/blog/eficiencia-publicidad-politica-meta-2023/figura-3-temas-eficiencia.png"
+  alt="Composición temática de los mensajes de las campañas en Meta"
+  caption="Figura 3. Distribución temática de los 7,828 anuncios. La movilización domina; el contenido negativo o de crítica es marginal."
+  wide={true}
+/>
+
+Primero, la campaña guatemalteca en Meta fue **abrumadoramente positiva**. La "movilización al voto" y los mensajes de "identidad y valores" dominaron, mientras que la "crítica y denuncia" —el ataque al rival— fue marginal: **menos del 1% de los anuncios y del gasto.** El campo digital guatemalteco de 2023 no fue, al menos en pauta pagada de Meta, una guerra sucia.
+
+Segundo, el contenido se asocia con la eficiencia. Los anuncios centrados en el **perfil del candidato** rindieron más (~259 imp/GTQ), casi el doble que el contenido genérico o de crítica (~130 imp/GTQ). Una diferencia de casi 2 a 1 según el tema del mensaje.
+
+### 5. Cada partido le habló a una audiencia distinta
+
+Al perfilar las audiencias por edad y género, emergieron **tres arquetipos** de targeting: joven con paridad de género, joven con sesgo femenino, y adulto/mayor con sesgo masculino. La mayoría de las campañas concentró más del 60% de sus impresiones en personas de 18 a 34 años.
+
+<Figure
+  src="/images/blog/eficiencia-publicidad-politica-meta-2023/figura-4-mapa-demografico.png"
+  alt="Mapa de calor demográfico de la audiencia por partido en Meta"
+  caption="Figura 4. Distribución demográfica de la audiencia alcanzada por partido político. La mayoría concentró su pauta en jóvenes de 18 a 34 años."
+  wide={true}
+/>
+
+Una advertencia metodológica que me parece importante: estos perfiles **no necesariamente reflejan decisiones deliberadas** de cada campaña. La audiencia que finalmente ve un anuncio resulta de tres cosas mezcladas que los datos no permiten separar: lo que el anunciante configuró, la composición real de usuarios de Meta en Guatemala, y la optimización del propio algoritmo. Atribuirlo todo a "estrategia de la campaña" o "del partido" sería sobreinterpretar.
+
+## Lo que NO pude medir
+
+Un estudio serio se define tanto por lo que afirma como por lo que se niega a afirmar. Mis límites:
+
+**No medí votos.** Mido eficiencia de alcance, no persuasión ni conversión electoral. Un anuncio eficiente llega barato; si eso cambia una intención de voto es otra pregunta, con otros datos.
+
+**No puedo probar sesgo algorítmico.** Los patrones que encontré son *compatibles* con que el algoritmo de Meta condicione el alcance de forma desigual, pero compatibilidad no es prueba. Demostrarlo requiere auditorías experimentales que un estudio observacional no puede hacer. El 41% que el modelo explica deja un 59% en la oscuridad, y buena parte de esa oscuridad es, precisamente, el algoritmo que nadie de afuera puede ver.
+
+**No tengo desglose territorial.** Sin datos subnacionales, no puedo decir nada sobre cómo se distribuyó la pauta entre regiones de Guatemala.
+
+**El gasto y las impresiones son aproximaciones.** Rangos convertidos a puntos medios, no cifras exactas.
+
+Nombrar estos límites no debilita el trabajo: lo hace confiable. Cualquier afirmación de este artículo se sostiene dentro de esas fronteras, y ninguna las cruza.
+
+## Por qué esto importa (y para quién)
+
+Para **el TSE y el Congreso**: hoy una parte central de la competencia electoral ocurre dentro de un sistema que la autoridad no puede auditar. No se trata de cuánto se gasta —eso se declara— sino de cómo se distribuye ese alcance y bajo qué reglas opacas. Medir esto es el primer paso para regularlo.
+
+Para **periodistas**: hay una historia cuantificable detrás de la pauta política, más allá del "quién gastó más". La brecha de 9 a 1, el techo de rendimiento, el ausente ataque digital, son ángulos reporteables con datos públicos.
+
+Para **investigadores y campañas**: existe una metodología replicable, con datos abiertos, para estudiar esto en cada nuevo ciclo. Mi recomendación es justamente repetirlo en 2027 y ver si los patrones son estructurales o propios de 2023.
+
+La conversación sobre el poder de las plataformas en nuestras democracias suele quedarse en la indignación o en la anécdota. Mi apuesta es que se puede hacer con números, con método, y con honestidad sobre lo que esos números sí y no permiten decir. Eso fue lo que intenté.
 
 ---
 
-Este artículo es la versión divulgativa de mi tesis de maestría. La versión completa —con la metodología detallada, las especificaciones de los modelos y los resultados con sus intervalos— está en la sección de [Investigación](/investigacion).
-
-{/* Publicado originalmente en Medium: <enlace canónico — agregar al hacer cross-post> */}
+*Este artículo es la versión accesible de mi tesis de maestría en Estadística Aplicada (USAC), "Modelo multivariado para medir la eficiencia publicitaria de Meta en el ámbito político", aceptada para publicación en la Revista Científica de la USAC (en prensa, 2026). La metodología completa, las pruebas de robustez y las referencias están en el documento académico. Cuando se publique, enlazaré la versión oficial en [/investigacion](/investigacion).*
