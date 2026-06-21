@@ -3,6 +3,7 @@ interface NavItem {
   href: string;
   label: string;
   key: string;
+  variant?: 'site';
 }
 
 interface Props {
@@ -16,13 +17,18 @@ const navItems: NavItem[] = [
   { href: '/mundial-2026/grupos', label: 'Grupos', key: 'grupos' },
   { href: '/mundial-2026/favoritos', label: 'Favoritos', key: 'favoritos' },
   { href: '/mundial-2026/metodologia', label: 'Metodología', key: 'metodologia' },
+  { href: '/', label: 'Ir a Edgar Sierra', key: 'site', variant: 'site' },
 ];
 ---
 
 <nav class="lab-subnav" aria-label="Navegación del Laboratorio Mundial 2026">
   <div class="nav-scroll">
     {navItems.map((item) => (
-      <a href={item.href} aria-current={active === item.key ? 'page' : undefined}>
+      <a
+        href={item.href}
+        class={item.variant === 'site' ? 'site-link' : undefined}
+        aria-current={active === item.key ? 'page' : undefined}
+      >
         {item.label}
       </a>
     ))}
@@ -37,7 +43,7 @@ const navItems: NavItem[] = [
 <style>
   .lab-subnav {
     position: sticky;
-    top: 85px;
+    top: 0;
     z-index: 20;
     margin-bottom: var(--space-5);
     padding-top: var(--space-3);
@@ -81,6 +87,13 @@ const navItems: NavItem[] = [
     background: linear-gradient(135deg, var(--wc-blue), var(--wc-blue-deep)) !important;
     text-decoration: none;
     box-shadow: 0 4px 12px rgba(0, 114, 178, 0.22);
+  }
+
+  .nav-scroll a.site-link {
+    margin-left: 0.25rem;
+    border: 1px solid var(--wc-border-strong);
+    color: var(--wc-blue-deep);
+    background: rgba(255, 255, 255, 0.72);
   }
 
   @supports not (backdrop-filter: blur(1px)) {

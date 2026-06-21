@@ -8,6 +8,7 @@ interface Props {
   ogType?: 'website' | 'article';
   ogImage?: string;
   jsonLd?: object[];
+  hideHeader?: boolean;
 }
 
 const {
@@ -16,6 +17,7 @@ const {
   ogType = 'website',
   ogImage = '/og/site.png',
   jsonLd = [],
+  hideHeader = false,
 } = Astro.props;
 
 const siteOrigin = Astro.site?.origin ?? 'https://edgarsierra.com';
@@ -99,6 +101,7 @@ const breadcrumbLD = {
     ))}
   </head>
   <body>
+    {!hideHeader && (
     <header class="site-header" id="site-header">
       <div class="header-inner">
         <a href="/" class="wordmark">Edgar Sierra</a>
@@ -122,6 +125,7 @@ const breadcrumbLD = {
         </nav>
       </div>
     </header>
+    )}
 
     <main id="main-content">
       <div class="container">
