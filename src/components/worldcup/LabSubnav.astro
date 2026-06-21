@@ -12,26 +12,31 @@ interface Props {
 
 const { active = 'home' } = Astro.props;
 const navItems: NavItem[] = [
-  { href: '/mundial-2026', label: 'Inicio', key: 'home' },
-  { href: '/mundial-2026/predicciones-hoy', label: 'Predicciones de hoy', key: 'predicciones' },
+  { href: '/mundial-2026/predicciones-hoy', label: 'Predicciones', key: 'predicciones' },
   { href: '/mundial-2026/grupos', label: 'Grupos', key: 'grupos' },
   { href: '/mundial-2026/favoritos', label: 'Favoritos', key: 'favoritos' },
   { href: '/mundial-2026/metodologia', label: 'Metodología', key: 'metodologia' },
-  { href: '/', label: 'Ir a Edgar Sierra', key: 'site', variant: 'site' },
+  { href: '/', label: 'EdgarSierra.com', key: 'site', variant: 'site' },
 ];
 ---
 
 <nav class="lab-subnav" aria-label="Navegación del Laboratorio Mundial 2026">
-  <div class="nav-scroll">
-    {navItems.map((item) => (
-      <a
-        href={item.href}
-        class={item.variant === 'site' ? 'site-link' : undefined}
-        aria-current={active === item.key ? 'page' : undefined}
-      >
-        {item.label}
-      </a>
-    ))}
+  <div class="nav-shell">
+    <a href="/mundial-2026" class="lab-brand" aria-current={active === 'home' ? 'page' : undefined}>
+      <span>Laboratorio</span>
+      <strong>Mundial 2026</strong>
+    </a>
+    <div class="nav-scroll">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class={item.variant === 'site' ? 'site-link' : undefined}
+          aria-current={active === item.key ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
   </div>
 </nav>
 
@@ -45,22 +50,66 @@ const navItems: NavItem[] = [
     position: sticky;
     top: 0;
     z-index: 20;
-    margin-bottom: var(--space-5);
-    padding-top: var(--space-3);
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-bottom: 0;
+    border-bottom: 1px solid rgba(24, 24, 27, 0.1);
+    background: rgba(244, 248, 251, 0.86);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 10px 30px rgba(24, 24, 27, 0.05);
+  }
+
+  .nav-shell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    max-width: min(var(--container), calc(100vw - 2rem));
+    margin: 0 auto;
+    padding: 0.7rem 0;
+  }
+
+  .lab-brand {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.08rem;
+    color: var(--wc-text) !important;
+    font-family: var(--font-ui);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .lab-brand span {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .lab-brand strong {
+    color: var(--wc-text);
+    font-size: var(--text-sm);
+    line-height: 1.1;
+  }
+
+  .lab-brand:hover {
+    text-decoration: none;
+  }
+
+  .lab-brand[aria-current='page'] strong {
+    color: var(--wc-blue-deep);
   }
 
   .nav-scroll {
     display: flex;
-    gap: 0.45rem;
-    width: fit-content;
-    max-width: 100%;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    max-width: min(100%, 720px);
     overflow-x: auto;
-    padding: 0.45rem;
-    border: 1px solid var(--wc-border-strong);
-    border-radius: 999px;
-    background: rgba(251, 251, 249, 0.85);
-    backdrop-filter: blur(22px);
-    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.08);
+    padding: 0.15rem;
     scrollbar-width: none;
   }
 
@@ -70,47 +119,49 @@ const navItems: NavItem[] = [
 
   .nav-scroll a {
     flex: 0 0 auto;
-    padding: 0.58rem 0.86rem;
+    padding: 0.52rem 0.72rem;
     border-radius: 999px;
     color: var(--wc-soft);
     font-family: var(--font-ui);
-    font-size: var(--text-sm);
+    font-size: 0.88rem;
     font-weight: 600;
     text-decoration: none;
     white-space: nowrap;
-    transition: color 0.2s, background-color 0.2s;
+    transition: color 0.2s, background-color 0.2s, box-shadow 0.2s;
   }
 
   .nav-scroll a:hover,
   .nav-scroll a[aria-current='page'] {
-    color: #ffffff !important;
-    background: linear-gradient(135deg, var(--wc-blue), var(--wc-blue-deep)) !important;
+    color: var(--wc-blue-deep) !important;
+    background: rgba(0, 114, 178, 0.1) !important;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(0, 114, 178, 0.22);
+    box-shadow: none;
   }
 
   .nav-scroll a.site-link {
-    margin-left: 0.25rem;
-    border: 1px solid var(--wc-border-strong);
-    color: var(--wc-blue-deep);
-    background: rgba(255, 255, 255, 0.72);
+    margin-left: 0.35rem;
+    border: 1px solid rgba(0, 114, 178, 0.24);
+    color: var(--wc-blue-deep) !important;
+    background: rgba(255, 255, 255, 0.7);
   }
 
   @supports not (backdrop-filter: blur(1px)) {
-    .nav-scroll {
+    .lab-subnav {
       background: var(--wc-bg);
     }
   }
 
   @media (max-width: 760px) {
-    .lab-subnav {
-      margin-inline: calc(var(--space-4) * -1);
-      padding-inline: var(--space-4);
+    .nav-shell {
+      display: grid;
+      gap: 0.55rem;
+      padding: 0.65rem 0;
     }
 
     .nav-scroll {
       width: 100%;
-      border-radius: 18px;
+      justify-content: flex-start;
+      padding-bottom: 0.25rem;
     }
   }
 </style>

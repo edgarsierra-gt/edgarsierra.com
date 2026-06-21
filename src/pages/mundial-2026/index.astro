@@ -46,7 +46,6 @@ const featuredGroupMatches = todayMatches.length > 0 ? todayMatches : getFirstDa
 const featuredMatch = featuredGroupMatches[0] ?? null;
 const sectionDate = featuredGroupMatches[0]?.date;
 const isSectionToday = sectionDate === todayIso;
-const topFavorite = championOdds.teams[0] ?? null;
 const hasMovement = championOdds.teams.some((team) => typeof team.movement_since_previous === 'number');
 const baseGoals = metadata.parameters.G_eff;
 
@@ -73,11 +72,7 @@ const jsonLd = [
   <WorldCupShell active="home">
     <div class="worldcup-page">
       <WorldCupHero
-        generatedAt={predictions.generated_at}
-        modelVersion={predictions.model_version}
         featuredMatch={featuredMatch}
-        topFavorite={topFavorite}
-        nSimulations={championOdds.n_simulations}
       />
 
       <section class="dashboard-section overview" data-reveal>

@@ -1,53 +1,62 @@
 ---
-import ExperimentalBadge from './ExperimentalBadge.astro';
 import ProbabilityBar from './ProbabilityBar.astro';
 import TeamBadge from './TeamBadge.astro';
-import { formatGeneratedAt, formatPercent } from '../../lib/worldcup/format';
-import type { ChampionOddsTeam, MatchPrediction } from '../../lib/worldcup/types';
+import { formatNumber, formatPercent } from '../../lib/worldcup/format';
+import type { MatchPrediction } from '../../lib/worldcup/types';
 
 interface Props {
-  generatedAt: string;
-  modelVersion: string;
   featuredMatch?: MatchPrediction | null;
-  topFavorite?: ChampionOddsTeam | null;
-  nSimulations?: number | null;
 }
 
-const { generatedAt, modelVersion, featuredMatch = null, topFavorite = null, nSimulations = null } = Astro.props;
+const { featuredMatch = null } = Astro.props;
+const featuredOutcomes = featuredMatch
+  ? [
+      {
+        label: featuredMatch.team_a.name,
+        value: featuredMatch.probabilities.team_a_win,
+      },
+      {
+        label: 'Empate',
+        value: featuredMatch.probabilities.draw,
+      },
+      {
+        label: featuredMatch.team_b.name,
+        value: featuredMatch.probabilities.team_b_win,
+      },
+    ]
+  : [];
+const leadingOutcome = [...featuredOutcomes].sort((a, b) => b.value - a.value)[0] ?? null;
+const expectedTotal = featuredMatch
+  ? featuredMatch.expected_goals.team_a + featuredMatch.expected_goals.team_b
+  : null;
 ---
 
 <section class="worldcup-hero" data-reveal>
-  <div class="hero-copy">
-    <p class="eyebrow">Laboratorio público · Mundial 2026</p>
-    <h1>Laboratorio Mundial 2026</h1>
-    <p class="hero-lede">
-      Predicciones, probabilidades y estadísticas del Mundial 2026 con un modelo estadístico propio.
-    </p>
-    <p class="hero-note">
-      Este modelo no adivina el futuro. Estima escenarios y mide incertidumbre.
-    </p>
-    <div class="hero-badges" aria-label="Características del laboratorio">
-      <span>Modelo propio</span>
-      <span>Monte Carlo</span>
-      <span>Auditoría pública</span>
-      <span>Probabilidades, no certezas</span>
-    </div>
-    <div class="hero-actions">
-      <a href="/mundial-2026/predicciones-hoy" class="button-primary">Ver predicciones de hoy</a>
-      <a href="/mundial-2026/metodologia" class="button-secondary">Cómo funciona el modelo</a>
-    </div>
-  </div>
-
-  <aside class="hero-dashboard" aria-label="Estado visual del modelo">
-    <div class="dashboard-topline">
-      <span>Centro de comando</span>
-      <strong>2026</strong>
+  <div class="hero-frame">
+    <div class="hero-copy">
+      <p class="eyebrow">Laboratorio público · Mundial 2026</p>
+      <h1>Laboratorio Mundial 2026</h1>
+      <p class="hero-lede">
+        Predicciones del Mundial 2026 con un modelo probabilístico propio.
+      </p>
+      <p class="hero-note">
+        Partidos, grupos, favoritos experimentales y auditoría pública después de cada resultado.
+      </p>
+      <div class="hero-actions">
+        <a href="/mundial-2026/predicciones-hoy" class="button-primary">Ver predicciones</a>
+        <a href="/mundial-2026/metodologia" class="button-secondary">Cómo funciona</a>
+      </div>
+      <div class="hero-badges" aria-label="Alcance del laboratorio">
+        <span>Modelo propio</span>
+        <span>Probabilidades, no certezas</span>
+        <span>Auditoría pública</span>
+      </div>
     </div>
 
     {featuredMatch && (
-      <article class="floating-match">
+      <aside class="hero-match" aria-label="Partido destacado del modelo">
         <p class="card-label">Partido destacado</p>
-        <div class="teams">
+        <div class="match-title">
           <TeamBadge id={featuredMatch.team_a.id} name={featuredMatch.team_a.name} />
           <span>vs</span>
           <TeamBadge id={featuredMatch.team_b.id} name={featuredMatch.team_b.name} />
@@ -59,49 +68,78 @@ const { generatedAt, modelVersion, featuredMatch = null, topFavorite = null, nSi
           teamAName={featuredMatch.team_a.name}
           teamBName={featuredMatch.team_b.name}
         />
-      </article>
-    )}
-
-    <div class="status-grid">
-      <div>
-        <span>Actualizado</span>
-        <strong>{formatGeneratedAt(generatedAt)}</strong>
-      </div>
-      <div>
-        <span>Versión</span>
-        <strong>{modelVersion}</strong>
-      </div>
-      {nSimulations !== null && (
-        <div>
-          <span>Simulaciones</span>
-          <strong>{nSimulations.toLocaleString('es-GT')}</strong>
+        <div class="match-insight">
+          <div>
+            <span>Mayor escenario</span>
+            <strong>{leadingOutcome ? `${leadingOutcome.label} · ${formatPercent(leadingOutcome.value)}` : 'ND'}</strong>
+          </div>
+          <div>
+            <span>Goles esperados</span>
+            <strong>{expectedTotal !== null ? formatNumber(expectedTotal, 1) : 'ND'}</strong>
+          </div>
         </div>
-      )}
-      {topFavorite && (
-        <div>
-          <span>Título exp.</span>
-          <strong>{formatPercent(topFavorite.prob_champion, 1)}</strong>
-        </div>
-      )}
-    </div>
-
-    {topFavorite && (
-      <div class="favorite-chip">
-        <ExperimentalBadge />
-        <TeamBadge team_id={topFavorite.team_id} name={topFavorite.name} />
-      </div>
+      </aside>
     )}
-  </aside>
+  </div>
 </section>
 
 <style>
   .worldcup-hero {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    overflow: hidden;
+    color: #ffffff;
+    background:
+      linear-gradient(90deg, rgba(1, 12, 24, 0.94) 0%, rgba(1, 20, 36, 0.86) 38%, rgba(1, 33, 52, 0.68) 66%, rgba(1, 12, 24, 0.82) 100%),
+      linear-gradient(180deg, rgba(1, 8, 18, 0.72) 0%, rgba(1, 8, 18, 0.26) 42%, rgba(1, 8, 18, 0.9) 100%),
+      url('/images/worldcup/stadium-hero.jpg');
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  .worldcup-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 18% 24%, rgba(86, 180, 233, 0.18), transparent 28%),
+      radial-gradient(circle at 74% 18%, rgba(255, 255, 255, 0.12), transparent 20%),
+      linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+    background-size: auto, auto, 84px 84px, 84px 84px;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.92), transparent 82%);
+    mix-blend-mode: screen;
+    opacity: 0.78;
+    pointer-events: none;
+  }
+
+  .worldcup-hero::after {
+    content: "2026";
+    position: absolute;
+    right: max(1rem, calc((100vw - var(--container)) / 2));
+    bottom: -0.18em;
+    color: rgba(255, 255, 255, 0.075);
+    font-family: var(--font-mono);
+    font-size: clamp(7rem, 18vw, 18rem);
+    font-weight: 700;
+    line-height: 0.8;
+    pointer-events: none;
+  }
+
+  .hero-frame {
+    position: relative;
+    z-index: 1;
     display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
-    gap: clamp(2rem, 5vw, 4rem);
+    grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.72fr);
+    gap: clamp(1.8rem, 5vw, 4.5rem);
     align-items: center;
-    min-height: clamp(620px, 78vh, 820px);
-    padding: var(--space-6) 0 var(--space-8);
+    max-width: min(var(--container), calc(100vw - 2rem));
+    min-height: min(720px, calc(100vh - 72px));
+    margin: 0 auto;
+    padding: clamp(3rem, 6vh, 4.5rem) 0 clamp(2.5rem, 5vh, 3.5rem);
   }
 
   .hero-copy {
@@ -109,53 +147,36 @@ const { generatedAt, modelVersion, featuredMatch = null, topFavorite = null, nSi
   }
 
   .eyebrow {
-    color: var(--wc-blue);
+    color: #9ed7ff;
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     margin-bottom: var(--space-2);
   }
 
   h1 {
-    max-width: 12ch;
-    color: var(--wc-text);
-    font-size: var(--text-hero);
-    letter-spacing: -0.01em;
-    line-height: 1.05;
-    margin-bottom: var(--space-2);
+    max-width: 11ch;
+    color: #ffffff;
+    font-size: clamp(4.4rem, 8vw, 7.2rem);
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    margin-bottom: var(--space-3);
   }
 
   .hero-lede {
-    max-width: 700px;
-    margin-top: var(--space-4);
-    color: var(--wc-soft);
-    font-size: clamp(1.2rem, 2.4vw, 1.65rem);
-    line-height: 1.35;
+    max-width: 620px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(1.25rem, 2.2vw, 1.85rem);
+    line-height: 1.26;
   }
 
   .hero-note {
-    max-width: 680px;
+    max-width: 640px;
     margin-top: var(--space-2);
-    color: var(--wc-text);
+    color: rgba(255, 255, 255, 0.76);
     font-size: var(--text-lg);
-  }
-
-  .hero-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    margin-top: var(--space-4);
-  }
-
-  .hero-badges span {
-    padding: 0.42rem 0.72rem;
-    border: 1px solid var(--wc-border);
-    border-radius: 999px;
-    background: var(--wc-bg-3);
-    color: var(--wc-soft);
-    font-family: var(--font-ui);
-    font-size: var(--text-sm);
+    line-height: 1.55;
   }
 
   .hero-actions {
@@ -170,25 +191,26 @@ const { generatedAt, modelVersion, featuredMatch = null, topFavorite = null, nSi
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 3rem;
-    padding: 0.8rem 1.1rem;
+    min-height: 3.15rem;
+    padding: 0.85rem 1.2rem;
     border-radius: 999px;
     font-family: var(--font-ui);
     font-size: var(--text-sm);
-    font-weight: 700;
+    font-weight: 800;
     text-decoration: none;
   }
 
   .button-primary {
-    background: linear-gradient(135deg, var(--wc-blue), var(--wc-blue-deep));
-    color: #ffffff !important;
-    box-shadow: 0 12px 30px rgba(0,114,178,0.22);
+    background: #ffffff;
+    color: var(--wc-blue-deep) !important;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
   }
 
   .button-secondary {
-    border: 1px solid var(--wc-border-strong);
-    background: var(--wc-bg-2);
-    color: var(--wc-text) !important;
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff !important;
+    backdrop-filter: blur(14px);
   }
 
   .button-primary:hover,
@@ -196,119 +218,96 @@ const { generatedAt, modelVersion, featuredMatch = null, topFavorite = null, nSi
     text-decoration: none;
   }
 
-  .hero-dashboard {
-    position: relative;
+  .hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: var(--space-4);
+  }
+
+  .hero-badges span {
+    padding: 0.42rem 0.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.86);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+  }
+
+  .hero-match {
     display: grid;
     gap: var(--space-3);
     min-width: 0;
-    padding: clamp(1.25rem, 3vw, 2rem);
-    border: 1px solid var(--wc-border-strong);
-    border-radius: 32px;
-    background: var(--wc-bg-2);
-    box-shadow: 0 16px 48px rgba(24, 24, 27, 0.06);
+    padding: clamp(1rem, 2.4vw, 1.45rem);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
   }
 
-  .hero-dashboard::before {
-    content: "";
-    position: absolute;
-    inset: 1rem;
-    border: 1px solid rgba(24, 24, 27, 0.04);
-    border-radius: 26px;
-    pointer-events: none;
-  }
-
-  .dashboard-topline,
-  .favorite-chip {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--space-2);
-  }
-
-  .dashboard-topline span,
   .card-label,
-  .status-grid span {
-    color: var(--wc-muted, #94a3b8);
+  .match-insight span {
+    color: var(--wc-muted);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }
 
-  .dashboard-topline strong {
-    color: rgba(249,250,251,0.16);
-    font-family: var(--font-mono);
-    font-size: clamp(3rem, 8vw, 6rem);
-    line-height: 0.8;
-  }
-
-  .floating-match {
+  .match-title {
     display: grid;
-    gap: var(--space-2);
-    padding: var(--space-3);
-    border: 1px solid var(--wc-border);
-    border-radius: 24px;
-    background: var(--wc-bg-3);
+    gap: 0.75rem;
   }
 
-  .teams {
-    display: grid;
-    gap: 0.7rem;
-  }
-
-  .teams > span {
+  .match-title > span {
     color: var(--wc-blue);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
   }
 
-  .status-grid {
+  .match-insight {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-2);
   }
 
-  .status-grid div {
+  .match-insight div {
     display: grid;
-    gap: 0.25rem;
+    gap: 0.35rem;
     min-width: 0;
-    padding: var(--space-2);
+    padding: 0.9rem;
     border: 1px solid var(--wc-border);
     border-radius: 18px;
     background: var(--wc-bg-3);
   }
 
-  .status-grid strong {
+  .match-insight strong {
     color: var(--wc-text);
     font-family: var(--font-mono);
     font-size: var(--text-sm);
     overflow-wrap: anywhere;
   }
 
-  @supports not (backdrop-filter: blur(1px)) {
-    .hero-dashboard {
-      background: var(--wc-bg-2);
-    }
-  }
-
-  @media (max-width: 960px) {
-    .worldcup-hero {
+  @media (max-width: 980px) {
+    .hero-frame {
       grid-template-columns: 1fr;
       min-height: auto;
     }
 
     h1 {
-      max-width: 11ch;
+      max-width: 12ch;
     }
   }
 
   @media (max-width: 560px) {
-    .worldcup-hero {
-      padding-top: var(--space-3);
+    .hero-frame {
+      padding: var(--space-6) 0 var(--space-5);
     }
 
     h1 {
       max-width: none;
+      font-size: clamp(3rem, 16vw, 4.4rem);
     }
 
     .hero-actions {
@@ -325,7 +324,7 @@ const { generatedAt, modelVersion, featuredMatch = null, topFavorite = null, nSi
       flex: 0 0 auto;
     }
 
-    .status-grid {
+    .match-insight {
       grid-template-columns: 1fr;
     }
   }
