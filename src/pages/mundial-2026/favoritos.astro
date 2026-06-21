@@ -1,0 +1,176 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ChampionOddsTable from '../../components/worldcup/ChampionOddsTable.astro';
+import EmptyState from '../../components/worldcup/EmptyState.astro';
+import ExperimentalBadge from '../../components/worldcup/ExperimentalBadge.astro';
+import RoundPathTable from '../../components/worldcup/RoundPathTable.astro';
+import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
+import WorldCupShell from '../../components/worldcup/WorldCupShell.astro';
+import { getChampionOdds, getRoundProbabilities } from '../../lib/worldcup/data';
+
+const odds = getChampionOdds();
+const roundProbabilities = getRoundProbabilities();
+const movements = odds.teams.filter((team) => typeof team.movement_since_previous === 'number');
+
+const title = 'Favoritos al título según el modelo - Mundial 2026';
+const description =
+  'Ranking experimental de favoritos al título del Mundial 2026 y camino por ronda según simulación Monte Carlo.';
+---
+
+<BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png">
+  <WorldCupShell active="favoritos">
+    <div class="favorites-page">
+      <header class="page-header" data-reveal>
+        <p class="eyebrow">Favoritos y camino por ronda</p>
+        <div class="title-line">
+          <h1>Favoritos al título según el modelo</h1>
+          <ExperimentalBadge />
+        </div>
+        <p>
+          Las probabilidades reflejan con qué frecuencia cada selección aparece como campeona al simular el torneo muchas veces. No son una predicción absoluta.
+        </p>
+        <strong>
+          `champion_odds` es experimental. La versión 2.0 incorporará un ancla externa de fuerza para mejorar estabilidad y comparación internacional.
+        </strong>
+      </header>
+
+      {odds.teams.length > 0 ? (
+        <ChampionOddsTable odds={odds} limit={12} showHeader={false} />
+      ) : (
+        <EmptyState
+          title="Sin favoritos disponibles"
+          text="El JSON de campeón no contiene selecciones en esta corrida."
+        />
+      )}
+
+      <RoundPathTable probabilities={roundProbabilities} limit={18} />
+
+      <section class="movement-section" data-reveal>
+        <div class="section-header">
+          <p class="eyebrow">Movimiento</p>
+          <h2>Equipos que más cambiaron</h2>
+          <p>
+            Esta sección mostrará variaciones cuando el predictor exporte comparación contra la corrida anterior.
+          </p>
+        </div>
+        {movements.length > 0 ? (
+          <div class="movement-grid">
+            {movements.slice(0, 6).map((team) => (
+              <article>
+                <span>{team.name}</span>
+                <strong>{team.movement_since_previous}</strong>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="Movimientos disponibles después de próximas actualizaciones"
+            text="La corrida actual no trae variación contra una versión anterior, así que el laboratorio no inventa cambios."
+          />
+        )}
+      </section>
+
+      <aside class="disclaimer" data-reveal>
+        <h2>Varianza en eliminatorias</h2>
+        <p>
+          El bracket y las probabilidades se actualizan con resultados reales. En eliminatorias la incertidumbre aumenta: un equipo fuerte puede quedar fuera por un solo partido, penales o eventos poco frecuentes.
+        </p>
+      </aside>
+
+      <WorldCupCTA />
+    </div>
+  </WorldCupShell>
+</BaseLayout>
+
+<style>
+  .favorites-page {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .page-header {
+    max-width: var(--reading);
+    padding: var(--space-6) 0 var(--space-2);
+  }
+
+  .eyebrow {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-1);
+  }
+
+  .title-line {
+    display: grid;
+    gap: var(--space-2);
+    align-items: start;
+  }
+
+  h1 {
+    color: var(--wc-text);
+    font-size: var(--text-hero);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+
+  h2 {
+    color: var(--wc-text);
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .page-header p,
+  .section-header p,
+  .disclaimer p {
+    color: var(--wc-soft);
+  }
+
+  .page-header strong {
+    display: block;
+    max-width: 860px;
+    margin-top: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid rgba(230, 159, 0, 0.35);
+    border-radius: 22px;
+    background: rgba(230, 159, 0, 0.08);
+    color: #9d6300;
+    font-family: var(--font-ui);
+  }
+
+  .movement-section {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .section-header {
+    max-width: var(--reading);
+  }
+
+  .movement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-2);
+  }
+
+  .movement-grid article,
+  .disclaimer {
+    padding: var(--space-4);
+    border: 1px solid var(--wc-border);
+    border-radius: 24px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 24px rgba(24, 24, 27, 0.04);
+  }
+
+  .movement-grid span {
+    color: var(--wc-soft);
+  }
+
+  .movement-grid strong {
+    display: block;
+    margin-top: 0.4rem;
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+  }
+</style>

@@ -1,0 +1,71 @@
+---
+import { getTeamDisplay } from '../../lib/worldcup/teams';
+
+interface Props {
+  id?: string | null;
+  team_id?: string | null;
+  name?: string | null;
+  compact?: boolean;
+}
+
+const { id, team_id, name, compact = false } = Astro.props;
+const team = getTeamDisplay({ id, team_id, name });
+---
+
+<span class:list={['team-badge', { compact }]} title={`${team.code} ${team.name}`}>
+  <span class="flag" aria-hidden="true">{team.flag}</span>
+  <span class="code">{team.code}</span>
+  <span class="name">{team.name}</span>
+</span>
+
+<style>
+  .team-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    max-width: 100%;
+    padding: 0.32rem 0.58rem;
+    border: 1px solid var(--wc-border);
+    border-radius: 999px;
+    background: var(--wc-bg-3);
+    color: var(--wc-text);
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    line-height: 1;
+  }
+
+  .flag {
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
+  .code {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--wc-blue);
+    letter-spacing: 0.02em;
+  }
+
+  .name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--wc-text);
+  }
+
+  .compact .name {
+    display: none;
+  }
+
+  @media (max-width: 560px) {
+    .team-badge {
+      padding-inline: 0.5rem;
+    }
+
+    .team-badge:not(.compact) .name {
+      display: none;
+    }
+  }
+</style>

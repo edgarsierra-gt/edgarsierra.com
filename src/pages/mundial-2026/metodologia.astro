@@ -1,14 +1,29 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModelAuditPanel from '../../components/worldcup/ModelAuditPanel.astro';
 import ModelMetadata from '../../components/worldcup/ModelMetadata.astro';
 import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
-import { getModelMetadata } from '../../lib/worldcup/data';
+import WorldCupShell from '../../components/worldcup/WorldCupShell.astro';
+import { getModelAudit, getModelCalibration, getModelMetadata } from '../../lib/worldcup/data';
 
 const metadata = getModelMetadata();
+const audit = getModelAudit();
+const calibration = getModelCalibration();
 
 const title = 'Cómo funciona el modelo de predicciones del Mundial 2026';
 const description =
-  'Metodología del modelo de predicciones del Mundial 2026: datos, goles esperados, Poisson, Dixon-Coles y auditoría probabilística.';
+  'Metodología del modelo de predicciones del Mundial 2026: datos, goles esperados, Poisson, Monte Carlo y auditoría probabilística.';
+
+const pipeline = [
+  'Datos históricos',
+  'Forma reciente',
+  'Ratings de equipo',
+  'Goles esperados',
+  'Matriz Poisson',
+  'Simulación Monte Carlo',
+  'Probabilidades',
+  'Auditoría posterior',
+];
 
 const jsonLd = [
   {
@@ -24,127 +39,242 @@ const jsonLd = [
 ---
 
 <BaseLayout title={title} description={description} ogType="article" ogImage="/og/mundial-2026.png" jsonLd={jsonLd}>
-  <article class="methodology-page">
-    <header class="page-header" data-reveal>
-      <p class="eyebrow">Metodología</p>
-      <h1>Cómo funciona el modelo de predicciones del Mundial 2026</h1>
-      <p>
-        Este modelo no intenta adivinar el futuro. Intenta estimar probabilidades razonables para cada partido del Mundial 2026.
-      </p>
-    </header>
+  <WorldCupShell active="metodologia">
+    <article class="methodology-page">
+      <header class="page-header" data-reveal>
+        <p class="eyebrow">Metodología y auditoría</p>
+        <h1>Cómo funciona el modelo</h1>
+        <p>
+          El laboratorio estima partidos, goles, escenarios de grupo y caminos de torneo usando un modelo estadístico trazable y auditable.
+        </p>
+        <strong>Este modelo no adivina el futuro. Estima escenarios y mide incertidumbre.</strong>
+      </header>
 
-    <div class="prose method-prose" data-reveal>
-      <h2>Qué intenta predecir</h2>
-      <p>
-        La salida principal no es el marcador exacto, sino la distribución de escenarios:
-        victoria de cada equipo, empate, goles esperados y marcadores más probables.
-      </p>
+      <section class="promise-grid" data-reveal>
+        <article>
+          <h2>Qué predice</h2>
+          <ul>
+            <li>Probabilidades 1X2.</li>
+            <li>Goles esperados.</li>
+            <li>Marcadores más probables.</li>
+            <li>Probabilidades de clasificación.</li>
+            <li>Camino por ronda.</li>
+            <li>Probabilidades experimentales de campeón.</li>
+          </ul>
+        </article>
+        <article>
+          <h2>Qué no promete</h2>
+          <ul>
+            <li>No afirma resultados como certezas.</li>
+            <li>No reemplaza contexto deportivo.</li>
+            <li>No trata el marcador exacto como verdad central.</li>
+            <li>No usa lenguaje comercial de pronóstico.</li>
+            <li>No oculta limitaciones del modelo.</li>
+          </ul>
+        </article>
+      </section>
 
-      <h2>Qué datos usa</h2>
-      <p>
-        La primera versión usa resultados y estadísticas del Mundial actual, más una base
-        histórica de los últimos 20 partidos de cada selección clasificada. Cada equipo se
-        normaliza con un identificador estable para evitar mezclar nombres, idiomas o códigos.
-      </p>
+      <section class="pipeline" data-reveal>
+        <div class="section-header">
+          <p class="eyebrow">Pipeline</p>
+          <h2>De datos a auditoría</h2>
+        </div>
+        <ol>
+          {pipeline.map((step, index) => (
+            <li>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <strong>{step}</strong>
+            </li>
+          ))}
+        </ol>
+      </section>
 
-      <h2>Cómo estima goles esperados</h2>
-      <p>
-        El pipeline calcula índices de ataque y defensa a partir de goles recientes,
-        ponderados por recencia y tipo de partido. Esos índices se combinan para producir
-        lambdas de goles esperados para cada equipo.
-      </p>
+      <section class="explain-grid" data-reveal>
+        <article>
+          <p class="eyebrow">Poisson</p>
+          <h2>Convertir goles esperados en marcadores posibles</h2>
+          <p>
+            Poisson convierte goles esperados en probabilidades de marcadores. Si un equipo tiene 1.8 goles esperados, no significa que anotará exactamente 1.8 goles; significa que el modelo usa ese promedio para calcular muchos resultados posibles.
+          </p>
+        </article>
+        <article>
+          <p class="eyebrow">Monte Carlo</p>
+          <h2>Simular el torneo muchas veces</h2>
+          <p>
+            Monte Carlo simula el torneo miles de veces. Si una selección aparece como campeona en 900 de 10,000 simulaciones, su probabilidad estimada de título es 9%.
+          </p>
+        </article>
+      </section>
 
-      <h2>Cómo convierte goles en probabilidades</h2>
-      <p>
-        Con los goles esperados se arma una matriz de marcadores usando una distribución
-        Poisson. Al sumar todos los marcadores donde gana el equipo A, empatan o gana el
-        equipo B, se obtienen las probabilidades 1X2.
-      </p>
+      <ModelAuditPanel audit={audit} calibration={calibration} />
 
-      <h2>Dixon-Coles</h2>
-      <p>
-        La arquitectura deja preparado un ajuste Dixon-Coles para marcadores bajos. En esta
-        versión el parámetro está neutralizado, porque no debe fijarse por intuición sino con
-        backtesting o calibración.
-      </p>
+      <section class="limitations" data-reveal>
+        <p class="eyebrow">Limitaciones</p>
+        <h2>Lo que el modelo todavía no sabe</h2>
+        <div class="limit-grid">
+          <article>El fútbol tiene alta varianza y eventos poco frecuentes.</article>
+          <article>El marcador exacto es difícil de estimar con estabilidad.</article>
+          <article>Lesiones, rotaciones y contexto táctico no siempre entran a tiempo.</article>
+          <article>La calidad de los datos condiciona la calidad del modelo.</article>
+          <article>Las eliminatorias concentran más incertidumbre por partido único.</article>
+          <article>La trazabilidad se prioriza sobre complejidad innecesaria.</article>
+        </div>
+      </section>
 
-      <h2>Auditoría</h2>
-      <p>
-        Una predicción útil no solo se publica: se audita. Después de cada partido, el modelo
-        debe compararse contra el resultado real usando métricas como accuracy 1X2, Brier
-        score, log loss y error de goles. Eso permite saber si las probabilidades estaban bien
-        calibradas, no solo si el favorito ganó.
-      </p>
-
-      <h2>Simulacion del torneo</h2>
-      <p>
-        La version actual simula la fase de grupos, los mejores terceros y una ruta de
-        eliminatorias con bracket aproximado. Las probabilidades de campeon indican cuantas
-        veces una seleccion aparece campeona en miles de simulaciones, no quien va a ganar.
-      </p>
-      <p>
-        El bracket aproximado se usa como MVP metodologico mientras se valida el mapeo oficial
-        completo. Esa limitacion se muestra de forma explicita en la pagina principal.
-      </p>
-
-      <h2>Limitaciones actuales</h2>
-      <ul>
-        <li>El fútbol tiene alta varianza.</li>
-        <li>Un equipo con 70% de probabilidad todavía pierde 3 de cada 10 veces.</li>
-        <li>El marcador exacto tiene baja probabilidad individual.</li>
-        <li>Lesiones, rotaciones y decisiones tácticas pueden cambiar el partido.</li>
-        <li>El modelo inicial prioriza trazabilidad sobre complejidad.</li>
-      </ul>
-
-      <h2>Que viene despues</h2>
-      <p>
-        Las siguientes iteraciones mejoraran el bracket oficial, automatizaran la sincronizacion
-        con el sitio y sumaran comparacion contra baselines como Elo puro o ranking FIFA.
-      </p>
-    </div>
-
-    <ModelMetadata metadata={metadata} />
-    <WorldCupCTA />
-  </article>
+      <ModelMetadata metadata={metadata} />
+      <WorldCupCTA />
+    </article>
+  </WorldCupShell>
 </BaseLayout>
 
 <style>
   .methodology-page {
     display: grid;
     gap: var(--space-8);
-    padding-top: var(--space-8);
-    padding-bottom: var(--space-12);
+  }
+
+  .methodology-page p {
+    max-width: var(--reading);
   }
 
   .page-header {
     max-width: var(--reading);
+    padding: var(--space-6) 0 var(--space-2);
   }
 
   .eyebrow {
-    font-family: var(--font-ui);
-    font-size: var(--text-sm);
-    color: var(--accent);
-    font-weight: 600;
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: var(--space-1);
   }
 
   h1 {
-    font-size: var(--text-3xl);
+    color: var(--wc-text);
+    font-size: var(--text-hero);
+    line-height: 1.05;
     margin-bottom: var(--space-3);
+    letter-spacing: -0.01em;
   }
 
-  .page-header p {
-    color: var(--ink-muted);
-    font-size: var(--text-lg);
+  h2 {
+    color: var(--wc-text);
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-2);
   }
 
-  .method-prose {
-    max-width: var(--reading);
+  .page-header p,
+  .explain-grid p,
+  .section-header p {
+    color: var(--wc-soft);
   }
 
-  @media (max-width: 640px) {
-    .methodology-page {
-      padding-top: var(--space-5);
+  .page-header strong {
+    display: inline-flex;
+    margin-top: var(--space-3);
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(86, 180, 233, 0.35);
+    border-radius: 999px;
+    background: rgba(86, 180, 233, 0.08);
+    color: var(--wc-text);
+    font-family: var(--font-ui);
+  }
+
+  .promise-grid,
+  .explain-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .promise-grid article,
+  .explain-grid article,
+  .pipeline,
+  .limitations {
+    padding: var(--space-4);
+    border: 1px solid var(--wc-border);
+    border-radius: 26px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
+  }
+
+  ul {
+    padding-left: var(--space-3);
+    color: var(--wc-soft);
+  }
+
+  li + li {
+    margin-top: var(--space-1);
+  }
+
+  .pipeline {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .pipeline ol {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .pipeline li {
+    display: grid;
+    gap: 0.5rem;
+    padding: var(--space-2);
+    border: 1px solid var(--wc-border);
+    border-radius: 18px;
+    background: var(--wc-bg-3);
+  }
+
+  .pipeline span {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .pipeline strong {
+    color: var(--wc-text);
+    font-family: var(--font-ui);
+  }
+
+  .limit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .limit-grid article {
+    padding: var(--space-2);
+    border: 1px solid var(--wc-border);
+    border-radius: 16px;
+    color: var(--wc-soft);
+    background: var(--wc-bg-3);
+  }
+
+  @media (max-width: 900px) {
+    .promise-grid,
+    .explain-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pipeline ol,
+    .limit-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .page-header strong {
+      border-radius: 18px;
+    }
+
+    .pipeline ol,
+    .limit-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>

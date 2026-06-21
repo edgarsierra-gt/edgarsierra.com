@@ -13,10 +13,10 @@ const metrics = audit.metrics;
 
 <section class="audit-section" data-reveal>
   <div class="section-header">
-    <p class="eyebrow">Auditoria</p>
-    <h2>Como va el modelo</h2>
+    <p class="eyebrow">Auditoría</p>
+    <h2>Una predicción útil no solo se publica: se audita.</h2>
     <p>
-      Las predicciones se evalúan contra resultados reales usando metricas probabilisticas. Cuando aun no hay cruce entre predicciones congeladas y resultados, el panel lo muestra sin maquillar la muestra.
+      Las predicciones se comparan contra resultados reales usando métricas probabilísticas. Si todavía no hay muestra suficiente, el panel lo muestra sin maquillar la lectura.
     </p>
   </div>
 
@@ -42,7 +42,7 @@ const metrics = audit.metrics;
       <strong>{formatPercentOptional(metrics.exact_score_hit_rate, 1)}</strong>
     </div>
     <div class="metric">
-      <span>Sesgo de goles</span>
+      <span>Bias de goles</span>
       <strong>{formatNumber(metrics.goals_bias, 2)}</strong>
     </div>
   </div>
@@ -71,7 +71,10 @@ const metrics = audit.metrics;
       </table>
     </div>
   ) : (
-    <p class="empty-state">Todavia no hay suficientes partidos auditables para construir bins de calibracion.</p>
+    <div class="audit-empty">
+      <strong>Calibración pendiente</strong>
+      <p>Todavía no hay suficientes partidos auditables para construir bins de calibración.</p>
+    </div>
   )}
 
   <div class="notes">
@@ -93,61 +96,77 @@ const metrics = audit.metrics;
   }
 
   .eyebrow {
-    font-family: var(--font-ui);
-    font-size: var(--text-sm);
-    color: var(--accent);
-    font-weight: 600;
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: var(--space-1);
   }
 
   h2 {
+    color: var(--wc-text);
     font-size: var(--text-2xl);
-    color: var(--ink);
     margin-bottom: var(--space-2);
   }
 
   .section-header p,
   .notes,
-  .empty-state {
-    color: var(--ink-muted);
+  .audit-empty p {
+    color: var(--wc-soft);
   }
 
   .metric-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: var(--space-2);
   }
 
   .metric {
     display: grid;
-    gap: var(--space-1);
+    gap: 0.35rem;
     padding: var(--space-3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    border: 1px solid var(--wc-border);
+    border-radius: 20px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 4px 12px rgba(24, 24, 27, 0.03);
+  }
+
+  .audit-empty {
+    display: grid;
+    gap: 0.35rem;
+    padding: var(--space-3);
+    border: 1px solid var(--wc-border);
+    border-radius: 20px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 4px 12px rgba(24, 24, 27, 0.03);
+    max-width: var(--reading);
   }
 
   .metric span {
+    color: var(--wc-muted);
     font-family: var(--font-ui);
     font-size: var(--text-sm);
-    color: var(--ink-muted);
   }
 
-  .metric strong {
+  .metric strong,
+  .audit-empty strong {
+    color: var(--wc-text);
     font-family: var(--font-mono);
     font-size: var(--text-xl);
-    color: var(--ink);
   }
 
   .table-wrap {
     overflow-x: auto;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    border: 1px solid var(--wc-border);
+    border-radius: 22px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 4px 18px rgba(24, 24, 27, 0.03);
   }
 
   table {
     width: 100%;
+    min-width: 540px;
     border-collapse: collapse;
     font-family: var(--font-mono);
     font-size: var(--text-sm);
@@ -156,7 +175,8 @@ const metrics = audit.metrics;
   th,
   td {
     padding: var(--space-2);
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--wc-border);
+    color: var(--wc-soft);
     text-align: right;
     white-space: nowrap;
   }
@@ -167,25 +187,14 @@ const metrics = audit.metrics;
   }
 
   thead th {
+    color: var(--wc-text);
     font-family: var(--font-ui);
-    color: var(--ink);
-    background: var(--code-bg);
+    background: var(--wc-bg-3);
   }
 
   tbody th {
     font-family: var(--font-ui);
     font-weight: 600;
-  }
-
-  tbody tr:last-child th,
-  tbody tr:last-child td {
-    border-bottom: 0;
-  }
-
-  .empty-state {
-    padding: var(--space-4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
   }
 
   .notes {

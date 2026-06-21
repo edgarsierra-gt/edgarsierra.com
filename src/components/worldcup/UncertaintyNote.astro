@@ -1,28 +1,38 @@
 <aside class="uncertainty" data-reveal>
-  <h2>Cómo leer estas predicciones</h2>
+  <p class="eyebrow">Incertidumbre</p>
+  <h2>Estas predicciones son probabilidades, no certezas.</h2>
   <p>
-    Estas predicciones son probabilidades, no certezas. Un equipo con 70% de
-    probabilidad todavía puede perder. El marcador más probable individual suele
-    tener una probabilidad baja y se muestra como referencia, no como promesa.
+    Un equipo con 70% de probabilidad todavía puede perder. El marcador más probable individual suele tener baja frecuencia y se muestra como referencia estadística.
   </p>
 </aside>
 
 <style>
   .uncertainty {
     padding: var(--space-4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--code-bg);
+    border: 1px solid rgba(86, 180, 233, 0.35);
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(86, 180, 233, 0.08), transparent 30%),
+      var(--wc-bg-2);
+  }
+
+  .eyebrow {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-1);
   }
 
   h2 {
+    color: var(--wc-text);
     font-size: var(--text-xl);
     margin-bottom: var(--space-2);
   }
 
   p {
-    color: var(--ink-muted);
     max-width: var(--reading);
+    color: var(--wc-soft);
   }
 </style>
-

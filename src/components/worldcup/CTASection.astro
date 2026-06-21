@@ -1,0 +1,89 @@
+<section class="cta-section" data-reveal>
+  <div>
+    <p class="eyebrow">Por Edgar Sierra</p>
+    <h2>Este laboratorio es parte de mi trabajo en estadística aplicada.</h2>
+    <p>
+      También escribo sobre IA, datos, marketing analytics y tecnología aplicada a problemas reales de Guatemala y Centroamérica.
+    </p>
+  </div>
+  <nav aria-label="Siguientes pasos del Laboratorio Mundial 2026">
+    <a href="/mundial-2026/metodologia">Leer metodología</a>
+    <a href="https://github.com/edgarsierra-gt/mundial-2026-predictor" target="_blank" rel="noopener noreferrer">Ver código en GitHub</a>
+    <a href="/newsletter">Suscribirme al newsletter</a>
+    <a href="/proyectos">Ver otros proyectos</a>
+  </nav>
+</section>
+
+<style>
+  .cta-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
+    gap: var(--space-5);
+    align-items: center;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 1px solid var(--wc-border-strong);
+    border-radius: 28px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
+      radial-gradient(circle at 85% 20%, rgba(86, 180, 233, 0.08), transparent 38%),
+      var(--wc-bg-2);
+    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
+  }
+
+  .eyebrow {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-1);
+  }
+
+  h2 {
+    max-width: 720px;
+    color: var(--wc-text);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    margin-bottom: var(--space-2);
+  }
+
+  p {
+    max-width: var(--reading);
+    color: var(--wc-soft);
+  }
+
+  nav {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  a {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--wc-border);
+    border-radius: 999px;
+    background: var(--wc-bg-3);
+    color: var(--wc-text) !important;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  a::after {
+    content: "→";
+    color: var(--wc-blue);
+  }
+
+  a:hover {
+    border-color: var(--wc-blue);
+    background: var(--wc-bg-2);
+    text-decoration: none;
+  }
+
+  @media (max-width: 840px) {
+    .cta-section {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

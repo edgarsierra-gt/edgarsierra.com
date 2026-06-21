@@ -1,34 +1,45 @@
 ---
+import ExperimentalBadge from './ExperimentalBadge.astro';
+import TeamBadge from './TeamBadge.astro';
 import { formatBracketMode, formatPercent } from '../../lib/worldcup/format';
 import type { ChampionOdds } from '../../lib/worldcup/types';
 
 interface Props {
   odds: ChampionOdds;
   limit?: number;
+  showHeader?: boolean;
 }
 
-const { odds, limit = 12 } = Astro.props;
+const { odds, limit = 12, showHeader = true } = Astro.props;
 const teams = odds.teams.slice(0, limit);
+const maxChampion = Math.max(...teams.map((team) => team.prob_champion), 0.01);
 ---
 
 <section class="champion-section" data-reveal>
-  <div class="section-header">
-    <p class="eyebrow">Monte Carlo</p>
-    <h2>Probabilidad experimental de campeon</h2>
-    <p>
-      Estas probabilidades indican cuantas veces aparece cada seleccion como campeona en {odds.n_simulations.toLocaleString('es-GT')} simulaciones. No dicen quien va a ganar.
-    </p>
-    <p class="mode-note">{formatBracketMode(odds.bracket_mode)}. Se refinara cuando el bracket oficial completo este validado.</p>
-  </div>
+  {showHeader && (
+    <div class="section-header">
+      <p class="eyebrow">Monte Carlo</p>
+      <div class="title-row">
+        <h2>Favoritos al título según el modelo</h2>
+        <ExperimentalBadge />
+      </div>
+      <p>
+        Estas probabilidades reflejan con qué frecuencia aparece cada selección como campeona en {odds.n_simulations.toLocaleString('es-GT')} simulaciones. No son una predicción absoluta.
+      </p>
+      <p class="mode-note">
+        {formatBracketMode(odds.bracket_mode)}. La versión 2.0 incorporará un ancla externa de fuerza para mejorar estabilidad y comparación internacional.
+      </p>
+    </div>
+  )}
 
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
           <th>#</th>
-          <th>Equipo</th>
+          <th>Selección</th>
           <th>Grupo</th>
-          <th>Campeon</th>
+          <th>Campeón</th>
           <th>Final</th>
           <th>Semis</th>
         </tr>
@@ -36,10 +47,15 @@ const teams = odds.teams.slice(0, limit);
       <tbody>
         {teams.map((team) => (
           <tr>
-            <td>{team.rank}</td>
-            <th scope="row">{team.name}</th>
+            <td class="rank">{team.rank}</td>
+            <th scope="row"><TeamBadge team_id={team.team_id} name={team.name} /></th>
             <td>{team.group}</td>
-            <td>{formatPercent(team.prob_champion, 1)}</td>
+            <td class="bar-cell">
+              <span class="value">{formatPercent(team.prob_champion, 1)}</span>
+              <span class="mini-bar" aria-hidden="true">
+                <span style={`width: ${(team.prob_champion / maxChampion) * 100}%`}></span>
+              </span>
+            </td>
             <td>{formatPercent(team.prob_final, 1)}</td>
             <td>{formatPercent(team.prob_semifinal, 1)}</td>
           </tr>
@@ -56,40 +72,52 @@ const teams = odds.teams.slice(0, limit);
   }
 
   .section-header {
-    max-width: var(--reading);
+    max-width: 860px;
   }
 
   .eyebrow {
-    font-family: var(--font-ui);
-    font-size: var(--text-sm);
-    color: var(--accent);
-    font-weight: 600;
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: var(--space-1);
   }
 
-  h2 {
-    font-size: var(--text-2xl);
-    color: var(--ink);
+  .title-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
     margin-bottom: var(--space-2);
   }
 
+  h2 {
+    color: var(--wc-text);
+    font-size: var(--text-2xl);
+  }
+
   .section-header p {
-    color: var(--ink-muted);
+    color: var(--wc-soft);
   }
 
   .mode-note {
+    margin-top: var(--space-1);
+    color: var(--wc-muted);
     font-size: var(--text-sm);
   }
 
   .table-wrap {
     overflow-x: auto;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    border: 1px solid var(--wc-border);
+    border-radius: 24px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
   }
 
   table {
     width: 100%;
+    min-width: 760px;
     border-collapse: collapse;
     font-family: var(--font-mono);
     font-size: var(--text-sm);
@@ -98,9 +126,10 @@ const teams = odds.teams.slice(0, limit);
   th,
   td {
     padding: var(--space-2);
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--wc-border);
     text-align: right;
     white-space: nowrap;
+    color: var(--wc-soft);
   }
 
   th:nth-child(2),
@@ -109,9 +138,11 @@ const teams = odds.teams.slice(0, limit);
   }
 
   thead th {
+    position: sticky;
+    top: 0;
+    color: var(--wc-text);
     font-family: var(--font-ui);
-    color: var(--ink);
-    background: var(--code-bg);
+    background: var(--wc-bg-3);
   }
 
   tbody th {
@@ -122,5 +153,35 @@ const teams = odds.teams.slice(0, limit);
   tbody tr:last-child th,
   tbody tr:last-child td {
     border-bottom: 0;
+  }
+
+  .rank {
+    color: var(--wc-blue);
+  }
+
+  .bar-cell {
+    min-width: 170px;
+  }
+
+  .value {
+    display: inline-block;
+    min-width: 4.5rem;
+    color: var(--wc-text);
+  }
+
+  .mini-bar {
+    display: inline-flex;
+    width: 76px;
+    height: 0.45rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--wc-bg-3);
+    vertical-align: middle;
+  }
+
+  .mini-bar span {
+    display: block;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--wc-blue), var(--wc-cyan));
   }
 </style>

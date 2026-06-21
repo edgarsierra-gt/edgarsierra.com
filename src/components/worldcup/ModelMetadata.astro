@@ -10,7 +10,10 @@ const { metadata } = Astro.props;
 ---
 
 <section class="metadata" data-reveal>
-  <h2>Estado del modelo</h2>
+  <div class="section-header">
+    <p class="eyebrow">Estado del modelo</p>
+    <h2>Contrato y límites actuales</h2>
+  </div>
   <dl>
     <div>
       <dt>Versión</dt>
@@ -27,7 +30,7 @@ const { metadata } = Astro.props;
   </dl>
   {metadata.limitations.length > 0 && (
     <div class="limitations">
-      <h3>Limitaciones actuales</h3>
+      <h3>Limitaciones declaradas</h3>
       <ul>
         {metadata.limitations.map((item) => <li>{item}</li>)}
       </ul>
@@ -41,8 +44,18 @@ const { metadata } = Astro.props;
     gap: var(--space-3);
   }
 
+  .eyebrow {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
   h2 {
+    color: var(--wc-text);
     font-size: var(--text-xl);
+    margin-top: 0.25rem;
   }
 
   dl {
@@ -51,40 +64,37 @@ const { metadata } = Astro.props;
     gap: var(--space-2);
   }
 
-  dl div {
-    padding: var(--space-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+  dl div,
+  .limitations {
+    padding: var(--space-3);
+    border: 1px solid var(--wc-border);
+    border-radius: 20px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 4px 12px rgba(24, 24, 27, 0.02);
   }
 
   dt {
+    color: var(--wc-muted);
     font-family: var(--font-ui);
     font-size: var(--text-xs);
-    color: var(--ink-muted);
   }
 
   dd {
+    color: var(--wc-text);
     font-family: var(--font-mono);
     font-size: var(--text-sm);
-    color: var(--ink);
     overflow-wrap: anywhere;
   }
 
-  .limitations {
-    padding: var(--space-3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-  }
-
   h3 {
+    color: var(--wc-text);
     font-size: var(--text-base);
     margin-bottom: var(--space-2);
   }
 
   ul {
     padding-left: var(--space-3);
-    color: var(--ink-muted);
+    color: var(--wc-soft);
   }
 
   li + li {
@@ -97,4 +107,3 @@ const { metadata } = Astro.props;
     }
   }
 </style>
-

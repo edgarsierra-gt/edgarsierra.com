@@ -1,16 +1,18 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ChampionOddsTable from '../../components/worldcup/ChampionOddsTable.astro';
+import EmptyState from '../../components/worldcup/EmptyState.astro';
 import GroupProbabilityTable from '../../components/worldcup/GroupProbabilityTable.astro';
 import MatchPredictionCard from '../../components/worldcup/MatchPredictionCard.astro';
 import MethodologySummary from '../../components/worldcup/MethodologySummary.astro';
-import ModelMetadata from '../../components/worldcup/ModelMetadata.astro';
 import ModelAuditPanel from '../../components/worldcup/ModelAuditPanel.astro';
-import RoundPathTable from '../../components/worldcup/RoundPathTable.astro';
+import ModelMetadata from '../../components/worldcup/ModelMetadata.astro';
+import StatCard from '../../components/worldcup/StatCard.astro';
 import TeamPowerRanking from '../../components/worldcup/TeamPowerRanking.astro';
 import UncertaintyNote from '../../components/worldcup/UncertaintyNote.astro';
 import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
 import WorldCupHero from '../../components/worldcup/WorldCupHero.astro';
+import WorldCupShell from '../../components/worldcup/WorldCupShell.astro';
 import {
   getChampionOdds,
   getGroupProbabilities,
@@ -18,25 +20,39 @@ import {
   getModelCalibration,
   getModelMetadata,
   getPredictionsToday,
-  getRoundProbabilities,
   getTeamPowerRanking,
 } from '../../lib/worldcup/data';
-import { formatDateEs, getFirstDateMatches } from '../../lib/worldcup/format';
+import {
+  formatDateEs,
+  formatGeneratedAt,
+  formatNumber,
+  getFirstDateMatches,
+  getMatchesForDate,
+  getTodayIso,
+  getUpcomingMatches,
+} from '../../lib/worldcup/format';
 
 const predictions = getPredictionsToday();
 const ranking = getTeamPowerRanking();
 const metadata = getModelMetadata();
 const groupProbabilities = getGroupProbabilities();
-const roundProbabilities = getRoundProbabilities();
 const championOdds = getChampionOdds();
 const modelAudit = getModelAudit();
 const modelCalibration = getModelCalibration();
-const todayMatches = getFirstDateMatches(predictions.matches);
-const firstDate = todayMatches[0]?.date;
+const todayIso = getTodayIso();
+const upcomingMatches = getUpcomingMatches(predictions.matches, todayIso);
+const todayMatches = getMatchesForDate(upcomingMatches, todayIso);
+const featuredGroupMatches = todayMatches.length > 0 ? todayMatches : getFirstDateMatches(upcomingMatches);
+const featuredMatch = featuredGroupMatches[0] ?? null;
+const sectionDate = featuredGroupMatches[0]?.date;
+const isSectionToday = sectionDate === todayIso;
+const topFavorite = championOdds.teams[0] ?? null;
+const hasMovement = championOdds.teams.some((team) => typeof team.movement_since_previous === 'number');
+const baseGoals = metadata.parameters.G_eff;
 
 const title = 'Predicciones Mundial 2026: probabilidades y modelo estadístico';
 const description =
-  'Predicciones, probabilidades y estadísticas del Mundial 2026 con un modelo estadístico propio de Edgar Sierra. Goles esperados, marcadores probables y metodología transparente.';
+  'Predicciones, probabilidades y estadísticas del Mundial 2026 con un modelo estadístico propio de Edgar Sierra. Goles esperados, simulación y auditoría transparente.';
 
 const jsonLd = [
   {
@@ -54,53 +70,111 @@ const jsonLd = [
 ---
 
 <BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png" jsonLd={jsonLd}>
-  <div class="worldcup-page">
-    <WorldCupHero generatedAt={predictions.generated_at} modelVersion={predictions.model_version} />
+  <WorldCupShell active="home">
+    <div class="worldcup-page">
+      <WorldCupHero
+        generatedAt={predictions.generated_at}
+        modelVersion={predictions.model_version}
+        featuredMatch={featuredMatch}
+        topFavorite={topFavorite}
+        nSimulations={championOdds.n_simulations}
+      />
 
-    <section class="section" id="predicciones" data-reveal>
-      <div class="section-header">
-        <p class="eyebrow">Predicciones</p>
-        <h2>{firstDate ? `Partidos del ${formatDateEs(firstDate)}` : 'Partidos próximos'}</h2>
-        <p>
-          Probabilidades 1X2, goles esperados y marcadores más probables generados por el modelo.
-        </p>
-      </div>
-
-      {todayMatches.length > 0 ? (
-        <div class="match-grid">
-          {todayMatches.map((match) => <MatchPredictionCard match={match} />)}
+      <section class="dashboard-section overview" data-reveal>
+        <div class="section-header">
+          <p class="eyebrow">Estado del laboratorio</p>
+          <h2>Modelo, datos y simulación en una sola vista.</h2>
+          <p>
+            El laboratorio convierte JSON derivados del predictor en una experiencia pública: partidos, grupos, caminos de torneo y auditoría.
+          </p>
         </div>
-      ) : (
-        <p class="empty-state">
-          No hay partidos próximos cargados en este momento. El modelo se actualizará cuando existan partidos programados.
-        </p>
-      )}
+        <div class="stat-grid">
+          <StatCard label="Simulaciones corridas" value={championOdds.n_simulations.toLocaleString('es-GT')} detail="Monte Carlo del torneo" />
+          <StatCard label="Versión del modelo" value={metadata.model_version} detail={metadata.model_mode} />
+          <StatCard label="Goles base" value={typeof baseGoals === 'number' ? formatNumber(baseGoals, 1) : 'ND'} detail="Parámetro global de ritmo" />
+          <StatCard label="Última actualización" value={formatGeneratedAt(metadata.generated_at)} detail="Hora Guatemala" />
+        </div>
+      </section>
 
-      <div class="section-link">
-        <a href="/mundial-2026/predicciones-hoy">Ver todos los partidos próximos</a>
-      </div>
-    </section>
+      <section class="dashboard-section" id="predicciones" data-reveal>
+        <div class="section-header split">
+          <div>
+            <p class="eyebrow">Predicciones</p>
+            <h2>
+              {sectionDate
+                ? isSectionToday
+                  ? `Partidos de hoy, ${formatDateEs(sectionDate)}`
+                  : `Próxima jornada: ${formatDateEs(sectionDate)}`
+                : 'Partidos próximos'}
+            </h2>
+            <p>
+              Probabilidades 1X2, goles esperados y marcadores más probables generados por el modelo.
+            </p>
+          </div>
+          <a class="section-cta" href="/mundial-2026/predicciones-hoy">Ver calendario del modelo</a>
+        </div>
 
-    <GroupProbabilityTable probabilities={groupProbabilities} />
-    <ChampionOddsTable odds={championOdds} />
-    <RoundPathTable probabilities={roundProbabilities} />
-    <ModelAuditPanel audit={modelAudit} calibration={modelCalibration} />
-    <TeamPowerRanking ranking={ranking} />
-    <MethodologySummary />
-    <UncertaintyNote />
-    <ModelMetadata metadata={metadata} />
-    <WorldCupCTA />
-  </div>
+        {featuredGroupMatches.length > 0 ? (
+          <div class="match-grid">
+            {featuredGroupMatches.slice(0, 4).map((match, index) => (
+              <MatchPredictionCard match={match} featured={index === 0} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="Sin partidos próximos"
+            text="El laboratorio mostrará nuevas predicciones cuando existan partidos programados en el JSON del predictor."
+          />
+        )}
+      </section>
+
+      <section class="dashboard-section movement-panel" data-reveal>
+        <div class="section-header">
+          <p class="eyebrow">Movimiento del modelo</p>
+          <h2>Qué cambió después de la última actualización</h2>
+          <p>
+            Cuando el predictor guarde deltas entre corridas, esta sección mostrará subidas, bajadas y razones de cambio.
+          </p>
+        </div>
+        {hasMovement ? (
+          <div class="movement-grid">
+            {championOdds.teams
+              .filter((team) => typeof team.movement_since_previous === 'number')
+              .slice(0, 4)
+              .map((team) => (
+                <article>
+                  <span>{team.name}</span>
+                  <strong>{team.movement_since_previous}</strong>
+                </article>
+              ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="Movimientos todavía no disponibles"
+            text="La corrida actual no incluye variación contra una simulación anterior. Se mostrará cuando exista historial comparable."
+          />
+        )}
+      </section>
+
+      <GroupProbabilityTable probabilities={groupProbabilities} limitGroups={4} />
+      <ChampionOddsTable odds={championOdds} limit={10} />
+      <ModelAuditPanel audit={modelAudit} calibration={modelCalibration} />
+      <TeamPowerRanking ranking={ranking} limit={10} />
+      <MethodologySummary />
+      <UncertaintyNote />
+      <ModelMetadata metadata={metadata} />
+      <WorldCupCTA />
+    </div>
+  </WorldCupShell>
 </BaseLayout>
 
 <style>
   .worldcup-page {
     display: grid;
     gap: var(--space-8);
-    padding-bottom: var(--space-12);
   }
 
-  .section {
+  .dashboard-section {
     display: grid;
     gap: var(--space-4);
   }
@@ -109,40 +183,99 @@ const jsonLd = [
     max-width: var(--reading);
   }
 
+  .section-header.split {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    align-items: end;
+    max-width: none;
+  }
+
   .eyebrow {
-    font-family: var(--font-ui);
-    font-size: var(--text-sm);
-    color: var(--accent);
-    font-weight: 600;
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: var(--space-1);
   }
 
   h2 {
+    color: var(--wc-text);
     font-size: var(--text-2xl);
-    color: var(--ink);
     margin-bottom: var(--space-2);
   }
 
   .section-header p {
-    color: var(--ink-muted);
+    color: var(--wc-soft);
+  }
+
+  .section-cta {
+    flex: 0 0 auto;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--wc-border-strong);
+    border-radius: 999px;
+    background: var(--wc-bg-2);
+    color: var(--wc-text) !important;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .section-cta:hover {
+    text-decoration: none;
+    background: var(--wc-bg-3);
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-2);
   }
 
   .match-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
     gap: var(--space-3);
   }
 
-  .empty-state {
-    padding: var(--space-4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--ink-muted);
+  .movement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-2);
   }
 
-  .section-link a {
-    font-family: var(--font-ui);
-    font-weight: 600;
-    color: var(--accent);
+  .movement-grid article {
+    display: grid;
+    gap: 0.35rem;
+    padding: var(--space-3);
+    border: 1px solid var(--wc-border);
+    border-radius: 20px;
+    background: var(--wc-bg-3);
+  }
+
+  .movement-grid span {
+    color: var(--wc-soft);
+  }
+
+  .movement-grid strong {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 960px) {
+    .stat-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .section-header.split {
+      display: grid;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .stat-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

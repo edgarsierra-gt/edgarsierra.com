@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EmptyState from '../../components/worldcup/EmptyState.astro';
+import GroupProbabilityTable from '../../components/worldcup/GroupProbabilityTable.astro';
+import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
+import WorldCupShell from '../../components/worldcup/WorldCupShell.astro';
+import { getGroupProbabilities } from '../../lib/worldcup/data';
+
+const probabilities = getGroupProbabilities();
+const groups = probabilities.groups;
+
+const title = 'Probabilidades de clasificación por grupo - Mundial 2026';
+const description =
+  'Probabilidades de avanzar, quedar primero, segundo, tercero clasificado o eliminado por grupo del Mundial 2026 según el modelo.';
+---
+
+<BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png">
+  <WorldCupShell active="grupos">
+    <div class="groups-page">
+      <header class="page-header" data-reveal>
+        <p class="eyebrow">Grupos y escenarios</p>
+        <h1>Probabilidades de clasificación por grupo</h1>
+        <p>
+          El modelo simula la fase de grupos miles de veces para estimar qué selecciones avanzan, quedan primeras, segundas o son eliminadas.
+        </p>
+      </header>
+
+      {groups.length > 0 ? (
+        <>
+          <nav class="group-pills" aria-label="Selector de grupo">
+            {groups.map((group) => (
+              <a href={`#grupo-${group.group.toLowerCase()}`}>Grupo {group.group}</a>
+            ))}
+          </nav>
+
+          <GroupProbabilityTable probabilities={probabilities} showHeader={false} />
+
+          <section class="scenario-notes" data-reveal>
+            <article>
+              <h2>Escenarios clave</h2>
+              <p>
+                Los insights automáticos de partido clave, selección más volátil y mayor cambio aparecerán cuando el predictor exporte historial entre corridas. Por ahora se muestran probabilidades trazables sin inventar narrativas.
+              </p>
+            </article>
+            <article>
+              <h2>Nota metodológica</h2>
+              <p>
+                Las probabilidades combinan resultados reales con simulación de partidos pendientes. Cambian después de cada actualización del modelo y deben leerse como escenarios, no certezas.
+              </p>
+            </article>
+          </section>
+        </>
+      ) : (
+        <EmptyState
+          title="Sin datos de grupos"
+          text="El JSON de probabilidades por grupo no contiene grupos disponibles en esta corrida."
+        />
+      )}
+
+      <WorldCupCTA />
+    </div>
+  </WorldCupShell>
+</BaseLayout>
+
+<style>
+  .groups-page {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .page-header {
+    max-width: var(--reading);
+    padding: var(--space-6) 0 var(--space-2);
+  }
+
+  .eyebrow {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-1);
+  }
+
+  h1 {
+    color: var(--wc-text);
+    font-size: var(--text-hero);
+    line-height: 1.05;
+    margin-bottom: var(--space-3);
+    letter-spacing: -0.01em;
+  }
+
+  .page-header p,
+  .scenario-notes p {
+    color: var(--wc-soft);
+  }
+
+  .group-pills {
+    display: flex;
+    gap: 0.55rem;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+    scrollbar-width: none;
+  }
+
+  .group-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .group-pills a {
+    flex: 0 0 auto;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--wc-border);
+    border-radius: 999px;
+    background: var(--wc-bg-3);
+    color: var(--wc-text) !important;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .scenario-notes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .scenario-notes article {
+    padding: var(--space-4);
+    border: 1px solid var(--wc-border);
+    border-radius: 24px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 24px rgba(24, 24, 27, 0.04);
+  }
+
+  h2 {
+    color: var(--wc-text);
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-2);
+  }
+
+  @media (max-width: 760px) {
+    .scenario-notes {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

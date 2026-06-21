@@ -1,134 +1,332 @@
 ---
-import { formatGeneratedAt } from '../../lib/worldcup/format';
+import ExperimentalBadge from './ExperimentalBadge.astro';
+import ProbabilityBar from './ProbabilityBar.astro';
+import TeamBadge from './TeamBadge.astro';
+import { formatGeneratedAt, formatPercent } from '../../lib/worldcup/format';
+import type { ChampionOddsTeam, MatchPrediction } from '../../lib/worldcup/types';
 
 interface Props {
   generatedAt: string;
   modelVersion: string;
+  featuredMatch?: MatchPrediction | null;
+  topFavorite?: ChampionOddsTeam | null;
+  nSimulations?: number | null;
 }
 
-const { generatedAt, modelVersion } = Astro.props;
+const { generatedAt, modelVersion, featuredMatch = null, topFavorite = null, nSimulations = null } = Astro.props;
 ---
 
 <section class="worldcup-hero" data-reveal>
   <div class="hero-copy">
-    <p class="eyebrow">Laboratorio público</p>
+    <p class="eyebrow">Laboratorio público · Mundial 2026</p>
     <h1>Laboratorio Mundial 2026</h1>
     <p class="hero-lede">
       Predicciones, probabilidades y estadísticas del Mundial 2026 con un modelo estadístico propio.
     </p>
     <p class="hero-note">
-      No adivina el futuro: estima escenarios, mide incertidumbre y se audita después de cada partido.
+      Este modelo no adivina el futuro. Estima escenarios y mide incertidumbre.
     </p>
+    <div class="hero-badges" aria-label="Características del laboratorio">
+      <span>Modelo propio</span>
+      <span>Monte Carlo</span>
+      <span>Auditoría pública</span>
+      <span>Probabilidades, no certezas</span>
+    </div>
     <div class="hero-actions">
-      <a href="/mundial-2026/predicciones-hoy" class="button-primary">Ver predicciones</a>
-      <a href="/mundial-2026/metodologia" class="button-secondary">Cómo funciona</a>
+      <a href="/mundial-2026/predicciones-hoy" class="button-primary">Ver predicciones de hoy</a>
+      <a href="/mundial-2026/metodologia" class="button-secondary">Cómo funciona el modelo</a>
     </div>
   </div>
-  <aside class="hero-panel" aria-label="Estado del modelo">
-    <p>Última actualización</p>
-    <strong>{formatGeneratedAt(generatedAt)}</strong>
-    <p>Versión del modelo</p>
-    <strong>{modelVersion}</strong>
+
+  <aside class="hero-dashboard" aria-label="Estado visual del modelo">
+    <div class="dashboard-topline">
+      <span>Centro de comando</span>
+      <strong>2026</strong>
+    </div>
+
+    {featuredMatch && (
+      <article class="floating-match">
+        <p class="card-label">Partido destacado</p>
+        <div class="teams">
+          <TeamBadge id={featuredMatch.team_a.id} name={featuredMatch.team_a.name} />
+          <span>vs</span>
+          <TeamBadge id={featuredMatch.team_b.id} name={featuredMatch.team_b.name} />
+        </div>
+        <ProbabilityBar
+          teamAWin={featuredMatch.probabilities.team_a_win}
+          draw={featuredMatch.probabilities.draw}
+          teamBWin={featuredMatch.probabilities.team_b_win}
+          teamAName={featuredMatch.team_a.name}
+          teamBName={featuredMatch.team_b.name}
+        />
+      </article>
+    )}
+
+    <div class="status-grid">
+      <div>
+        <span>Actualizado</span>
+        <strong>{formatGeneratedAt(generatedAt)}</strong>
+      </div>
+      <div>
+        <span>Versión</span>
+        <strong>{modelVersion}</strong>
+      </div>
+      {nSimulations !== null && (
+        <div>
+          <span>Simulaciones</span>
+          <strong>{nSimulations.toLocaleString('es-GT')}</strong>
+        </div>
+      )}
+      {topFavorite && (
+        <div>
+          <span>Campeón</span>
+          <strong>{formatPercent(topFavorite.prob_champion, 1)}</strong>
+        </div>
+      )}
+    </div>
+
+    {topFavorite && (
+      <div class="favorite-chip">
+        <ExperimentalBadge />
+        <TeamBadge team_id={topFavorite.team_id} name={topFavorite.name} />
+      </div>
+    )}
   </aside>
 </section>
 
 <style>
   .worldcup-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 280px;
-    gap: var(--space-5);
-    align-items: end;
-    padding-top: var(--space-8);
-    padding-bottom: var(--space-6);
-    border-bottom: 1px solid var(--border);
+    grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+    min-height: clamp(620px, 78vh, 820px);
+    padding: var(--space-6) 0 var(--space-8);
+  }
+
+  .hero-copy {
+    min-width: 0;
   }
 
   .eyebrow {
-    font-family: var(--font-ui);
-    font-size: var(--text-sm);
-    color: var(--accent);
-    font-weight: 600;
+    color: var(--wc-cyan, #38bdf8);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
     margin-bottom: var(--space-2);
   }
 
   h1 {
-    font-size: var(--text-hero);
-    color: var(--ink);
     max-width: 12ch;
+    color: var(--wc-text);
+    font-size: var(--text-hero);
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+    margin-bottom: var(--space-2);
   }
 
   .hero-lede {
-    max-width: 62ch;
-    margin-top: var(--space-3);
-    font-size: var(--text-lg);
-    color: var(--ink-muted);
+    max-width: 700px;
+    margin-top: var(--space-4);
+    color: var(--wc-soft);
+    font-size: clamp(1.2rem, 2.4vw, 1.65rem);
+    line-height: 1.35;
   }
 
   .hero-note {
-    max-width: 62ch;
+    max-width: 680px;
     margin-top: var(--space-2);
-    color: var(--ink);
+    color: var(--wc-text);
+    font-size: var(--text-lg);
+  }
+
+  .hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: var(--space-4);
+  }
+
+  .hero-badges span {
+    padding: 0.42rem 0.72rem;
+    border: 1px solid var(--wc-border);
+    border-radius: 999px;
+    background: var(--wc-bg-3);
+    color: var(--wc-soft);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
   }
 
   .hero-actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-top: var(--space-4);
+    margin-top: var(--space-5);
   }
 
   .button-primary,
   .button-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.8rem 1.1rem;
+    border-radius: 999px;
     font-family: var(--font-ui);
     font-size: var(--text-sm);
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: none;
-    border-radius: var(--radius);
-    padding: 0.7rem var(--space-2);
   }
 
   .button-primary {
-    background: var(--accent);
-    color: #fff;
+    background: linear-gradient(135deg, var(--wc-blue), var(--wc-cyan));
+    color: #ffffff !important;
+    box-shadow: 0 12px 30px rgba(0,114,178,0.22);
   }
 
   .button-secondary {
-    color: var(--accent);
-    border: 1px solid var(--border);
-    background: var(--surface);
+    border: 1px solid var(--wc-border-strong);
+    background: var(--wc-bg-2);
+    color: var(--wc-text) !important;
   }
 
-  .hero-panel {
+  .button-primary:hover,
+  .button-secondary:hover {
+    text-decoration: none;
+  }
+
+  .hero-dashboard {
+    position: relative;
     display: grid;
-    gap: var(--space-1);
-    padding: var(--space-3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
+    gap: var(--space-3);
+    min-width: 0;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid var(--wc-border-strong);
+    border-radius: 32px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 16px 48px rgba(24, 24, 27, 0.06);
   }
 
-  .hero-panel p {
-    font-family: var(--font-ui);
+  .hero-dashboard::before {
+    content: "";
+    position: absolute;
+    inset: 1rem;
+    border: 1px solid rgba(24, 24, 27, 0.04);
+    border-radius: 26px;
+    pointer-events: none;
+  }
+
+  .dashboard-topline,
+  .favorite-chip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .dashboard-topline span,
+  .card-label,
+  .status-grid span {
+    color: var(--wc-muted, #94a3b8);
+    font-family: var(--font-mono);
     font-size: var(--text-xs);
-    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
-  .hero-panel strong {
+  .dashboard-topline strong {
+    color: rgba(249,250,251,0.16);
+    font-family: var(--font-mono);
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 0.8;
+  }
+
+  .floating-match {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: 1px solid var(--wc-border);
+    border-radius: 24px;
+    background: var(--wc-bg-3);
+  }
+
+  .teams {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .teams > span {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .status-grid div {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
+    padding: var(--space-2);
+    border: 1px solid var(--wc-border);
+    border-radius: 18px;
+    background: var(--wc-bg-3);
+  }
+
+  .status-grid strong {
+    color: var(--wc-text);
     font-family: var(--font-mono);
     font-size: var(--text-sm);
-    color: var(--ink);
-    margin-bottom: var(--space-1);
+    overflow-wrap: anywhere;
   }
 
-  @media (max-width: 760px) {
+  @supports not (backdrop-filter: blur(1px)) {
+    .hero-dashboard {
+      background: var(--wc-bg-2);
+    }
+  }
+
+  @media (max-width: 960px) {
     .worldcup-hero {
       grid-template-columns: 1fr;
-      padding-top: var(--space-5);
+      min-height: auto;
+    }
+
+    h1 {
+      max-width: 11ch;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .worldcup-hero {
+      padding-top: var(--space-3);
     }
 
     h1 {
       max-width: none;
     }
+
+    .hero-actions {
+      display: grid;
+    }
+
+    .hero-badges {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 0.2rem;
+    }
+
+    .hero-badges span {
+      flex: 0 0 auto;
+    }
+
+    .status-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
-

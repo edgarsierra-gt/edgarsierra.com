@@ -1,0 +1,156 @@
+---
+title: "Cómo funciona mi modelo de predicciones del Mundial 2026"
+excerpt: "Construí un laboratorio público para estimar escenarios del Mundial 2026 con goles esperados, Poisson, Monte Carlo y auditoría probabilística."
+pillar: 2
+tags: ["Mundial 2026", "modelo probabilístico", "Poisson", "Monte Carlo", "auditoría", "Python"]
+publishedAt: 2026-06-19
+draft: false
+seo:
+  metaTitle: "Cómo funciona mi modelo de predicciones del Mundial 2026"
+  metaDescription: "Metodología del Laboratorio Mundial 2026: datos, goles esperados, Poisson, simulación Monte Carlo, auditoría y límites del modelo."
+  keywords: ["modelo predicciones mundial 2026", "probabilidades mundial 2026", "poisson futbol", "monte carlo mundial 2026", "auditoria modelo predictivo"]
+---
+
+Construí un laboratorio público para predecir el Mundial 2026 con un modelo probabilístico propio.
+
+No busca adivinar marcadores. Busca estimar escenarios, medir incertidumbre y auditarse después de cada partido. Esa diferencia es importante: un modelo de este tipo no debería leerse como una promesa, sino como una forma disciplinada de decir "con lo que sabemos hoy, estos resultados parecen más o menos probables".
+
+El proyecto vive en dos capas. El pipeline técnico está en Python y genera JSON versionados. El sitio en Astro consume esos archivos y los convierte en una experiencia pública dentro de `edgarsierra.com/mundial-2026`.
+
+## Por qué construirlo
+
+El Mundial es un evento perfecto para construir en público: hay atención, datos, incertidumbre, narrativa y resultados verificables. También hay mucho ruido. Casi todo se cuenta como certeza: "este equipo va a ganar", "este grupo ya está definido", "este favorito no debería sufrir".
+
+Un enfoque probabilístico obliga a una conversación más honesta.
+
+Un equipo con 70% de probabilidad todavía pierde 3 de cada 10 veces. Un empate de 18% no es una rareza imposible. Un marcador exacto puede ser improbable incluso cuando el favorito gana. La pregunta no es solo si el modelo "acertó"; la pregunta útil es si estaba bien calibrado.
+
+## Qué predice y qué no predice
+
+La primera capa del modelo estima partidos. Para cada encuentro produce:
+
+- probabilidades 1X2: victoria local, empate y victoria visitante;
+- goles esperados para cada equipo;
+- marcadores más probables;
+- una etiqueta editorial de favorito, partido abierto o partido parejo.
+
+La segunda capa simula el torneo con esos partidos como insumo. Ahí aparecen probabilidades de clasificación por grupo, rondas alcanzadas y una tabla experimental de campeón.
+
+Esa palabra, experimental, no es adorno. La salida de campeón todavía depende demasiado del bracket aproximado y de la fuerza inicial aprendida por el modelo base. En una v2.0 quiero anclar esa parte con un prior estructural externo, como ranking FIFA, Elo o power rankings públicos, para evitar que una combinación de calendario, grupos y muestra reciente empuje demasiado a selecciones que el sentido futbolístico global no pondría tan arriba.
+
+## Datos e insumos
+
+El predictor parte de dos familias de datos:
+
+- calendario del Mundial 2026, con equipos, fechas, sedes y grupos;
+- estadísticas recientes de selecciones, especialmente producción ofensiva y defensiva.
+
+Los Excel crudos no se publican en el frontend. El repositorio técnico conserva derivados trazables y el sitio solo consume outputs preparados en JSON. Esa separación importa porque el sitio debe ser una vitrina legible, no un lugar para exponer insumos internos.
+
+El contrato público entre el predictor y el sitio se apoya en archivos como:
+
+- `predictions_today.json`;
+- `team_power_ranking.json`;
+- `group_probabilities.json`;
+- `round_probabilities.json`;
+- `champion_odds.json`;
+- `model_audit.json`;
+- `model_metadata.json`.
+
+La web no recalcula el modelo. Lo presenta.
+
+## Fuerza ofensiva y defensiva
+
+El modelo necesita traducir el historial reciente de cada selección en una idea simple: qué tan probable es que produzca goles y qué tan vulnerable es a recibirlos.
+
+Para eso construye features básicas de forma, goles a favor, goles en contra y fuerza relativa. No es un sistema de scouting. No sabe si un delantero llega lesionado, si un entrenador cambió estructura o si un equipo jugó con suplentes en un amistoso. Es una versión inicial y trazable de fuerza futbolística.
+
+La ventaja de empezar así es que cada supuesto se puede auditar. La desventaja es que algunos matices del fútbol real quedan fuera. Prefiero partir de algo claro y medible antes que esconder complejidad no validada detrás de una caja negra.
+
+## Goles esperados y Poisson
+
+Una vez calculadas las fuerzas relativas, el modelo estima goles esperados para cada equipo. Ese número no es un pronóstico literal. Si un equipo tiene 1.65 goles esperados, no significa que vaya a marcar "1.65 goles"; significa que, bajo las condiciones modeladas, su distribución de goles se centra alrededor de ese valor.
+
+Con esos goles esperados construyo una matriz de marcadores usando una distribución Poisson. La matriz responde una pregunta:
+
+si el partido se jugara muchas veces con esta misma expectativa de gol, ¿qué tan probable sería cada marcador?
+
+De esa matriz salen tres cosas:
+
+- la probabilidad de victoria de cada equipo;
+- la probabilidad de empate;
+- los marcadores más probables.
+
+El marcador exacto casi siempre tiene una probabilidad baja. Por eso no debería ser el centro narrativo del laboratorio. Lo valioso es la distribución completa de posibilidades.
+
+## Simulación Monte Carlo
+
+Para pasar de partidos a torneo, el predictor usa simulación Monte Carlo. En vez de elegir un solo resultado por partido, simula muchas versiones posibles del Mundial.
+
+En cada simulación:
+
+1. se resuelven partidos con base en probabilidades;
+2. se actualizan tablas de grupo;
+3. se aplican criterios de clasificación;
+4. se avanza por rondas;
+5. se agregan frecuencias después de miles de escenarios.
+
+El resultado no es "este equipo será campeón". El resultado es "en esta versión del modelo, bajo estos supuestos, este equipo fue campeón en cierto porcentaje de simulaciones".
+
+Esa distinción protege contra la falsa precisión. También permite aprender cuando el modelo se equivoca.
+
+## Auditoría
+
+La parte más importante del laboratorio no es la predicción. Es la auditoría.
+
+Después de cada partido, el pipeline puede comparar la predicción congelada con el resultado real y calcular métricas como:
+
+- accuracy 1X2;
+- Brier score;
+- log loss;
+- error de goles;
+- sesgo de goles a favor o en contra;
+- acierto de marcador exacto.
+
+Accuracy responde si el resultado más probable ocurrió. Brier score y log loss son más útiles porque castigan probabilidades mal calibradas. No es lo mismo fallar un resultado al que se le dio 38% que fallar uno al que se le dio 92%.
+
+Un modelo responsable debe poder decir: "fallé aquí, y fallé con este nivel de confianza".
+
+## El sesgo detectado en campeón
+
+El primer MVP mostró una señal incómoda y útil: la tabla de campeón puede verse rara.
+
+Algunas selecciones históricamente fuertes pueden quedar más abajo de lo esperado y otras pueden subir demasiado. Eso no necesariamente significa que todo el modelo esté roto; sí significa que la capa de torneo es sensible al bracket aproximado, a la información inicial y a cómo se traduce fuerza de partido en caminos de eliminación.
+
+Por eso mantengo `champion_odds.json` como experimental. No es una tabla definitiva de favoritos al título. Es una salida de simulación útil para explorar escenarios, pero pendiente de una v2.0 con prior estructural.
+
+La mejora natural será combinar la fuerza aprendida por el pipeline con una señal externa más estable, como FIFA ranking, Elo o power rankings públicos. Esa ancla ayudaría a que el modelo no dependa solo de forma reciente y estructura del calendario.
+
+## Limitaciones
+
+Este modelo tiene límites claros:
+
+- no usa cuotas de apuestas;
+- no garantiza resultados;
+- no incorpora lesiones automáticamente;
+- no conoce decisiones tácticas de último minuto;
+- no reemplaza análisis futbolístico experto;
+- no debe interpretarse como consejo financiero ni de apuestas;
+- depende de la calidad de los datos cargados;
+- su bracket de campeón todavía es aproximado.
+
+La gracia no está en fingir que esas limitaciones no existen. La gracia está en publicarlas, medirlas y usarlas para mejorar.
+
+## Qué viene después
+
+La v2.0 del modelo debería mejorar tres piezas:
+
+- anclar fuerza global con FIFA ranking, Elo o power rankings externos;
+- calibrar mejor la simulación de campeón;
+- comparar predicciones contra resultados reales con más partidos auditados.
+
+También quiero que el artículo técnico en Python explique con más detalle cómo se construye la matriz Poisson, cómo se simula un partido y cómo se agregan miles de escenarios.
+
+Por ahora, el objetivo del launch pack es simple: que el laboratorio sea entendible, compartible y honesto.
+
+Puedes ver el proyecto en el [Laboratorio Mundial 2026](/mundial-2026), revisar la [metodología pública](/mundial-2026/metodologia), explorar el [código en GitHub](https://github.com/edgarsierra-gt/mundial-2026-predictor) o suscribirte al [newsletter](/newsletter) para recibir más análisis de datos, IA y estadística aplicada.

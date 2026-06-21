@@ -1,11 +1,9 @@
 <section class="method-summary" data-reveal>
   <div>
     <p class="eyebrow">Metodología</p>
-    <h2>Probabilidades, no certezas</h2>
+    <h2>Probabilidades, escenarios y auditoría.</h2>
     <p>
-      El modelo combina forma reciente, producción de goles y una matriz probabilística
-      de marcadores. En próximas versiones incorporará simulación completa del torneo,
-      auditoría acumulada y comparación contra baselines.
+      El modelo combina forma reciente, producción de goles, matriz Poisson, simulación Monte Carlo y evaluación posterior. Este modelo no adivina el futuro. Estima escenarios y mide incertidumbre.
     </p>
   </div>
   <a href="/mundial-2026/metodologia">Leer metodología completa</a>
@@ -18,39 +16,52 @@
     gap: var(--space-4);
     align-items: center;
     padding: var(--space-4);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
+    border: 1px solid var(--wc-border);
+    border-radius: 24px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
   }
 
   .eyebrow {
-    font-family: var(--font-ui);
-    font-size: var(--text-sm);
-    color: var(--accent);
-    font-weight: 600;
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: var(--space-1);
   }
 
   h2 {
+    color: var(--wc-text);
     font-size: var(--text-2xl);
     margin-bottom: var(--space-2);
   }
 
   p {
-    color: var(--ink-muted);
     max-width: var(--reading);
+    color: var(--wc-soft);
   }
 
   a {
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--wc-border-strong);
+    border-radius: 999px;
+    background: var(--wc-bg-2);
+    color: var(--wc-text) !important;
     font-family: var(--font-ui);
-    font-weight: 600;
-    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  a:hover {
+    text-decoration: none;
+    background: var(--wc-bg-3);
   }
 
   @media (max-width: 720px) {
     .method-summary {
       grid-template-columns: 1fr;
-      padding-inline: 0;
     }
   }
 </style>
-

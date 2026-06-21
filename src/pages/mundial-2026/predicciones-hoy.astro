@@ -1,14 +1,19 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import EmptyState from '../../components/worldcup/EmptyState.astro';
 import MatchPredictionCard from '../../components/worldcup/MatchPredictionCard.astro';
 import UncertaintyNote from '../../components/worldcup/UncertaintyNote.astro';
 import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
+import WorldCupShell from '../../components/worldcup/WorldCupShell.astro';
 import { getPredictionsToday } from '../../lib/worldcup/data';
-import { formatDateEs, groupMatchesByDate } from '../../lib/worldcup/format';
+import { formatDateEs, getTodayIso, getUpcomingMatches, groupMatchesByDate } from '../../lib/worldcup/format';
 
 const predictions = getPredictionsToday();
-const groupedMatches = groupMatchesByDate(predictions.matches);
-const firstDate = groupedMatches[0]?.date;
+const todayIso = getTodayIso();
+const upcomingMatches = getUpcomingMatches(predictions.matches, todayIso);
+const groupedMatches = groupMatchesByDate(upcomingMatches);
+const todayHasMatches = groupedMatches.some((group) => group.date === todayIso);
+const nextDate = groupedMatches[0]?.date;
 
 const title = 'Predicciones Mundial 2026 hoy: probabilidades de los partidos';
 const description =
@@ -16,85 +21,124 @@ const description =
 ---
 
 <BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png">
-  <div class="predictions-page">
-    <header class="page-header" data-reveal>
-      <p class="eyebrow">Predicciones de hoy</p>
-      <h1>
-        {firstDate ? `Predicciones de los partidos del ${formatDateEs(firstDate)}` : 'Predicciones de los partidos del Mundial 2026'}
-      </h1>
-      <p>
-        Estas predicciones muestran probabilidades, no certezas. El modelo estima la probabilidad de victoria, empate o derrota usando datos recientes de selecciones, goles esperados y una matriz probabilística de marcadores.
-      </p>
-      <nav aria-label="Navegación del laboratorio">
-        <a href="/mundial-2026">Laboratorio</a>
-        <a href="/mundial-2026/metodologia">Metodología</a>
-      </nav>
-    </header>
+  <WorldCupShell active="predicciones">
+    <div class="predictions-page">
+      <header class="page-header" data-reveal>
+        <p class="eyebrow">{todayHasMatches ? 'Predicciones de hoy' : 'Calendario de predicciones'}</p>
+        <h1>
+          {
+            todayHasMatches
+              ? `Predicciones de hoy, ${formatDateEs(todayIso)}`
+              : nextDate
+                ? `Próxima jornada: ${formatDateEs(nextDate)}`
+                : 'Predicciones del Mundial 2026'
+          }
+        </h1>
+        <p>
+          Probabilidades 1X2, goles esperados, escenarios de marcador y lectura del modelo para los partidos del día.
+        </p>
+        {!todayHasMatches && nextDate && (
+          <p class="next-day-note">Hoy no hay partidos programados. Estos son los del próximo día con partidos.</p>
+        )}
+        <strong class="notice">Estas predicciones son probabilidades, no certezas. Un equipo con 70% de probabilidad todavía puede perder.</strong>
+      </header>
 
-    {groupedMatches.length > 0 ? (
-      groupedMatches.map((group) => (
-        <section class="date-section" data-reveal>
-          <div class="date-header">
-            <h2>{formatDateEs(group.date)}</h2>
-            <p>{group.matches.length} partidos programados</p>
-          </div>
-          <div class="match-grid">
-            {group.matches.map((match) => <MatchPredictionCard match={match} />)}
-          </div>
-        </section>
-      ))
-    ) : (
-      <p class="empty-state">
-        No hay partidos próximos cargados en este momento. El modelo se actualizará cuando existan partidos programados.
-      </p>
-    )}
+      {groupedMatches.length > 0 ? (
+        groupedMatches.map((group) => (
+          <section class="date-section" data-reveal>
+            <div class="date-header">
+              <div>
+                <p class="eyebrow">Jornada</p>
+                <h2>{formatDateEs(group.date)}</h2>
+              </div>
+              <p>{group.matches.length} partidos programados</p>
+            </div>
+            <div class="match-grid">
+              {group.matches.map((match) => <MatchPredictionCard match={match} />)}
+            </div>
+          </section>
+        ))
+      ) : (
+        <EmptyState
+          title="Sin partidos próximos"
+          text="El modelo se actualizará cuando existan partidos programados en los outputs del predictor."
+        />
+      )}
 
-    <UncertaintyNote />
-    <WorldCupCTA />
-  </div>
+      <section class="reading-guide" data-reveal>
+        <p class="eyebrow">Guía de lectura</p>
+        <h2>Cómo leer estas probabilidades</h2>
+        <div class="guide-grid">
+          <article>El modelo estima escenarios, no afirma resultados.</article>
+          <article>El marcador más probable individual suele tener baja frecuencia.</article>
+          <article>Un favorito de 60% todavía pierde muchas veces en simulaciones.</article>
+          <article>La confianza depende de diferencia de fuerza, goles esperados y estabilidad de datos.</article>
+        </div>
+        <a href="/mundial-2026/metodologia">Entender cómo funciona el modelo</a>
+      </section>
+
+      <UncertaintyNote />
+      <WorldCupCTA />
+    </div>
+  </WorldCupShell>
 </BaseLayout>
 
 <style>
   .predictions-page {
     display: grid;
     gap: var(--space-8);
-    padding-top: var(--space-8);
-    padding-bottom: var(--space-12);
+    padding-bottom: var(--space-4);
   }
 
   .page-header {
     max-width: var(--reading);
+    padding: var(--space-6) 0 var(--space-2);
   }
 
   .eyebrow {
-    font-family: var(--font-ui);
-    font-size: var(--text-sm);
-    color: var(--accent);
-    font-weight: 600;
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: var(--space-1);
   }
 
   h1 {
-    font-size: var(--text-3xl);
+    max-width: 880px;
+    color: var(--wc-text);
+    font-size: var(--text-hero);
+    line-height: 1.05;
     margin-bottom: var(--space-3);
+    letter-spacing: -0.01em;
+  }
+
+  h2 {
+    color: var(--wc-text);
+    font-size: var(--text-2xl);
   }
 
   .page-header p,
   .date-header p {
-    color: var(--ink-muted);
+    color: var(--wc-soft);
   }
 
-  .page-header nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin-top: var(--space-3);
-  }
-
-  .page-header nav a {
+  .next-day-note {
+    margin-top: var(--space-2);
+    color: var(--wc-soft);
     font-family: var(--font-ui);
-    font-weight: 600;
-    color: var(--accent);
+    font-size: var(--text-sm);
+  }
+
+  .notice {
+    display: inline-flex;
+    margin-top: var(--space-3);
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(86, 180, 233, 0.35);
+    border-radius: 999px;
+    background: rgba(86, 180, 233, 0.08);
+    color: var(--wc-text);
+    font-family: var(--font-ui);
   }
 
   .date-section {
@@ -106,36 +150,70 @@ const description =
     display: flex;
     justify-content: space-between;
     gap: var(--space-3);
-    align-items: baseline;
-    border-bottom: 1px solid var(--border);
+    align-items: end;
     padding-bottom: var(--space-2);
-  }
-
-  h2 {
-    font-size: var(--text-2xl);
+    border-bottom: 1px solid var(--wc-border);
   }
 
   .match-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
     gap: var(--space-3);
   }
 
-  .empty-state {
+  .reading-guide {
+    display: grid;
+    gap: var(--space-3);
     padding: var(--space-4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--ink-muted);
+    border: 1px solid var(--wc-border);
+    border-radius: 26px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
+  }
+
+  .guide-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .guide-grid article {
+    padding: var(--space-2);
+    border: 1px solid var(--wc-border);
+    border-radius: 16px;
+    color: var(--wc-soft);
+    background: var(--wc-bg-3);
+  }
+
+  .reading-guide a {
+    width: fit-content;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--wc-border-strong);
+    border-radius: 999px;
+    background: var(--wc-bg-2);
+    color: var(--wc-text) !important;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  @media (max-width: 900px) {
+    .guide-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   @media (max-width: 640px) {
-    .predictions-page {
-      padding-top: var(--space-5);
+    .date-header {
+      display: grid;
     }
 
-    .date-header {
-      display: block;
+    .notice {
+      border-radius: 18px;
+    }
+
+    .guide-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>
-

@@ -1,0 +1,98 @@
+---
+interface NavItem {
+  href: string;
+  label: string;
+  key: string;
+}
+
+interface Props {
+  active?: string;
+}
+
+const { active = 'home' } = Astro.props;
+const navItems: NavItem[] = [
+  { href: '/mundial-2026', label: 'Inicio', key: 'home' },
+  { href: '/mundial-2026/predicciones-hoy', label: 'Predicciones de hoy', key: 'predicciones' },
+  { href: '/mundial-2026/grupos', label: 'Grupos', key: 'grupos' },
+  { href: '/mundial-2026/favoritos', label: 'Favoritos', key: 'favoritos' },
+  { href: '/mundial-2026/metodologia', label: 'Metodología', key: 'metodologia' },
+];
+---
+
+<nav class="lab-subnav" aria-label="Navegación del Laboratorio Mundial 2026">
+  <div class="nav-scroll">
+    {navItems.map((item) => (
+      <a href={item.href} aria-current={active === item.key ? 'page' : undefined}>
+        {item.label}
+      </a>
+    ))}
+  </div>
+</nav>
+
+<style>
+  .lab-subnav {
+    position: sticky;
+    top: 85px;
+    z-index: 20;
+    margin-bottom: var(--space-5);
+    padding-top: var(--space-3);
+  }
+
+  .nav-scroll {
+    display: flex;
+    gap: 0.45rem;
+    width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 0.45rem;
+    border: 1px solid var(--wc-border-strong);
+    border-radius: 999px;
+    background: rgba(251, 251, 249, 0.85);
+    backdrop-filter: blur(22px);
+    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.08);
+    scrollbar-width: none;
+  }
+
+  .nav-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-scroll a {
+    flex: 0 0 auto;
+    padding: 0.58rem 0.86rem;
+    border-radius: 999px;
+    color: var(--wc-soft);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s, background-color 0.2s;
+  }
+
+  .nav-scroll a:hover,
+  .nav-scroll a[aria-current='page'] {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, var(--wc-blue), var(--wc-cyan)) !important;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 114, 178, 0.22);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .nav-scroll {
+      background: var(--wc-bg);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .lab-subnav {
+      margin-inline: calc(var(--space-4) * -1);
+      padding-inline: var(--space-4);
+    }
+
+    .nav-scroll {
+      width: 100%;
+      border-radius: 18px;
+    }
+  }
+</style>

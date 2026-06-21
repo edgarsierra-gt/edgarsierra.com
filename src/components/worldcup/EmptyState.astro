@@ -1,0 +1,35 @@
+---
+interface Props {
+  title: string;
+  text: string;
+}
+
+const { title, text } = Astro.props;
+---
+
+<aside class="empty-state">
+  <strong>{title}</strong>
+  <p>{text}</p>
+</aside>
+
+<style>
+  .empty-state {
+    display: grid;
+    gap: 0.4rem;
+    padding: var(--space-4);
+    border: 1px dashed rgba(148, 163, 184, 0.34);
+    border-radius: 22px;
+    background: rgba(255,255,255,0.05);
+    color: var(--wc-soft, #cbd5e1);
+  }
+
+  strong {
+    font-family: var(--font-ui);
+    color: var(--wc-text, #f9fafb);
+  }
+
+  p {
+    max-width: var(--reading);
+    color: var(--wc-muted, #94a3b8);
+  }
+</style>

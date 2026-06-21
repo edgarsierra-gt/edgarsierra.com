@@ -71,3 +71,24 @@ export function getFirstDateMatches(matches: MatchPrediction[]): MatchPrediction
   const first = [...matches].sort((a, b) => a.date.localeCompare(b.date))[0]?.date;
   return first ? matches.filter((match) => match.date === first) : [];
 }
+
+const SITE_TIME_ZONE = 'America/Guatemala';
+
+export function getTodayIso(timeZone = SITE_TIME_ZONE): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const lookup = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${lookup.year}-${lookup.month}-${lookup.day}`;
+}
+
+export function getUpcomingMatches(matches: MatchPrediction[], todayIso: string): MatchPrediction[] {
+  return matches.filter((match) => match.date >= todayIso);
+}
+
+export function getMatchesForDate(matches: MatchPrediction[], dateIso: string): MatchPrediction[] {
+  return matches.filter((match) => match.date === dateIso);
+}

@@ -1,0 +1,103 @@
+---
+import LabSubnav from './LabSubnav.astro';
+
+interface Props {
+  active?: string;
+}
+
+const { active = 'home' } = Astro.props;
+---
+
+<div class="worldcup-shell">
+  <div class="stadium-glow" aria-hidden="true"></div>
+  <div class="pitch-lines" aria-hidden="true"></div>
+  <div class="worldcup-inner">
+    <LabSubnav active={active} />
+    <slot />
+  </div>
+</div>
+
+<style>
+  .worldcup-shell {
+    --wc-bg: var(--bg);
+    --wc-bg-2: var(--surface);
+    --wc-bg-3: var(--code-bg);
+    --wc-text: var(--ink);
+    --wc-soft: var(--ink-muted);
+    --wc-muted: #71717a;
+    --wc-blue: var(--accent);
+    --wc-cyan: var(--c-sky);
+    --wc-green: var(--accent-2);
+    --wc-yellow: var(--c-yellow);
+    --wc-orange: var(--c-orange);
+    --wc-red: var(--c-vermilion);
+    --wc-border: var(--border);
+    --wc-border-strong: rgba(24,24,27,0.18);
+
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    min-height: 100vh;
+    overflow: visible;
+    color: var(--wc-text);
+    background:
+      radial-gradient(circle at 18% 8%, rgba(0,114,178,0.05), transparent 30%),
+      radial-gradient(circle at 82% 12%, rgba(0,158,115,0.04), transparent 28%),
+      radial-gradient(circle at 50% 100%, rgba(86,180,233,0.05), transparent 42%),
+      var(--wc-bg);
+    font-family: var(--font-ui);
+    padding: 0 var(--space-4) var(--space-12);
+  }
+
+  .worldcup-shell :global(a) {
+    color: var(--wc-blue);
+  }
+
+  .worldcup-shell :global(.worldcup-page),
+  .worldcup-shell :global(.predictions-page),
+  .worldcup-shell :global(.methodology-page),
+  .worldcup-shell :global(.groups-page),
+  .worldcup-shell :global(.favorites-page) {
+    color: var(--wc-text);
+  }
+
+  .worldcup-inner {
+    position: relative;
+    z-index: 1;
+    max-width: min(var(--container), 100%);
+    margin: 0 auto;
+  }
+
+  .stadium-glow,
+  .pitch-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .stadium-glow {
+    background:
+      radial-gradient(circle at 12% 20%, rgba(0, 114, 178, 0.03), transparent 15%),
+      radial-gradient(circle at 88% 18%, rgba(0, 158, 115, 0.03), transparent 15%),
+      radial-gradient(circle at 50% 12%, rgba(86, 180, 233, 0.04), transparent 20%);
+    filter: blur(10px);
+    opacity: 0.9;
+  }
+
+  .pitch-lines {
+    opacity: 0.22;
+    background-image:
+      linear-gradient(rgba(0, 114, 178, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 114, 178, 0.05) 1px, transparent 1px),
+      radial-gradient(circle at 50% 50%, transparent 0 88px, rgba(0, 114, 178, 0.06) 89px 90px, transparent 91px);
+    background-size: 80px 80px, 80px 80px, 100% 100%;
+    mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+  }
+
+  @media (max-width: 760px) {
+    .worldcup-shell {
+      padding-inline: var(--space-4);
+    }
+  }
+</style>
