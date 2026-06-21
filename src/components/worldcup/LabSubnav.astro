@@ -29,6 +29,11 @@ const navItems: NavItem[] = [
   </div>
 </nav>
 
+<script>
+  const activeLabLink = document.querySelector('.lab-subnav [aria-current="page"]');
+  activeLabLink?.scrollIntoView({ block: 'nearest', inline: 'center' });
+</script>
+
 <style>
   .lab-subnav {
     position: sticky;
@@ -73,7 +78,7 @@ const navItems: NavItem[] = [
   .nav-scroll a:hover,
   .nav-scroll a[aria-current='page'] {
     color: #ffffff !important;
-    background: linear-gradient(135deg, var(--wc-blue), var(--wc-cyan)) !important;
+    background: linear-gradient(135deg, var(--wc-blue), var(--wc-blue-deep)) !important;
     text-decoration: none;
     box-shadow: 0 4px 12px rgba(0, 114, 178, 0.22);
   }

@@ -1,0 +1,198 @@
+---
+import TeamBadge from './TeamBadge.astro';
+import type { GroupStandingRow, TournamentSnapshot } from '../../lib/worldcup/types';
+
+interface Props {
+  snapshot: TournamentSnapshot;
+  limitGroups?: number;
+  showHeader?: boolean;
+}
+
+const { snapshot, limitGroups, showHeader = true } = Astro.props;
+
+function groupStandings(rows: GroupStandingRow[]): Array<{ group: string; rows: GroupStandingRow[] }> {
+  const byGroup = new Map<string, GroupStandingRow[]>();
+  for (const row of rows) {
+    const list = byGroup.get(row.group) ?? [];
+    list.push(row);
+    byGroup.set(row.group, list);
+  }
+  return Array.from(byGroup, ([group, groupRows]) => ({
+    group,
+    rows: [...groupRows].sort((a, b) => a.rank_current - b.rank_current),
+  })).sort((a, b) => a.group.localeCompare(b.group));
+}
+
+const allGroups = groupStandings(snapshot.standings_current);
+const groups = typeof limitGroups === 'number' ? allGroups.slice(0, limitGroups) : allGroups;
+
+function formatGoalDifference(value: number): string {
+  return value > 0 ? `+${value}` : String(value);
+}
+---
+
+<section class="standings-section" data-reveal>
+  {showHeader && (
+    <div class="section-header">
+      <p class="eyebrow">Resultados reales</p>
+      <h2>Tabla actual de cada grupo</h2>
+      <p>
+        Posiciones, partidos jugados, goles y puntos con los resultados ya confirmados. No es simulación: es la tabla real del grupo en este momento.
+      </p>
+    </div>
+  )}
+
+  <div class="groups-grid">
+    {groups.map(({ group, rows }) => (
+      <article class="group-block" id={`grupo-${group.toLowerCase()}-tabla`}>
+        <div class="group-title">
+          <h3>Grupo {group}</h3>
+          <span>{rows.length} selecciones</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Selección</th>
+                <th>PJ</th>
+                <th>G</th>
+                <th>E</th>
+                <th>P</th>
+                <th>GF</th>
+                <th>GC</th>
+                <th>DG</th>
+                <th>Pts</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr>
+                  <th scope="row"><TeamBadge team_id={row.team_id} /></th>
+                  <td>{row.played}</td>
+                  <td>{row.wins}</td>
+                  <td>{row.draws}</td>
+                  <td>{row.losses}</td>
+                  <td>{row.goals_for}</td>
+                  <td>{row.goals_against}</td>
+                  <td>{formatGoalDifference(row.goal_difference)}</td>
+                  <td class="points-cell">{row.points}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .standings-section {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .section-header {
+    max-width: 820px;
+  }
+
+  .eyebrow {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-1);
+  }
+
+  h2 {
+    color: var(--wc-text);
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .section-header p {
+    color: var(--wc-soft);
+  }
+
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .group-block {
+    display: grid;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .group-title {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    align-items: end;
+  }
+
+  h3 {
+    color: var(--wc-text);
+    font-size: var(--text-xl);
+  }
+
+  .group-title span {
+    color: var(--wc-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--wc-border);
+    border-radius: 22px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
+  }
+
+  table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  th,
+  td {
+    padding: 0.72rem;
+    border-bottom: 1px solid var(--wc-border);
+    color: var(--wc-soft);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
+
+  thead th {
+    color: var(--wc-text);
+    font-family: var(--font-ui);
+    background: var(--wc-bg-3);
+  }
+
+  tbody th {
+    font-family: var(--font-ui);
+    font-weight: 600;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .points-cell {
+    color: var(--wc-text);
+    font-weight: 700;
+  }
+</style>

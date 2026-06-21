@@ -31,6 +31,10 @@ const { active = 'home' } = Astro.props;
     --wc-yellow: var(--c-yellow);
     --wc-orange: var(--c-orange);
     --wc-red: var(--c-vermilion);
+    --wc-blue-deep: #005a8d;
+    --wc-amber-ink: #7a4b00;
+    --wc-green-ink: #022a20;
+    --wc-yellow-ink: #3d3300;
     --wc-border: var(--border);
     --wc-border-strong: rgba(24,24,27,0.18);
 
@@ -50,8 +54,24 @@ const { active = 'home' } = Astro.props;
     padding: 0 var(--space-4) var(--space-12);
   }
 
+  :global(html:has(.worldcup-shell)),
+  :global(body:has(.worldcup-shell)) {
+    overflow-x: clip;
+  }
+
   .worldcup-shell :global(a) {
     color: var(--wc-blue);
+  }
+
+  .worldcup-shell :global([data-reveal]) {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .worldcup-shell :global(.table-wrap) {
+    position: relative;
+    scrollbar-color: var(--wc-blue) var(--wc-bg-3);
+    scrollbar-width: thin;
   }
 
   .worldcup-shell :global(.worldcup-page),
@@ -98,6 +118,32 @@ const { active = 'home' } = Astro.props;
   @media (max-width: 760px) {
     .worldcup-shell {
       padding-inline: var(--space-4);
+    }
+
+    .worldcup-shell :global(.table-wrap) {
+      box-shadow:
+        inset -24px 0 22px -24px rgba(0, 114, 178, 0.72),
+        0 8px 24px rgba(24, 24, 27, 0.04) !important;
+    }
+
+    .worldcup-shell :global(.table-wrap::after) {
+      content: "→";
+      position: absolute;
+      top: 0.7rem;
+      right: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.55rem;
+      height: 1.55rem;
+      border: 1px solid var(--wc-border-strong);
+      border-radius: 999px;
+      background: var(--wc-bg-2);
+      color: var(--wc-blue);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(24, 24, 27, 0.08);
     }
   }
 </style>

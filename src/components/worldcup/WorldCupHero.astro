@@ -79,7 +79,7 @@ const { generatedAt, modelVersion, featuredMatch = null, topFavorite = null, nSi
       )}
       {topFavorite && (
         <div>
-          <span>Campeón</span>
+          <span>Título exp.</span>
           <strong>{formatPercent(topFavorite.prob_champion, 1)}</strong>
         </div>
       )}
@@ -109,7 +109,7 @@ const { generatedAt, modelVersion, featuredMatch = null, topFavorite = null, nSi
   }
 
   .eyebrow {
-    color: var(--wc-cyan, #38bdf8);
+    color: var(--wc-blue);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     text-transform: uppercase;
@@ -180,7 +180,7 @@ const { generatedAt, modelVersion, featuredMatch = null, topFavorite = null, nSi
   }
 
   .button-primary {
-    background: linear-gradient(135deg, var(--wc-blue), var(--wc-cyan));
+    background: linear-gradient(135deg, var(--wc-blue), var(--wc-blue-deep));
     color: #ffffff !important;
     box-shadow: 0 12px 30px rgba(0,114,178,0.22);
   }

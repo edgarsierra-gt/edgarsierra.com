@@ -2,12 +2,15 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import EmptyState from '../../components/worldcup/EmptyState.astro';
 import GroupProbabilityTable from '../../components/worldcup/GroupProbabilityTable.astro';
+import GroupStandingsTable from '../../components/worldcup/GroupStandingsTable.astro';
 import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
 import WorldCupShell from '../../components/worldcup/WorldCupShell.astro';
-import { getGroupProbabilities } from '../../lib/worldcup/data';
+import { getGroupProbabilities, getTournamentSnapshot } from '../../lib/worldcup/data';
 
 const probabilities = getGroupProbabilities();
 const groups = probabilities.groups;
+const tournamentSnapshot = getTournamentSnapshot();
+const hasStandings = tournamentSnapshot.standings_current.length > 0;
 
 const title = 'Probabilidades de clasificación por grupo - Mundial 2026';
 const description =
@@ -32,6 +35,8 @@ const description =
               <a href={`#grupo-${group.group.toLowerCase()}`}>Grupo {group.group}</a>
             ))}
           </nav>
+
+          {hasStandings && <GroupStandingsTable snapshot={tournamentSnapshot} />}
 
           <GroupProbabilityTable probabilities={probabilities} showHeader={false} />
 

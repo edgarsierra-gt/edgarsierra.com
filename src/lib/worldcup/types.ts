@@ -175,3 +175,29 @@ export type ModelCalibration = {
     mae: number | null;
   };
 };
+
+export type GroupStandingRow = {
+  group: string;
+  team_id: string;
+  played: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goals_for: number;
+  goals_against: number;
+  goal_difference: number;
+  points: number;
+  rank_current: number;
+  status: string;
+  updated_at: string;
+};
+
+export type TournamentSnapshot = {
+  generated_at: string;
+  model_version: string;
+  n_simulations: number;
+  scope: string;
+  bracket_mode: string;
+  standings_current: GroupStandingRow[];
+  notes: string[];
+};
