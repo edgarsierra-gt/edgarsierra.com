@@ -67,7 +67,7 @@ function formatGoalDifference(value: number): string {
             <tbody>
               {rows.map((row) => (
                 <tr>
-                  <th scope="row"><TeamBadge team_id={row.team_id} /></th>
+                  <th scope="row"><TeamBadge team_id={row.team_id} compact={true} /></th>
                   <td>{row.played}</td>
                   <td>{row.wins}</td>
                   <td>{row.draws}</td>
@@ -117,7 +117,7 @@ function formatGoalDifference(value: number): string {
 
   .groups-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr));
     gap: var(--space-3);
   }
 
@@ -146,24 +146,29 @@ function formatGoalDifference(value: number): string {
   }
 
   .table-wrap {
-    overflow-x: auto;
+    overflow-x: hidden;
     border: 1px solid var(--wc-border);
     border-radius: 22px;
     background: var(--wc-bg-2);
     box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
+    position: relative;
+  }
+
+  .table-wrap::after {
+    display: none !important;
   }
 
   table {
     width: 100%;
-    min-width: 560px;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     font-family: var(--font-mono);
     font-size: var(--text-sm);
   }
 
   th,
   td {
-    padding: 0.72rem;
+    padding: 0.5rem 0.35rem;
     border-bottom: 1px solid var(--wc-border);
     color: var(--wc-soft);
     text-align: right;
@@ -173,6 +178,12 @@ function formatGoalDifference(value: number): string {
   th:first-child,
   td:first-child {
     text-align: left;
+    padding-left: 0.72rem;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 0.72rem;
   }
 
   thead th {

@@ -37,26 +37,28 @@ const groups = typeof limitGroups === 'number' ? probabilities.groups.slice(0, l
               <tr>
                 <th>Selección</th>
                 <th>Pts</th>
-                <th>Avanza</th>
-                <th>1º</th>
-                <th>2º</th>
-                <th>3º clas.</th>
-                <th>Elim.</th>
+                <th class="advance-header">Avanza</th>
               </tr>
             </thead>
             <tbody>
               {group.teams.map((team) => (
                 <tr>
-                  <th scope="row"><TeamBadge team_id={team.team_id} name={team.name} /></th>
-                  <td>{team.points}</td>
+                  <th scope="row">
+                    <div class="team-info">
+                      <TeamBadge team_id={team.team_id} name={team.name} />
+                      <div class="prob-breakdown">
+                        <span>1º: {formatPercent(team.prob_group_winner, 0)}</span>
+                        <span>2º: {formatPercent(team.prob_group_runner_up, 0)}</span>
+                        <span>3º: {formatPercent(team.prob_qualified_as_third, 0)}</span>
+                        <span>Elim: {formatPercent(team.prob_eliminated_group, 0)}</span>
+                      </div>
+                    </div>
+                  </th>
+                  <td class="points-cell">{team.points}</td>
                   <td class="advance-cell">
                     <span>{formatPercent(team.prob_advance, 0)}</span>
                     <i aria-hidden="true"><b style={`width: ${team.prob_advance * 100}%`}></b></i>
                   </td>
-                  <td>{formatPercent(team.prob_group_winner, 0)}</td>
-                  <td>{formatPercent(team.prob_group_runner_up, 0)}</td>
-                  <td>{formatPercent(team.prob_qualified_as_third, 0)}</td>
-                  <td>{formatPercent(team.prob_eliminated_group, 0)}</td>
                 </tr>
               ))}
             </tbody>
@@ -98,7 +100,7 @@ const groups = typeof limitGroups === 'number' ? probabilities.groups.slice(0, l
 
   .groups-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr));
     gap: var(--space-3);
   }
 
@@ -127,19 +129,25 @@ const groups = typeof limitGroups === 'number' ? probabilities.groups.slice(0, l
   }
 
   .table-wrap {
-    overflow-x: auto;
     border: 1px solid var(--wc-border);
     border-radius: 22px;
     background: var(--wc-bg-2);
     box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .table-wrap::after {
+    display: none !important;
   }
 
   table {
     width: 100%;
-    min-width: 650px;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     font-family: var(--font-mono);
     font-size: var(--text-sm);
+    table-layout: fixed;
   }
 
   th,
@@ -149,11 +157,29 @@ const groups = typeof limitGroups === 'number' ? probabilities.groups.slice(0, l
     color: var(--wc-soft);
     text-align: right;
     white-space: nowrap;
+    vertical-align: middle;
   }
 
   th:first-child,
   td:first-child {
     text-align: left;
+    white-space: normal;
+    overflow: hidden;
+    width: auto;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 50px;
+    text-align: right;
+  }
+
+  th:last-child,
+  td:last-child {
+    width: 125px;
+    text-align: right;
+    padding-left: 0.4rem;
+    padding-right: 0.72rem;
   }
 
   thead th {
@@ -172,19 +198,50 @@ const groups = typeof limitGroups === 'number' ? probabilities.groups.slice(0, l
     border-bottom: 0;
   }
 
+  .team-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-start;
+  }
+
+  .prob-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--wc-muted);
+    font-weight: normal;
+  }
+
+  .prob-breakdown span {
+    white-space: nowrap;
+  }
+
+  .points-cell {
+    font-weight: 700;
+    color: var(--wc-text);
+  }
+
+  .advance-header {
+    text-align: right;
+  }
+
   .advance-cell {
-    min-width: 140px;
+    width: 125px;
   }
 
   .advance-cell span {
     display: inline-block;
-    min-width: 3rem;
+    min-width: 2.8rem;
     color: var(--wc-text);
+    font-weight: 700;
   }
 
   .advance-cell i {
     display: inline-flex;
-    width: 62px;
+    width: 58px;
     height: 0.4rem;
     overflow: hidden;
     border-radius: 999px;
