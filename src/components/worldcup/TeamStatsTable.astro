@@ -30,7 +30,7 @@ function formatGoalDifference(value: number): string {
       <p class="eyebrow">Datos reales del torneo</p>
       <h2>Estadísticas por selección</h2>
       <p>
-        Posesión, remates, goles esperados (xG), córners y tarjetas de los {stats.matches_analyzed} partidos jugados del Mundial 2026, no es una simulación.
+        Resultados, posesión y goles esperados (xG) de los {stats.matches_analyzed} partidos jugados del Mundial 2026, no es una simulación. Remates, córners y tarjetas de cada selección están en su página de detalle.
       </p>
     </div>
   )}
@@ -54,14 +54,8 @@ function formatGoalDifference(value: number): string {
           <th>GC</th>
           <th>DG</th>
           <th>Posesión %</th>
-          <th>Remates</th>
-          <th>A puerta</th>
           <th>xG</th>
-          <th>xG rival</th>
           <th>Dif. xG</th>
-          <th>Córners</th>
-          <th>TA</th>
-          <th>TR</th>
         </tr>
       </thead>
       <tbody>
@@ -81,14 +75,8 @@ function formatGoalDifference(value: number): string {
               <td>{team.goals_against}</td>
               <td>{formatGoalDifference(team.goal_difference)}</td>
               <td>{formatNumber(team.possession_avg_pct, 1)}%</td>
-              <td>{team.shots}</td>
-              <td>{team.shots_on_target}</td>
               <td>{formatNumber(team.xg_for, 2)}</td>
-              <td>{formatNumber(team.xg_against, 2)}</td>
               <td>{formatGoalDifference(team.xg_difference)}</td>
-              <td>{team.corners}</td>
-              <td>{team.yellow_cards}</td>
-              <td>{team.red_cards}</td>
             </tr>
           );
         })}
@@ -177,7 +165,7 @@ function formatGoalDifference(value: number): string {
 
   table {
     width: 100%;
-    min-width: 980px;
+    min-width: 600px;
     border-collapse: collapse;
     font-family: var(--font-mono);
     font-size: var(--text-sm);

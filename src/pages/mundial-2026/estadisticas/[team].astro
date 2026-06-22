@@ -6,7 +6,7 @@ import WorldCupCTA from '../../../components/worldcup/WorldCupCTA.astro';
 import WorldCupShell from '../../../components/worldcup/WorldCupShell.astro';
 import { getTeamMatchStats, getTeamRecentForm } from '../../../lib/worldcup/data';
 import { findTeamForm } from '../../../lib/worldcup/stats';
-import { getTeamDisplay } from '../../../lib/worldcup/teams';
+import { getFlagUrl, getTeamDisplay } from '../../../lib/worldcup/teams';
 import { formatNumber } from '../../../lib/worldcup/format';
 
 export async function getStaticPaths() {
@@ -25,6 +25,7 @@ type Props = Awaited<ReturnType<typeof getStaticPaths>>[number]['props'];
 const { matchEntry, formEntry } = Astro.props;
 
 const display = getTeamDisplay({ id: matchEntry.team_id });
+const flagUrl = getFlagUrl(display.flagCode);
 
 function formatGoalDifference(value: number): string {
   return value > 0 ? `+${value}` : String(value);
@@ -40,7 +41,7 @@ const description = `Estadísticas reales de ${display.name} en el Mundial 2026:
       <a class="back-link" href="/mundial-2026/estadisticas">← Volver a estadísticas</a>
 
       <header class="team-header" data-reveal>
-        <span class="flag" aria-hidden="true">{display.flag}</span>
+        {flagUrl && <img class="flag" src={flagUrl} width="64" height="48" alt="" />}
         <div>
           <p class="eyebrow">Grupo {matchEntry.group ?? 'ND'}</p>
           <h1>{display.name}</h1>
@@ -120,8 +121,13 @@ const description = `Estadísticas reales de ${display.name} en el Mundial 2026:
   }
 
   .flag {
-    font-size: 2.6rem;
-    line-height: 1;
+    flex: 0 0 auto;
+    width: 4.4rem;
+    height: 3.3rem;
+    border-radius: 6px;
+    outline: 1px solid rgba(24, 24, 27, 0.12);
+    outline-offset: -1px;
+    object-fit: cover;
   }
 
   .eyebrow {

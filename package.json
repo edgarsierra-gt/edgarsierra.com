@@ -27,6 +27,7 @@
   "devDependencies": {
     "@expo-google-fonts/ibm-plex-sans": "^0.4.1",
     "astro-og-canvas": "^0.11.1",
+    "flag-icons": "^7.5.0",
     "pagefind": "^1.5.2",
     "xlsx": "^0.18.5"
   }

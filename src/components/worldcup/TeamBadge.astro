@@ -1,5 +1,5 @@
 ---
-import { getTeamDisplay } from '../../lib/worldcup/teams';
+import { getFlagUrl, getTeamDisplay } from '../../lib/worldcup/teams';
 
 interface Props {
   id?: string | null;
@@ -10,10 +10,11 @@ interface Props {
 
 const { id, team_id, name, compact = false } = Astro.props;
 const team = getTeamDisplay({ id, team_id, name });
+const flagUrl = getFlagUrl(team.flagCode);
 ---
 
 <span class:list={['team-badge', { compact }]} title={`${team.code} ${team.name}`}>
-  <span class="flag" aria-hidden="true">{team.flag}</span>
+  {flagUrl && <img class="flag" src={flagUrl} width="20" height="15" alt="" loading="lazy" />}
   <span class="code">{team.code}</span>
   <span class="name">{team.name}</span>
 </span>
@@ -36,8 +37,13 @@ const team = getTeamDisplay({ id, team_id, name });
   }
 
   .flag {
-    font-size: 1.05rem;
-    line-height: 1;
+    flex: 0 0 auto;
+    width: 1.15rem;
+    height: 0.8625rem;
+    border-radius: 2px;
+    outline: 1px solid rgba(24, 24, 27, 0.12);
+    outline-offset: -1px;
+    object-fit: cover;
   }
 
   .code {
