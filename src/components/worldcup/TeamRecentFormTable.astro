@@ -1,0 +1,190 @@
+---
+import TeamBadge from './TeamBadge.astro';
+import { getTeamDisplay } from '../../lib/worldcup/teams';
+import { formatNumber } from '../../lib/worldcup/format';
+import type { TeamRecentForm } from '../../lib/worldcup/types';
+
+interface Props {
+  form: TeamRecentForm;
+  showHeader?: boolean;
+}
+
+const { form, showHeader = true } = Astro.props;
+
+const teams = [...form.teams].sort((a, b) =>
+  getTeamDisplay({ id: a.team_id }).name.localeCompare(getTeamDisplay({ id: b.team_id }).name),
+);
+
+function formatGoalDifference(value: number): string {
+  return value > 0 ? `+${value}` : String(value);
+}
+
+function streakLabel(letter: string): string {
+  if (letter === 'V') return 'Victoria';
+  if (letter === 'E') return 'Empate';
+  if (letter === 'D') return 'Derrota';
+  return 'Desconocido';
+}
+---
+
+<section class="form-table-section" data-reveal>
+  {showHeader && (
+    <div class="section-header">
+      <p class="eyebrow">Forma previa al Mundial</p>
+      <h2>Últimos 20 partidos antes del torneo</h2>
+      <p>
+        Resultados de cada selección en sus 20 partidos previos al Mundial 2026 (amistosos, eliminatorias y torneos continentales), corte {form.as_of_date}. No incluye remates ni posesión: esa información no estaba disponible para el histórico.
+      </p>
+    </div>
+  )}
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Selección</th>
+          <th>PJ</th>
+          <th>G</th>
+          <th>E</th>
+          <th>P</th>
+          <th>GF</th>
+          <th>GC</th>
+          <th>DG</th>
+          <th>GF·PJ</th>
+          <th>GC·PJ</th>
+          <th>Racha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {teams.map((team) => (
+          <tr>
+            <th scope="row"><TeamBadge team_id={team.team_id} /></th>
+            <td>{team.played}</td>
+            <td>{team.wins}</td>
+            <td>{team.draws}</td>
+            <td>{team.losses}</td>
+            <td>{team.goals_for}</td>
+            <td>{team.goals_against}</td>
+            <td>{formatGoalDifference(team.goal_difference)}</td>
+            <td>{formatNumber(team.goals_for_pg, 2)}</td>
+            <td>{formatNumber(team.goals_against_pg, 2)}</td>
+            <td>
+              <span class="streak" title={`Más reciente primero: ${team.streak_last5}`}>
+                {team.streak_last5.split('-').map((letter) => (
+                  <span class:list={['chip', `chip-${letter.toLowerCase()}`]} title={streakLabel(letter)}>
+                    {letter}
+                  </span>
+                ))}
+              </span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  .form-table-section {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .section-header {
+    max-width: 820px;
+  }
+
+  .eyebrow {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-1);
+  }
+
+  h2 {
+    color: var(--wc-text);
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .section-header p {
+    color: var(--wc-soft);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--wc-border);
+    border-radius: 24px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
+  }
+
+  table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  th,
+  td {
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--wc-border);
+    color: var(--wc-soft);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
+
+  thead th {
+    color: var(--wc-text);
+    font-family: var(--font-ui);
+    background: var(--wc-bg-3);
+  }
+
+  tbody th {
+    font-family: var(--font-ui);
+    font-weight: 600;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .streak {
+    display: inline-flex;
+    gap: 0.2rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3rem;
+    height: 1.3rem;
+    border-radius: 50%;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .chip-v {
+    background: var(--wc-green);
+  }
+
+  .chip-e {
+    background: var(--wc-muted);
+  }
+
+  .chip-d {
+    background: var(--wc-red);
+  }
+</style>

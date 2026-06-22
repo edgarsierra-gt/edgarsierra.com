@@ -155,6 +155,20 @@ const jsonLd = [
       <ChampionOddsTable odds={championOdds} limit={10} />
       <ModelAuditPanel audit={modelAudit} calibration={modelCalibration} />
       <TeamPowerRanking ranking={ranking} limit={10} />
+
+      <section class="dashboard-section" data-reveal>
+        <div class="section-header split">
+          <div>
+            <p class="eyebrow">Datos reales, no simulación</p>
+            <h2>Estadísticas por selección</h2>
+            <p>
+              Posesión, remates, xG, córners y tarjetas de los partidos ya jugados, más la forma de cada selección antes del Mundial.
+            </p>
+          </div>
+          <a class="section-cta" href="/mundial-2026/estadisticas">Ver estadísticas completas</a>
+        </div>
+      </section>
+
       <MethodologySummary />
       <UncertaintyNote />
       <ModelMetadata metadata={metadata} />

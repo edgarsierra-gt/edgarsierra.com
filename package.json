@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "sync:estadisticas": "node scripts/sync-estadisticas.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.2",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@expo-google-fonts/ibm-plex-sans": "^0.4.1",
     "astro-og-canvas": "^0.11.1",
-    "pagefind": "^1.5.2"
+    "pagefind": "^1.5.2",
+    "xlsx": "^0.18.5"
   }
 }

@@ -7,6 +7,8 @@ import championOdds from '../../data/mundial-2026/champion_odds.json';
 import modelAudit from '../../data/mundial-2026/model_audit.json';
 import modelCalibration from '../../data/mundial-2026/model_calibration.json';
 import tournamentSnapshot from '../../data/mundial-2026/tournament_snapshot.json';
+import teamMatchStats from '../../data/mundial-2026/team_match_stats.json';
+import teamRecentForm from '../../data/mundial-2026/team_recent_form.json';
 
 import type {
   ChampionOdds,
@@ -16,7 +18,9 @@ import type {
   ModelMetadata,
   PredictionsToday,
   RoundProbabilities,
+  TeamMatchStats,
   TeamPowerRanking,
+  TeamRecentForm,
   TournamentSnapshot,
 } from './types';
 
@@ -54,4 +58,12 @@ export function getModelCalibration(): ModelCalibration {
 
 export function getTournamentSnapshot(): TournamentSnapshot {
   return tournamentSnapshot as TournamentSnapshot;
+}
+
+export function getTeamMatchStats(): TeamMatchStats {
+  return teamMatchStats as TeamMatchStats;
+}
+
+export function getTeamRecentForm(): TeamRecentForm {
+  return teamRecentForm as TeamRecentForm;
 }

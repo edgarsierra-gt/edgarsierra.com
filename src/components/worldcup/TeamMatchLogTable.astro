@@ -1,0 +1,191 @@
+---
+import { formatDateShort, formatNumber } from '../../lib/worldcup/format';
+import type { TeamMatchStatsMatch, TeamRecentFormMatch } from '../../lib/worldcup/types';
+
+type Props =
+  | { variant: 'real'; matches: TeamMatchStatsMatch[]; title?: string }
+  | { variant: 'historical'; matches: TeamRecentFormMatch[]; title?: string };
+
+const { variant, matches, title } = Astro.props;
+
+function resultClass(resultado: string): 'win' | 'draw' | 'loss' {
+  if (resultado === 'G' || resultado.startsWith('Victoria')) return 'win';
+  if (resultado === 'P' || resultado.startsWith('Derrota')) return 'loss';
+  return 'draw';
+}
+
+function realResultLabel(resultado: string): string {
+  if (resultado === 'G') return 'Ganó';
+  if (resultado === 'P') return 'Perdió';
+  return 'Empató';
+}
+---
+
+{matches.length === 0 ? (
+  <p class="empty">Sin partidos disponibles.</p>
+) : (
+  <div class="table-wrap">
+    <table>
+      {variant === 'real' ? (
+        <>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Rival</th>
+              <th>Resultado</th>
+              <th>Marcador</th>
+              <th>Posesión %</th>
+              <th>Remates</th>
+              <th>A puerta</th>
+              <th>xG</th>
+              <th>xG rival</th>
+              <th>Córners</th>
+              <th>TA</th>
+              <th>TR</th>
+              <th><span class="sr-only">Fuente</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {matches.map((match) => (
+              <tr>
+                <td class="cell-label">{formatDateShort(match.fecha)}</td>
+                <td class="cell-label">{match.rival}</td>
+                <td><span class:list={['badge', resultClass(match.resultado)]}>{realResultLabel(match.resultado)}</span></td>
+                <td>{match.goles_for}-{match.goles_against}</td>
+                <td>{match.posesion_pct !== null ? `${formatNumber(match.posesion_pct, 0)}%` : 'ND'}</td>
+                <td>{match.remates ?? 'ND'}</td>
+                <td>{match.remates_arco ?? 'ND'}</td>
+                <td>{formatNumber(match.xg_for, 2)}</td>
+                <td>{formatNumber(match.xg_against, 2)}</td>
+                <td>{match.corners ?? 'ND'}</td>
+                <td>{match.amarillas ?? 'ND'}</td>
+                <td>{match.rojas ?? 'ND'}</td>
+                <td>
+                  {match.fuente && (
+                    <a href={match.fuente} target="_blank" rel="noopener noreferrer" aria-label="Ver fuente">↗</a>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </>
+      ) : (
+        <>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Rival</th>
+              <th>Condición</th>
+              <th>Competición</th>
+              <th>Resultado</th>
+              <th>Marcador</th>
+            </tr>
+          </thead>
+          <tbody>
+            {matches.map((match) => (
+              <tr>
+                <td class="cell-label">{formatDateShort(match.fecha)}</td>
+                <td class="cell-label">{match.rival}</td>
+                <td>{match.condicion}</td>
+                <td>{match.tipo_partido}</td>
+                <td><span class:list={['badge', resultClass(match.resultado)]}>{match.resultado}</span></td>
+                <td>{match.goles_for}-{match.goles_against}</td>
+              </tr>
+            ))}
+          </tbody>
+        </>
+      )}
+    </table>
+  </div>
+)}
+
+<style>
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--wc-border);
+    border-radius: 24px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
+  }
+
+  table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  th,
+  td {
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--wc-border);
+    color: var(--wc-soft);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  th:first-child,
+  td:first-child,
+  th:nth-child(2),
+  td:nth-child(2) {
+    text-align: left;
+  }
+
+  .cell-label {
+    font-family: var(--font-ui);
+  }
+
+  thead th {
+    color: var(--wc-text);
+    font-family: var(--font-ui);
+    background: var(--wc-bg-3);
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .badge.win {
+    background: rgba(0, 158, 115, 0.14);
+    color: var(--wc-green-ink);
+  }
+
+  .badge.draw {
+    background: rgba(113, 113, 122, 0.14);
+    color: var(--wc-soft);
+  }
+
+  .badge.loss {
+    background: rgba(213, 94, 0, 0.12);
+    color: var(--wc-amber-ink);
+  }
+
+  .empty {
+    padding: var(--space-4);
+    color: var(--wc-soft);
+    text-align: center;
+    border: 1px solid var(--wc-border);
+    border-radius: 24px;
+    background: var(--wc-bg-2);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+</style>

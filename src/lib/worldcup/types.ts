@@ -201,3 +201,88 @@ export type TournamentSnapshot = {
   standings_current: GroupStandingRow[];
   notes: string[];
 };
+
+export type TeamMatchStatsMatch = {
+  fecha: string;
+  grupo: string | null;
+  rival: string;
+  rival_id: string;
+  resultado: string;
+  goles_for: number;
+  goles_against: number;
+  posesion_pct: number | null;
+  remates: number | null;
+  remates_arco: number | null;
+  xg_for: number | null;
+  xg_against: number | null;
+  corners: number | null;
+  amarillas: number | null;
+  rojas: number | null;
+  formacion: string | null;
+  fuente: string | null;
+};
+
+export type TeamMatchStatsEntry = {
+  team_id: string;
+  group: string | null;
+  played: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goals_for: number;
+  goals_against: number;
+  goal_difference: number;
+  points: number;
+  // 0-100, not 0-1 — matches the source "Posesión %" scale, unlike shots_on_target_pct below.
+  possession_avg_pct: number;
+  shots: number;
+  shots_on_target: number;
+  shots_on_target_pct: number | null;
+  xg_for: number;
+  xg_against: number;
+  xg_difference: number;
+  corners: number;
+  yellow_cards: number;
+  red_cards: number;
+  matches: TeamMatchStatsMatch[];
+};
+
+export type TeamMatchStats = {
+  generated_at: string;
+  source_cutoff: string;
+  matches_analyzed: number;
+  teams: TeamMatchStatsEntry[];
+};
+
+export type TeamRecentFormMatch = {
+  n: number;
+  fecha: string;
+  rival: string;
+  condicion: 'Local' | 'Visitante';
+  tipo_partido: string;
+  resultado: string;
+  goles_for: number;
+  goles_against: number;
+};
+
+export type TeamRecentFormEntry = {
+  team_id: string;
+  played: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goals_for: number;
+  goals_against: number;
+  goal_difference: number;
+  goals_for_pg: number;
+  goals_against_pg: number;
+  streak_last5: string;
+  matches: TeamRecentFormMatch[];
+};
+
+export type TeamRecentForm = {
+  generated_at: string;
+  as_of_date: string;
+  matches_per_team: number;
+  teams: TeamRecentFormEntry[];
+};

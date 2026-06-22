@@ -1,0 +1,190 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import StatCard from '../../components/worldcup/StatCard.astro';
+import TeamBadge from '../../components/worldcup/TeamBadge.astro';
+import TeamRecentFormTable from '../../components/worldcup/TeamRecentFormTable.astro';
+import TeamStatsTable from '../../components/worldcup/TeamStatsTable.astro';
+import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
+import WorldCupShell from '../../components/worldcup/WorldCupShell.astro';
+import { getTeamMatchStats, getTeamRecentForm } from '../../lib/worldcup/data';
+import { getLeaders } from '../../lib/worldcup/stats';
+import { formatNumber } from '../../lib/worldcup/format';
+
+const matchStats = getTeamMatchStats();
+const recentForm = getTeamRecentForm();
+
+const topAttack = getLeaders(matchStats.teams, 'goals_for', 'max', 1)[0];
+const topDefense = getLeaders(matchStats.teams, 'goals_against', 'min', 1)[0];
+const topPossession = getLeaders(matchStats.teams, 'possession_avg_pct', 'max', 1)[0];
+const topXgDiff = getLeaders(matchStats.teams, 'xg_difference', 'max', 1)[0];
+
+const title = 'Estadísticas por selección - Mundial 2026';
+const description =
+  'Posesión, remates, goles esperados (xG), córners y tarjetas de cada selección del Mundial 2026, con datos reales de los partidos ya jugados.';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Estadísticas por selección - Mundial 2026',
+    description,
+    author: {
+      '@type': 'Person',
+      name: 'Edgar Sierra',
+    },
+  },
+];
+---
+
+<BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png" jsonLd={jsonLd} hideHeader>
+  <WorldCupShell active="estadisticas">
+    <div class="stats-page">
+      <header class="page-header" data-reveal>
+        <p class="eyebrow">Datos reales, no simulación</p>
+        <h1>Estadísticas por selección</h1>
+        <p>
+          Posesión, remates, goles esperados (xG), córners y tarjetas de los {matchStats.matches_analyzed} partidos ya jugados del Mundial 2026, más la forma de cada selección en sus 20 partidos previos al torneo. Todo se calcula directamente de los partidos, no son proyecciones del modelo.
+        </p>
+      </header>
+
+      <section class="leaders-grid" data-reveal>
+        {topAttack && (
+          <StatCard
+            label="Más goles anotados"
+            value={String(topAttack.value)}
+            detail={`${topAttack.team.goals_for} goles en ${topAttack.team.played} partido(s)`}
+          />
+        )}
+        {topDefense && (
+          <StatCard
+            label="Mejor defensa"
+            value={String(topDefense.value)}
+            detail="Goles recibidos, la menor cifra del torneo"
+          />
+        )}
+        {topPossession && (
+          <StatCard
+            label="Más posesión promedio"
+            value={`${formatNumber(topPossession.value, 1)}%`}
+            detail="Promedio de posesión de balón"
+          />
+        )}
+        {topXgDiff && (
+          <StatCard
+            label="Mejor diferencia de xG"
+            value={`+${formatNumber(topXgDiff.value, 2)}`}
+            detail="xG a favor menos xG en contra"
+          />
+        )}
+      </section>
+
+      <section class="leaders-teams" data-reveal>
+        {[topAttack, topDefense, topPossession, topXgDiff].filter(Boolean).map((leader) => leader && (
+          <a class="leader-team" href={`/mundial-2026/estadisticas/${leader.team.team_id.toLowerCase()}`}>
+            <TeamBadge team_id={leader.team.team_id} />
+          </a>
+        ))}
+      </section>
+
+      <TeamStatsTable stats={matchStats} />
+
+      <TeamRecentFormTable form={recentForm} />
+
+      <aside class="sources-note" data-reveal>
+        <h2>De dónde vienen estos datos</h2>
+        <p>
+          Las estadísticas del torneo en curso vienen de los box scores oficiales de cada partido (posesión, remates, xG, córners, tarjetas), corte {matchStats.source_cutoff}. La forma previa al Mundial viene de los resultados públicos de los últimos 20 partidos de cada selección, corte {recentForm.as_of_date}; ese histórico no incluye remates a puerta porque la fuente abierta no los registra partido por partido.
+        </p>
+        <p>
+          Ambos conjuntos se recalculan desde los partidos individuales cada vez que se actualiza la fuente, no son cifras escritas a mano. Ver también la <a href="/mundial-2026/metodologia">metodología del laboratorio</a>.
+        </p>
+      </aside>
+
+      <WorldCupCTA />
+    </div>
+  </WorldCupShell>
+</BaseLayout>
+
+<style>
+  .stats-page {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .page-header {
+    max-width: var(--reading);
+    padding: var(--space-6) 0 var(--space-2);
+  }
+
+  .eyebrow {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-1);
+  }
+
+  h1 {
+    color: var(--wc-text);
+    font-size: var(--text-hero);
+    line-height: 1.05;
+    margin-bottom: var(--space-3);
+    letter-spacing: -0.01em;
+  }
+
+  .page-header p {
+    color: var(--wc-soft);
+  }
+
+  .leaders-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .leaders-teams {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: calc(var(--space-2) * -1);
+  }
+
+  .leader-team {
+    text-decoration: none;
+  }
+
+  .sources-note {
+    padding: var(--space-4);
+    border: 1px solid var(--wc-border);
+    border-radius: 24px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 24px rgba(24, 24, 27, 0.04);
+  }
+
+  .sources-note h2 {
+    color: var(--wc-text);
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .sources-note p {
+    color: var(--wc-soft);
+  }
+
+  .sources-note p + p {
+    margin-top: var(--space-2);
+  }
+
+  @media (max-width: 960px) {
+    .leaders-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .leaders-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import StatCard from '../../../components/worldcup/StatCard.astro';
+import TeamMatchLogTable from '../../../components/worldcup/TeamMatchLogTable.astro';
+import WorldCupCTA from '../../../components/worldcup/WorldCupCTA.astro';
+import WorldCupShell from '../../../components/worldcup/WorldCupShell.astro';
+import { getTeamMatchStats, getTeamRecentForm } from '../../../lib/worldcup/data';
+import { findTeamForm } from '../../../lib/worldcup/stats';
+import { getTeamDisplay } from '../../../lib/worldcup/teams';
+import { formatNumber } from '../../../lib/worldcup/format';
+
+export async function getStaticPaths() {
+  const matchStats = getTeamMatchStats();
+  const recentForm = getTeamRecentForm();
+  return matchStats.teams.map((team) => ({
+    params: { team: team.team_id.toLowerCase() },
+    props: {
+      matchEntry: team,
+      formEntry: findTeamForm(recentForm, team.team_id),
+    },
+  }));
+}
+
+type Props = Awaited<ReturnType<typeof getStaticPaths>>[number]['props'];
+const { matchEntry, formEntry } = Astro.props;
+
+const display = getTeamDisplay({ id: matchEntry.team_id });
+
+function formatGoalDifference(value: number): string {
+  return value > 0 ? `+${value}` : String(value);
+}
+
+const title = `${display.name} en el Mundial 2026 - Estadísticas`;
+const description = `Estadísticas reales de ${display.name} en el Mundial 2026: ${matchEntry.played} partido(s), ${matchEntry.goals_for}-${matchEntry.goals_against} goles, posesión, xG, córners y tarjetas.`;
+---
+
+<BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png" hideHeader>
+  <WorldCupShell active="estadisticas">
+    <div class="team-detail-page">
+      <a class="back-link" href="/mundial-2026/estadisticas">← Volver a estadísticas</a>
+
+      <header class="team-header" data-reveal>
+        <span class="flag" aria-hidden="true">{display.flag}</span>
+        <div>
+          <p class="eyebrow">Grupo {matchEntry.group ?? 'ND'}</p>
+          <h1>{display.name}</h1>
+        </div>
+      </header>
+
+      <section class="stat-grid" data-reveal>
+        <StatCard
+          label="Partidos jugados"
+          value={matchEntry.played}
+          detail={`${matchEntry.wins}G ${matchEntry.draws}E ${matchEntry.losses}P`}
+        />
+        <StatCard
+          label="Goles"
+          value={`${matchEntry.goals_for}-${matchEntry.goals_against}`}
+          detail={`Diferencia ${formatGoalDifference(matchEntry.goal_difference)}`}
+        />
+        <StatCard label="Posesión promedio" value={`${formatNumber(matchEntry.possession_avg_pct, 1)}%`} />
+        <StatCard
+          label="xG a favor / en contra"
+          value={`${formatNumber(matchEntry.xg_for, 2)} / ${formatNumber(matchEntry.xg_against, 2)}`}
+          detail={`Diferencia ${formatGoalDifference(matchEntry.xg_difference)}`}
+        />
+        <StatCard label="Remates / a puerta" value={`${matchEntry.shots} / ${matchEntry.shots_on_target}`} />
+        <StatCard
+          label="Tarjetas"
+          value={`${matchEntry.yellow_cards} TA, ${matchEntry.red_cards} TR`}
+          detail={`${matchEntry.corners} córners`}
+        />
+      </section>
+
+      <section class="log-section" data-reveal>
+        <div class="section-header">
+          <p class="eyebrow">Mundial 2026</p>
+          <h2>Partidos jugados en el torneo</h2>
+        </div>
+        <TeamMatchLogTable variant="real" matches={matchEntry.matches} />
+      </section>
+
+      {formEntry && (
+        <section class="log-section" data-reveal>
+          <div class="section-header">
+            <p class="eyebrow">Forma previa</p>
+            <h2>Últimos 20 partidos antes del Mundial</h2>
+            <p>
+              Racha más reciente: <span class="streak-text">{formEntry.streak_last5}</span> (el más reciente primero).
+            </p>
+          </div>
+          <TeamMatchLogTable variant="historical" matches={formEntry.matches} />
+        </section>
+      )}
+
+      <WorldCupCTA />
+    </div>
+  </WorldCupShell>
+</BaseLayout>
+
+<style>
+  .team-detail-page {
+    display: grid;
+    gap: var(--space-8);
+    padding-top: var(--space-4);
+  }
+
+  .back-link {
+    color: var(--wc-blue);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .team-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .flag {
+    font-size: 2.6rem;
+    line-height: 1;
+  }
+
+  .eyebrow {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-1);
+  }
+
+  h1 {
+    color: var(--wc-text);
+    font-size: var(--text-hero);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .log-section {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .section-header {
+    max-width: var(--reading);
+  }
+
+  .section-header h2 {
+    color: var(--wc-text);
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .section-header p {
+    color: var(--wc-soft);
+  }
+
+  .streak-text {
+    font-family: var(--font-mono);
+    color: var(--wc-blue);
+  }
+
+  @media (max-width: 760px) {
+    .stat-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stat-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

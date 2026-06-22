@@ -38,6 +38,10 @@ const description =
 
           {hasStandings && <GroupStandingsTable snapshot={tournamentSnapshot} />}
 
+          <p class="stats-cross-link">
+            ¿Buscas posesión, remates, xG, córners o tarjetas por selección? Eso vive en <a href="/mundial-2026/estadisticas">estadísticas por selección</a>.
+          </p>
+
           <GroupProbabilityTable probabilities={probabilities} showHeader={false} />
 
           <section class="scenario-notes" data-reveal>
@@ -110,6 +114,10 @@ const description =
 
   .group-pills::-webkit-scrollbar {
     display: none;
+  }
+
+  .stats-cross-link {
+    color: var(--wc-soft);
   }
 
   .group-pills a {
