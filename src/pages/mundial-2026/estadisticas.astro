@@ -1,13 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import StatCard from '../../components/worldcup/StatCard.astro';
-import TeamBadge from '../../components/worldcup/TeamBadge.astro';
 import TeamRecentFormTable from '../../components/worldcup/TeamRecentFormTable.astro';
 import TeamStatsTable from '../../components/worldcup/TeamStatsTable.astro';
 import WorldCupCTA from '../../components/worldcup/WorldCupCTA.astro';
 import WorldCupShell from '../../components/worldcup/WorldCupShell.astro';
 import { getTeamMatchStats, getTeamRecentForm } from '../../lib/worldcup/data';
 import { getLeaders } from '../../lib/worldcup/stats';
+import { getTeamDisplay } from '../../lib/worldcup/teams';
 import { formatNumber } from '../../lib/worldcup/format';
 
 const matchStats = getTeamMatchStats();
@@ -17,6 +17,15 @@ const topAttack = getLeaders(matchStats.teams, 'goals_for', 'max', 1)[0];
 const topDefense = getLeaders(matchStats.teams, 'goals_against', 'min', 1)[0];
 const topPossession = getLeaders(matchStats.teams, 'possession_avg_pct', 'max', 1)[0];
 const topXgDiff = getLeaders(matchStats.teams, 'xg_difference', 'max', 1)[0];
+
+function leaderDetail(leader: { team: { team_id: string; played: number } }): string {
+  const name = getTeamDisplay({ id: leader.team.team_id }).name;
+  return `${name} — ${leader.team.played} partido(s)`;
+}
+
+function leaderHref(leader: { team: { team_id: string } }): string {
+  return `/mundial-2026/estadisticas/${leader.team.team_id.toLowerCase()}`;
+}
 
 const title = 'Estadísticas por selección - Mundial 2026';
 const description =
@@ -49,41 +58,33 @@ const jsonLd = [
 
       <section class="leaders-grid" data-reveal>
         {topAttack && (
-          <StatCard
-            label="Más goles anotados"
-            value={String(topAttack.value)}
-            detail={`${topAttack.team.goals_for} goles en ${topAttack.team.played} partido(s)`}
-          />
+          <a class="leader-card" href={leaderHref(topAttack)}>
+            <StatCard label="Más goles anotados" value={String(topAttack.value)} detail={leaderDetail(topAttack)} />
+          </a>
         )}
         {topDefense && (
-          <StatCard
-            label="Mejor defensa"
-            value={String(topDefense.value)}
-            detail="Goles recibidos, la menor cifra del torneo"
-          />
+          <a class="leader-card" href={leaderHref(topDefense)}>
+            <StatCard label="Mejor defensa" value={String(topDefense.value)} detail={leaderDetail(topDefense)} />
+          </a>
         )}
         {topPossession && (
-          <StatCard
-            label="Más posesión promedio"
-            value={`${formatNumber(topPossession.value, 1)}%`}
-            detail="Promedio de posesión de balón"
-          />
+          <a class="leader-card" href={leaderHref(topPossession)}>
+            <StatCard
+              label="Más posesión promedio"
+              value={`${formatNumber(topPossession.value, 1)}%`}
+              detail={leaderDetail(topPossession)}
+            />
+          </a>
         )}
         {topXgDiff && (
-          <StatCard
-            label="Mejor diferencia de xG"
-            value={`+${formatNumber(topXgDiff.value, 2)}`}
-            detail="xG a favor menos xG en contra"
-          />
-        )}
-      </section>
-
-      <section class="leaders-teams" data-reveal>
-        {[topAttack, topDefense, topPossession, topXgDiff].filter(Boolean).map((leader) => leader && (
-          <a class="leader-team" href={`/mundial-2026/estadisticas/${leader.team.team_id.toLowerCase()}`}>
-            <TeamBadge team_id={leader.team.team_id} />
+          <a class="leader-card" href={leaderHref(topXgDiff)}>
+            <StatCard
+              label="Mejor diferencia de xG"
+              value={`+${formatNumber(topXgDiff.value, 2)}`}
+              detail={leaderDetail(topXgDiff)}
+            />
           </a>
-        ))}
+        )}
       </section>
 
       <TeamStatsTable stats={matchStats} />
@@ -143,15 +144,20 @@ const jsonLd = [
     gap: var(--space-2);
   }
 
-  .leaders-teams {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin-top: calc(var(--space-2) * -1);
+  .leader-card {
+    display: block;
+    border-radius: 22px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
   }
 
-  .leader-team {
-    text-decoration: none;
+  .leader-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .leader-card:hover :global(.stat-card) {
+    border-color: var(--wc-blue);
+    box-shadow: 0 10px 28px rgba(0, 114, 178, 0.12);
   }
 
   .sources-note {
