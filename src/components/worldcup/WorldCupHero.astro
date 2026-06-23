@@ -134,16 +134,18 @@ const expectedTotal = featuredMatch
     z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.72fr);
-    gap: clamp(1.8rem, 5vw, 4.5rem);
+    gap: clamp(2.5rem, 6vw, 5rem);
     align-items: center;
     max-width: min(var(--container), calc(100vw - 2rem));
-    min-height: min(720px, calc(100vh - 72px));
+    min-height: min(680px, calc(100vh - 72px));
     margin: 0 auto;
-    padding: clamp(3rem, 6vh, 4.5rem) 0 clamp(2.5rem, 5vh, 3.5rem);
+    padding: clamp(4rem, 8vh, 6rem) 0 clamp(3.5rem, 6vh, 5rem);
   }
 
   .hero-copy {
     min-width: 0;
+    display: grid;
+    gap: 0;
   }
 
   .eyebrow {
@@ -152,38 +154,39 @@ const expectedTotal = featuredMatch
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    margin-bottom: var(--space-2);
-  }
-
-  h1 {
-    max-width: 11ch;
-    color: #ffffff;
-    font-size: clamp(4.4rem, 8vw, 7.2rem);
-    letter-spacing: -0.02em;
-    line-height: 0.9;
     margin-bottom: var(--space-3);
   }
 
+  h1 {
+    max-width: 13ch;
+    color: #ffffff;
+    font-size: clamp(3rem, 5.5vw, 5rem);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+
   .hero-lede {
-    max-width: 620px;
+    max-width: 580px;
     color: rgba(255, 255, 255, 0.9);
-    font-size: clamp(1.25rem, 2.2vw, 1.85rem);
-    line-height: 1.26;
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    line-height: 1.35;
   }
 
   .hero-note {
-    max-width: 640px;
-    margin-top: var(--space-2);
-    color: rgba(255, 255, 255, 0.76);
-    font-size: var(--text-lg);
-    line-height: 1.55;
+    max-width: 600px;
+    margin-top: var(--space-3);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: var(--text-base);
+    line-height: 1.6;
   }
 
   .hero-actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-top: var(--space-5);
+    margin-top: var(--space-6);
   }
 
   .button-primary,
@@ -221,8 +224,8 @@ const expectedTotal = featuredMatch
   .hero-badges {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55rem;
-    margin-top: var(--space-4);
+    gap: 0.5rem;
+    margin-top: var(--space-5);
   }
 
   .hero-badges span {
@@ -302,12 +305,12 @@ const expectedTotal = featuredMatch
 
   @media (max-width: 560px) {
     .hero-frame {
-      padding: var(--space-6) 0 var(--space-5);
+      padding: var(--space-7) 0 var(--space-6);
     }
 
     h1 {
       max-width: none;
-      font-size: clamp(3rem, 16vw, 4.4rem);
+      font-size: clamp(2.4rem, 13vw, 3.2rem);
     }
 
     .hero-actions {

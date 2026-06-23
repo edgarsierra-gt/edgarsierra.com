@@ -32,7 +32,7 @@ function realResultLabel(resultado: string): string {
             <tr>
               <th>Fecha</th>
               <th>Rival</th>
-              <th>Resultado</th>
+              <th class="cell-left">Resultado</th>
               <th>Marcador</th>
               <th>Posesión %</th>
               <th>Remates</th>
@@ -50,7 +50,7 @@ function realResultLabel(resultado: string): string {
               <tr>
                 <td class="cell-label">{formatDateShort(match.fecha)}</td>
                 <td class="cell-label">{match.rival}</td>
-                <td><span class:list={['badge', resultClass(match.resultado)]}>{realResultLabel(match.resultado)}</span></td>
+                <td class="cell-label cell-left"><span class:list={['badge', resultClass(match.resultado)]}>{realResultLabel(match.resultado)}</span></td>
                 <td>{match.goles_for}-{match.goles_against}</td>
                 <td>{match.posesion_pct !== null ? `${formatNumber(match.posesion_pct, 0)}%` : 'ND'}</td>
                 <td>{match.remates ?? 'ND'}</td>
@@ -75,9 +75,9 @@ function realResultLabel(resultado: string): string {
             <tr>
               <th>Fecha</th>
               <th>Rival</th>
-              <th>Condición</th>
-              <th>Competición</th>
-              <th>Resultado</th>
+              <th class="cell-left">Condición</th>
+              <th class="cell-left">Competición</th>
+              <th class="cell-left">Resultado</th>
               <th>Marcador</th>
             </tr>
           </thead>
@@ -86,9 +86,9 @@ function realResultLabel(resultado: string): string {
               <tr>
                 <td class="cell-label">{formatDateShort(match.fecha)}</td>
                 <td class="cell-label">{match.rival}</td>
-                <td>{match.condicion}</td>
-                <td>{match.tipo_partido}</td>
-                <td><span class:list={['badge', resultClass(match.resultado)]}>{match.resultado}</span></td>
+                <td class="cell-label cell-left">{match.condicion}</td>
+                <td class="cell-label cell-left">{match.tipo_partido}</td>
+                <td class="cell-label cell-left"><span class:list={['badge', resultClass(match.resultado)]}>{match.resultado}</span></td>
                 <td>{match.goles_for}-{match.goles_against}</td>
               </tr>
             ))}
@@ -134,6 +134,10 @@ function realResultLabel(resultado: string): string {
 
   .cell-label {
     font-family: var(--font-ui);
+  }
+
+  .cell-left {
+    text-align: left;
   }
 
   thead th {
