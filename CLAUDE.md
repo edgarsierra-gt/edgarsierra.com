@@ -39,6 +39,11 @@ Tono: riguroso pero accesible (ni académico, ni corporativo).
 4. Secretos en Secret Manager, jamás en el repo. CORS solo a edgarsierra.com.
 5. Suscriptores: Beehiiv es la fuente de verdad, NO duplicar en Firestore.
 
+## Datos de /mundial-2026
+- `src/data/mundial-2026/*.json` tiene dos capas: estadísticas reales (`team_match_stats.json`, `team_recent_form.json`, `tournament_snapshot.json`) calculadas por `scripts/sync-estadisticas.mjs` en este repo; y predicciones/simulación/auditoría calculadas por el repo separado `mundial-2026-predictor` (sibling de este, en `../mundial-2026-predictor`).
+- Para refrescar TODO con un Excel nuevo (colocarlo antes en `_planning/Mundial_2026/`): correr `python scripts/refresh_and_publish.py` desde `mundial-2026-predictor` — hace las dos capas, copia outputs, build, commit y push de ambos repos. Detalle completo en el README de ese repo.
+- Los Excel crudos viven en `_planning/` (gitignored) y nunca se publican; el sitio solo consume los JSON derivados.
+
 ## Pilares de contenido (nombre corto — color)
 1. Política y datos — #D55E00
 2. Marketing analytics — #0072B2
