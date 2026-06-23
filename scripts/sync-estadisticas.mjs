@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import XLSX from 'xlsx';
@@ -276,9 +276,63 @@ function writeJson(path, data) {
   writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
 }
 
+// tournament_snapshot.json feeds the real "Tabla actual de cada grupo" on
+// /mundial-2026/grupos. Its standings_current rows are observed results, not a
+// model output, so they can (and should) be recomputed from the same box-score
+// data as team_match_stats.json — independent of when the predictor last ran.
+// The file's other fields (model_version, n_simulations, bracket_mode, notes)
+// describe the predictor's own simulation pass and are left untouched here.
+function buildGroupStandings(matchStats) {
+  const updatedAt = new Date().toISOString();
+  const byGroup = new Map();
+  for (const team of matchStats.teams) {
+    if (!team.group) continue;
+    const list = byGroup.get(team.group) ?? [];
+    list.push(team);
+    byGroup.set(team.group, list);
+  }
+
+  const rows = [];
+  for (const [group, teams] of byGroup) {
+    const ranked = [...teams].sort(
+      (a, b) => b.points - a.points || b.goal_difference - a.goal_difference || b.goals_for - a.goals_for,
+    );
+    ranked.forEach((team, index) => {
+      rows.push({
+        group,
+        team_id: team.team_id,
+        played: team.played,
+        wins: team.wins,
+        draws: team.draws,
+        losses: team.losses,
+        goals_for: team.goals_for,
+        goals_against: team.goals_against,
+        goal_difference: team.goal_difference,
+        points: team.points,
+        rank_current: index + 1,
+        status: 'active',
+        updated_at: updatedAt,
+      });
+    });
+  }
+
+  rows.sort((a, b) => a.group.localeCompare(b.group) || a.rank_current - b.rank_current);
+  return rows;
+}
+
+function updateTournamentSnapshot(matchStats) {
+  const path = join(DATA_DIR, 'tournament_snapshot.json');
+  const snapshot = JSON.parse(readFileSync(path, 'utf8'));
+  snapshot.standings_current = buildGroupStandings(matchStats);
+  snapshot.generated_at = new Date().toISOString();
+  writeJson(path, snapshot);
+  return snapshot;
+}
+
 function main() {
   const matchStats = buildTeamMatchStats();
   const recentForm = buildTeamRecentForm();
+  const snapshot = updateTournamentSnapshot(matchStats);
 
   writeJson(join(DATA_DIR, 'team_match_stats.json'), matchStats);
   writeJson(join(DATA_DIR, 'team_recent_form.json'), recentForm);
@@ -290,6 +344,10 @@ function main() {
   console.log(
     `team_recent_form.json: ${recentForm.teams.length}/48 selecciones, ` +
       `${recentForm.matches_per_team} partidos c/u, corte ${recentForm.as_of_date}`,
+  );
+  console.log(
+    `tournament_snapshot.json: ${snapshot.standings_current.length} filas de tabla real actualizadas ` +
+      `(modelo/simulación del predictor sin tocar).`,
   );
 }
 
