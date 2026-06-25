@@ -62,7 +62,16 @@ function findLabeledValue(workbook, sheetName, label) {
   if (!sheet) return null;
   const grid = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: null });
   const row = grid.find((cells) => typeof cells[0] === 'string' && cells[0].includes(label));
-  return row ? row[1] : null;
+  if (!row) return null;
+  if (row[1] !== null && row[1] !== undefined) return row[1];
+  // Fallback: extract value from row[0] after a colon if column B is empty
+  const colonIndex = row[0].indexOf(':');
+  if (colonIndex !== -1) {
+    const afterColon = row[0].slice(colonIndex + 1);
+    const valuePart = afterColon.split(/[—–-]/)[0];
+    return valuePart.trim();
+  }
+  return null;
 }
 
 // Excel's 1900-date-system epoch, as days before the Unix epoch (1970-01-01).
