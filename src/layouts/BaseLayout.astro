@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { SOCIALS } from '../data/socials';
+import Analytics from '@vercel/analytics/astro';
 
 interface Props {
   title?: string;
@@ -207,9 +208,8 @@ const breadcrumbLD = {
       }
     </script>
 
-    <!-- Cloudflare Web Analytics — pegá el token del dashboard:
-    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "CF_ANALYTICS_TOKEN"}'></script>
-    -->
+    <!-- Vercel Web Analytics -->
+    <Analytics />
   </body>
 </html>
 

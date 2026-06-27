@@ -113,7 +113,7 @@ Dos planos de despliegue independientes:
 | CI/CD | GitHub Actions + Workload Identity Federation (OIDC) |
 | Secretos | Secret Manager |
 | DNS | Cloudflare (registros DNS-only) |
-| Analytics | Cloudflare Web Analytics |
+| Analytics | Vercel Web Analytics |
 
 ---
 
@@ -301,7 +301,7 @@ Run; el deploy con WIF no necesita ningún secreto almacenado en GitHub.
 - **Meta:** Open Graph + Twitter Card en cada página, canonical, `og:locale=es_GT`.
 - **Búsqueda:** Pagefind (indexa el HTML en build; cero backend).
 - **RSS + sitemap:** generados automáticamente desde las Content Collections.
-- **Analytics:** Cloudflare Web Analytics (sin cookies).
+- **Analytics:** Vercel Web Analytics (sin cookies).
 
 ---
 

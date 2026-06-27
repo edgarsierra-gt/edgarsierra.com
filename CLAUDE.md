@@ -15,7 +15,7 @@ Tono: riguroso pero accesible (ni académico, ni corporativo).
 - Contenido (blog, investigacion, projects): MDX en src/content/. Git es la fuente de verdad. NO base de datos.
 - Backend dinámico: Cloud Run + FastAPI + Firestore. En JUNIO solo: newsletter (proxy a Beehiiv) + contacto.
 - Auth deploy: GitHub Actions con Workload Identity Federation (sin llaves).
-- Analytics: Cloudflare Web Analytics. Búsqueda: Pagefind. RSS: @astrojs/rss.
+- Analytics: Vercel Web Analytics. Búsqueda: Pagefind. RSS: @astrojs/rss.
 
 ## Reglas de diseño (src/styles/tokens.css es la única fuente de verdad)
 - Tipografía: IBM Plex Sans (UI), Plex Serif (cuerpo), Plex Mono (código). Self-hosted.
