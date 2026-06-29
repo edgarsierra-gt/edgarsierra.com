@@ -1,5 +1,9 @@
 import type { MatchPrediction } from './types';
 
+export function isPlaceholderValue(value?: string | null): boolean {
+  return !value || value.trim().toUpperCase() === 'TBD';
+}
+
 export function formatPercent(value: number, decimals = 0): string {
   return `${(value * 100).toFixed(decimals)}%`;
 }

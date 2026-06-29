@@ -3,35 +3,45 @@ import ExpectedGoalsBox from './ExpectedGoalsBox.astro';
 import ProbabilityBar from './ProbabilityBar.astro';
 import TeamBadge from './TeamBadge.astro';
 import TopScoresList from './TopScoresList.astro';
-import { formatDateShort, getPredictionLabel } from '../../lib/worldcup/format';
+import { formatDateShort, getPredictionLabel, isPlaceholderValue } from '../../lib/worldcup/format';
 import type { MatchPrediction } from '../../lib/worldcup/types';
 
 interface Props {
   match: MatchPrediction;
   featured?: boolean;
+  linkToDetail?: boolean;
 }
 
-const { match, featured = false } = Astro.props;
+const { match, featured = false, linkToDetail = true } = Astro.props;
 const predictionLabel = getPredictionLabel(
   match.predicted_result,
   match.team_a.name,
   match.team_b.name,
 );
+const hasTime = !isPlaceholderValue(match.time_local);
+const hasVenue = !isPlaceholderValue(match.venue);
+
+const detailHref = `/mundial-2026/partido/${match.team_a.slug}-vs-${match.team_b.slug}`;
+const Wrapper = linkToDetail ? 'a' : 'div';
+const wrapperAttrs = linkToDetail
+  ? { href: detailHref, 'aria-label': `Ver análisis completo: ${match.team_a.name} vs ${match.team_b.name}` }
+  : {};
 ---
 
-<article class:list={['match-card', { featured }]}>
+{/* Nota: toda la tarjeta se envuelve en <a> cuando linkToDetail=true — no agregar <a>/<button> en componentes hijos (ProbabilityBar, TeamBadge, ExpectedGoalsBox, TopScoresList) para evitar enlaces anidados. */}
+<Wrapper class:list={['match-card', { featured }]} {...wrapperAttrs}>
   <header class="match-header">
     <p class="match-meta">
       {match.group && <span>Grupo {match.group}</span>}
       <span>{formatDateShort(match.date)}</span>
-      {match.time_local && <span>{match.time_local}</span>}
+      {hasTime && <span>{match.time_local}</span>}
     </p>
     <div class="teams-row">
       <TeamBadge id={match.team_a.id} name={match.team_a.name} />
       <span class="versus">vs</span>
       <TeamBadge id={match.team_b.id} name={match.team_b.name} />
     </div>
-    {match.venue && <p class="venue">{match.venue}</p>}
+    {hasVenue && <p class="venue">{match.venue}</p>}
   </header>
 
   <ProbabilityBar
@@ -63,7 +73,9 @@ const predictionLabel = getPredictionLabel(
   <TopScoresList scores={match.top_scores} limit={featured ? 5 : 3} />
 
   {match.notes && <p class="match-note">{match.notes}</p>}
-</article>
+
+  {linkToDetail && <p class="detail-cta">Ver análisis completo →</p>}
+</Wrapper>
 
 <style>
   .match-card {
@@ -75,6 +87,15 @@ const predictionLabel = getPredictionLabel(
     border-radius: 24px;
     background: var(--wc-bg-2);
     box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  a.match-card:hover {
+    border-color: var(--wc-blue);
+    box-shadow: 0 12px 36px rgba(0, 114, 178, 0.1);
+    text-decoration: none;
   }
 
   .featured {
@@ -162,6 +183,13 @@ const predictionLabel = getPredictionLabel(
     color: var(--wc-muted);
     font-size: var(--text-sm);
     line-height: 1.5;
+  }
+
+  .detail-cta {
+    color: var(--wc-blue);
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: var(--text-sm);
   }
 
   @supports not (backdrop-filter: blur(1px)) {

@@ -1,0 +1,343 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import MatchPredictionCard from '../../../components/worldcup/MatchPredictionCard.astro';
+import RoundPathTable from '../../../components/worldcup/RoundPathTable.astro';
+import StatCard from '../../../components/worldcup/StatCard.astro';
+import TeamBadge from '../../../components/worldcup/TeamBadge.astro';
+import WorldCupCTA from '../../../components/worldcup/WorldCupCTA.astro';
+import WorldCupShell from '../../../components/worldcup/WorldCupShell.astro';
+import { getPredictionsToday, getRoundProbabilities, getTeamMatchStats, getTeamRecentForm } from '../../../lib/worldcup/data';
+import { findTeamForm, findTeamStats } from '../../../lib/worldcup/stats';
+import { formatDateEs, formatNumber, isPlaceholderValue } from '../../../lib/worldcup/format';
+
+export async function getStaticPaths() {
+  const predictions = getPredictionsToday();
+  const matchStats = getTeamMatchStats();
+  const recentForm = getTeamRecentForm();
+  const roundProbabilities = getRoundProbabilities();
+
+  return predictions.matches.map((match) => {
+    const matchTeamIds = new Set([match.team_a.id, match.team_b.id]);
+    return {
+      params: { match: `${match.team_a.slug}-vs-${match.team_b.slug}` },
+      props: {
+        match,
+        teamAStats: findTeamStats(matchStats, match.team_a.id),
+        teamBStats: findTeamStats(matchStats, match.team_b.id),
+        teamAForm: findTeamForm(recentForm, match.team_a.id),
+        teamBForm: findTeamForm(recentForm, match.team_b.id),
+        matchRoundProbabilities: {
+          generated_at: roundProbabilities.generated_at,
+          model_version: roundProbabilities.model_version,
+          n_simulations: roundProbabilities.n_simulations,
+          bracket_mode: roundProbabilities.bracket_mode,
+          teams: roundProbabilities.teams.filter((team) => matchTeamIds.has(team.team_id)),
+        },
+      },
+    };
+  });
+}
+
+type Props = Awaited<ReturnType<typeof getStaticPaths>>[number]['props'];
+const { match, teamAStats, teamBStats, teamAForm, teamBForm, matchRoundProbabilities } = Astro.props;
+
+function formatSigned(value: number): string {
+  return value > 0 ? `+${value}` : String(value);
+}
+
+const compareColumns = [
+  { team: match.team_a, stats: teamAStats, form: teamAForm },
+  { team: match.team_b, stats: teamBStats, form: teamBForm },
+];
+
+const hasTime = !isPlaceholderValue(match.time_local);
+const hasVenue = !isPlaceholderValue(match.venue);
+
+const PHASE_LABELS: Record<string, string> = {
+  R16: 'octavos',
+  QF: 'cuartos',
+  SF: 'semifinal',
+  F: 'final',
+};
+const phase = match.group ? PHASE_LABELS[match.group] : undefined;
+const phaseContext = phase ? `en ${phase} del Mundial 2026` : 'en el Mundial 2026';
+
+const title = `${match.team_a.name} vs ${match.team_b.name}: predicción Mundial 2026`;
+
+const description = `Predicción de ${match.team_a.name} vs ${match.team_b.name} ${phaseContext}: probabilidades, goles esperados, marcadores más probables y estadísticas reales.`;
+
+function buildStartDate(date: string, timeLocal?: string | null): string {
+  if (isPlaceholderValue(timeLocal)) return date;
+  const parsedTime = timeLocal!.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!parsedTime) return date;
+  let hour = Number(parsedTime[1]) % 12;
+  if (parsedTime[3].toUpperCase() === 'PM') hour += 12;
+  return `${date}T${String(hour).padStart(2, '0')}:${parsedTime[2]}:00`;
+}
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SportsEvent',
+    name: `${match.team_a.name} vs ${match.team_b.name}`,
+    description,
+    sport: 'Soccer',
+    startDate: buildStartDate(match.date, match.time_local),
+    ...(hasVenue ? { location: { '@type': 'Place', name: match.venue } } : {}),
+    homeTeam: { '@type': 'SportsTeam', name: match.team_a.name },
+    awayTeam: { '@type': 'SportsTeam', name: match.team_b.name },
+  },
+];
+---
+
+<BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png" jsonLd={jsonLd} hideHeader>
+  <WorldCupShell active="predicciones">
+    <div class="match-detail-page">
+      <a class="back-link" href="/mundial-2026/predicciones-hoy">← Volver a predicciones</a>
+
+      <header class="match-header" data-reveal>
+        {match.group && <p class="eyebrow">Grupo {match.group}</p>}
+        <h1>{match.team_a.name} vs {match.team_b.name}</h1>
+        <div class="teams-row">
+          <TeamBadge id={match.team_a.id} name={match.team_a.name} />
+          <span class="versus">vs</span>
+          <TeamBadge id={match.team_b.id} name={match.team_b.name} />
+        </div>
+        <p class="match-meta">
+          <span>{formatDateEs(match.date)}</span>
+          {hasTime && <span>{match.time_local}</span>}
+        </p>
+        {hasVenue && <p class="venue">{match.venue}</p>}
+      </header>
+
+      <MatchPredictionCard match={match} featured linkToDetail={false} />
+
+      {(teamAStats || teamBStats || teamAForm || teamBForm) && (
+        <section class="compare-section" data-reveal>
+          <div class="section-header">
+            <p class="eyebrow">Comparativa</p>
+            <h2>Estadísticas reales y forma reciente</h2>
+          </div>
+          <div class="compare-grid">
+            {compareColumns.map(({ team, stats, form }) => (
+              <div class="compare-column">
+                <TeamBadge id={team.id} name={team.name} />
+
+                {stats && (
+                  <div class="stat-grid">
+                    <StatCard
+                      label="Partidos jugados"
+                      value={stats.played}
+                      detail={`${stats.wins}G ${stats.draws}E ${stats.losses}P`}
+                    />
+                    <StatCard
+                      label="Goles"
+                      value={`${stats.goals_for}-${stats.goals_against}`}
+                      detail={`Diferencia ${formatSigned(stats.goal_difference)}`}
+                    />
+                    <StatCard label="Posesión promedio" value={`${formatNumber(stats.possession_avg_pct, 1)}%`} />
+                    <StatCard
+                      label="xG a favor / en contra"
+                      value={`${formatNumber(stats.xg_for, 2)} / ${formatNumber(stats.xg_against, 2)}`}
+                      detail={`Diferencia ${formatSigned(stats.xg_difference)}`}
+                    />
+                    <StatCard label="Remates / a puerta" value={`${stats.shots} / ${stats.shots_on_target}`} />
+                    <StatCard
+                      label="Tarjetas"
+                      value={`${stats.yellow_cards} TA, ${stats.red_cards} TR`}
+                      detail={`${stats.corners} córners`}
+                    />
+                  </div>
+                )}
+
+                {form && (
+                  <div class="stat-grid">
+                    <StatCard
+                      label="Forma previa (20 partidos)"
+                      value={`${form.wins}G ${form.draws}E ${form.losses}P`}
+                      detail={`Racha: ${form.streak_last5}`}
+                    />
+                    <StatCard
+                      label="Goles por partido (forma previa)"
+                      value={`${formatNumber(form.goals_for_pg, 2)} / ${formatNumber(form.goals_against_pg, 2)}`}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {matchRoundProbabilities.teams.length > 0 && (
+        <RoundPathTable probabilities={matchRoundProbabilities} limit={2} />
+      )}
+
+      <nav class="related-links" aria-label="Más sobre este partido" data-reveal>
+        <a href={`/mundial-2026/estadisticas/${match.team_a.id.toLowerCase()}`}>
+          Estadísticas de {match.team_a.name} →
+        </a>
+        <a href={`/mundial-2026/estadisticas/${match.team_b.id.toLowerCase()}`}>
+          Estadísticas de {match.team_b.name} →
+        </a>
+        <a href="/mundial-2026/predicciones-hoy">Volver a predicciones →</a>
+        <a href="/mundial-2026/grupos">Ver fase de grupos →</a>
+      </nav>
+
+      <WorldCupCTA />
+    </div>
+  </WorldCupShell>
+</BaseLayout>
+
+<style>
+  .match-detail-page {
+    display: grid;
+    gap: var(--space-8);
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-4);
+  }
+
+  .back-link {
+    color: var(--wc-blue);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .related-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .related-links a {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--wc-border-strong);
+    border-radius: 999px;
+    background: var(--wc-bg-2);
+    color: var(--wc-text) !important;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .related-links a:hover {
+    background: var(--wc-bg-3);
+    text-decoration: none;
+  }
+
+  .match-header {
+    display: grid;
+    gap: var(--space-2);
+    max-width: var(--reading);
+  }
+
+  .eyebrow {
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  h1 {
+    color: var(--wc-text);
+    font-size: var(--text-hero);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+
+  .teams-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .versus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    border: 1px solid var(--wc-border);
+    border-radius: 999px;
+    background: var(--wc-bg-3);
+    color: var(--wc-blue);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+  }
+
+  .match-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    color: var(--wc-soft);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+  }
+
+  .match-meta span + span::before {
+    content: "· ";
+    color: var(--wc-muted);
+  }
+
+  .venue {
+    color: var(--wc-muted);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+  }
+
+  .compare-section {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .section-header {
+    max-width: var(--reading);
+  }
+
+  .section-header h2 {
+    color: var(--wc-text);
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-1);
+  }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .compare-column {
+    display: grid;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-3);
+    border: 1px solid var(--wc-border);
+    border-radius: 24px;
+    background: var(--wc-bg-2);
+    box-shadow: 0 8px 30px rgba(24, 24, 27, 0.04);
+  }
+
+  .compare-column .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  @media (max-width: 900px) {
+    .compare-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .compare-column .stat-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
