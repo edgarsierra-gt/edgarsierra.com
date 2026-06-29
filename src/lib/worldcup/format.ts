@@ -46,6 +46,7 @@ export function formatGeneratedAt(value: string): string {
 
 export function formatBracketMode(value: string): string {
   if (value === 'approximate_stable_seed') return 'Bracket aproximado';
+  if (value === 'official_fifa_2026') return 'Bracket oficial FIFA 2026';
   return value;
 }
 

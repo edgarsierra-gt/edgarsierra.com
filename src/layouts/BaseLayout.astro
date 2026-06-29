@@ -10,6 +10,7 @@ interface Props {
   ogImage?: string;
   jsonLd?: object[];
   hideHeader?: boolean;
+  breadcrumbLabels?: Record<string, string>;
 }
 
 const {
@@ -19,6 +20,7 @@ const {
   ogImage = '/og/site.png',
   jsonLd = [],
   hideHeader = false,
+  breadcrumbLabels = {},
 } = Astro.props;
 
 const siteOrigin = Astro.site?.origin ?? 'https://edgarsierra.com';
@@ -45,7 +47,7 @@ const breadcrumbLD = {
     ...segments.map((seg, i) => ({
       '@type': 'ListItem',
       position: i + 2,
-      name: SEGMENT_NAMES[seg] ?? (seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, ' ')),
+      name: breadcrumbLabels[seg] ?? SEGMENT_NAMES[seg] ?? (seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, ' ')),
       item: siteOrigin + '/' + segments.slice(0, i + 1).join('/') + '/',
     })),
   ],

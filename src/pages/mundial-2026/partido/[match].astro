@@ -90,7 +90,14 @@ const jsonLd = [
 ];
 ---
 
-<BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png" jsonLd={jsonLd} hideHeader>
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage="/og/mundial-2026.png"
+  jsonLd={jsonLd}
+  breadcrumbLabels={{ [Astro.params.match]: `${match.team_a.name} vs ${match.team_b.name}` }}
+  hideHeader
+>
   <WorldCupShell active="predicciones">
     <div class="match-detail-page">
       <a class="back-link" href="/mundial-2026/predicciones-hoy">← Volver a predicciones</a>
