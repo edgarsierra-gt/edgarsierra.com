@@ -1,0 +1,34 @@
+{
+  "redirects": [
+    {
+      "source": "/mundial-2026/partido/brasil-vs-japon",
+      "destination": "/mundial-2026/predicciones-hoy/",
+      "permanent": true
+    },
+    {
+      "source": "/mundial-2026/partido/brasil-vs-japon/",
+      "destination": "/mundial-2026/predicciones-hoy/",
+      "permanent": true
+    },
+    {
+      "source": "/mundial-2026/partido/alemania-vs-paraguay",
+      "destination": "/mundial-2026/predicciones-hoy/",
+      "permanent": true
+    },
+    {
+      "source": "/mundial-2026/partido/alemania-vs-paraguay/",
+      "destination": "/mundial-2026/predicciones-hoy/",
+      "permanent": true
+    },
+    {
+      "source": "/mundial-2026/partido/paises-bajos-vs-marruecos",
+      "destination": "/mundial-2026/predicciones-hoy/",
+      "permanent": true
+    },
+    {
+      "source": "/mundial-2026/partido/paises-bajos-vs-marruecos/",
+      "destination": "/mundial-2026/predicciones-hoy/",
+      "permanent": true
+    }
+  ]
+}
