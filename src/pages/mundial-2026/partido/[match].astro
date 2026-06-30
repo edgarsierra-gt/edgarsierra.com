@@ -75,6 +75,22 @@ function buildStartDate(date: string, timeLocal?: string | null): string {
   return `${date}T${String(hour).padStart(2, '0')}:${parsedTime[2]}:00`;
 }
 
+function buildEndDate(date: string, timeLocal?: string | null): string {
+  if (isPlaceholderValue(timeLocal)) return date;
+  const parsedTime = timeLocal!.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!parsedTime) return date;
+  let hour = Number(parsedTime[1]) % 12;
+  if (parsedTime[3].toUpperCase() === 'PM') hour += 12;
+  hour += 2;
+  if (hour >= 24) {
+    const [y, m, d] = date.split('-').map(Number);
+    const next = new Date(Date.UTC(y, m - 1, d + 1));
+    const nd = next.toISOString().slice(0, 10);
+    return `${nd}T${String(hour - 24).padStart(2, '0')}:${parsedTime[2]}:00`;
+  }
+  return `${date}T${String(hour).padStart(2, '0')}:${parsedTime[2]}:00`;
+}
+
 const jsonLd = [
   {
     '@context': 'https://schema.org',
@@ -82,8 +98,17 @@ const jsonLd = [
     name: `${match.team_a.name} vs ${match.team_b.name}`,
     description,
     sport: 'Soccer',
+    eventStatus: 'https://schema.org/EventScheduled',
+    image: 'https://edgarsierra.com/og/mundial-2026.png',
     startDate: buildStartDate(match.date, match.time_local),
-    ...(hasVenue ? { location: { '@type': 'Place', name: match.venue } } : {}),
+    endDate: buildEndDate(match.date, match.time_local),
+    location: hasVenue
+      ? { '@type': 'Place', name: match.venue }
+      : {
+          '@type': 'Place',
+          name: 'Mundial 2026',
+          address: { '@type': 'PostalAddress', addressCountry: 'US' },
+        },
     homeTeam: { '@type': 'SportsTeam', name: match.team_a.name },
     awayTeam: { '@type': 'SportsTeam', name: match.team_b.name },
   },
