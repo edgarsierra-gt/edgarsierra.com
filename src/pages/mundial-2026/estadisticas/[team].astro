@@ -9,7 +9,7 @@ import { getPredictionsToday, getTeamMatchStats, getTeamRecentForm } from '../..
 import { findTeamForm } from '../../../lib/worldcup/stats';
 import { getFlagUrl, getTeamDisplay } from '../../../lib/worldcup/teams';
 import { formatNumber } from '../../../lib/worldcup/format';
-import { buildTeamSeoDescription, buildTeamSeoTitle } from '../../../lib/worldcup/seo';
+import { buildTeamSeoDescription, buildTeamSeoIntro, buildTeamSeoTitle } from '../../../lib/worldcup/seo';
 
 export async function getStaticPaths() {
   const matchStats = getTeamMatchStats();
@@ -40,6 +40,7 @@ function formatGoalDifference(value: number): string {
 
 const title = buildTeamSeoTitle(display.name);
 const description = buildTeamSeoDescription(display.name, matchEntry);
+const introSentence = buildTeamSeoIntro(display.name, matchEntry);
 
 const jsonLd = [
   {
@@ -72,6 +73,7 @@ const jsonLd = [
         <div>
           <p class="eyebrow">Grupo {matchEntry.group ?? 'ND'}</p>
           <h1>{display.name}</h1>
+          <p class="team-lead">{introSentence}</p>
         </div>
       </header>
 
@@ -181,6 +183,12 @@ const jsonLd = [
     font-size: var(--text-hero);
     line-height: 1.05;
     letter-spacing: -0.01em;
+  }
+
+  .team-lead {
+    color: var(--wc-soft);
+    max-width: var(--reading);
+    margin-top: var(--space-1);
   }
 
   .stat-grid {
