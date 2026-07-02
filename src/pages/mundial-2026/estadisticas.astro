@@ -45,7 +45,14 @@ const jsonLd = [
 ];
 ---
 
-<BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png" jsonLd={jsonLd} hideHeader>
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage="/og/mundial-2026.png"
+  jsonLd={jsonLd}
+  breadcrumbLabels={{ estadisticas: 'Estadísticas' }}
+  hideHeader
+>
   <WorldCupShell active="estadisticas">
     <div class="stats-page">
       <header class="page-header" data-reveal>

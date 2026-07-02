@@ -9,6 +9,7 @@ import { getPredictionsToday, getTeamMatchStats, getTeamRecentForm } from '../..
 import { findTeamForm } from '../../../lib/worldcup/stats';
 import { getFlagUrl, getTeamDisplay } from '../../../lib/worldcup/teams';
 import { formatNumber } from '../../../lib/worldcup/format';
+import { buildTeamSeoDescription, buildTeamSeoTitle } from '../../../lib/worldcup/seo';
 
 export async function getStaticPaths() {
   const matchStats = getTeamMatchStats();
@@ -37,11 +38,31 @@ function formatGoalDifference(value: number): string {
   return value > 0 ? `+${value}` : String(value);
 }
 
-const title = `${display.name} en el Mundial 2026 - Estadísticas`;
-const description = `Estadísticas reales de ${display.name} en el Mundial 2026: ${matchEntry.played} partido(s), ${matchEntry.goals_for}-${matchEntry.goals_against} goles, posesión, xG, córners y tarjetas.`;
+const title = buildTeamSeoTitle(display.name);
+const description = buildTeamSeoDescription(display.name, matchEntry);
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SportsTeam',
+    name: display.name,
+    alternateName: display.code,
+    sport: 'Soccer',
+    url: new URL(Astro.url.pathname, Astro.site).href,
+    description,
+    image: 'https://edgarsierra.com/og/mundial-2026.png',
+  },
+];
 ---
 
-<BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png" hideHeader>
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage="/og/mundial-2026.png"
+  jsonLd={jsonLd}
+  breadcrumbLabels={{ estadisticas: 'Estadísticas', [Astro.params.team]: display.name }}
+  hideHeader
+>
   <WorldCupShell active="estadisticas">
     <div class="team-detail-page">
       <a class="back-link" href="/mundial-2026/estadisticas">← Volver a estadísticas</a>
