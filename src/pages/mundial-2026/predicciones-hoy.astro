@@ -15,32 +15,22 @@ const groupedMatches = groupMatchesByDate(upcomingMatches);
 const todayHasMatches = groupedMatches.some((group) => group.date === todayIso);
 const nextDate = groupedMatches[0]?.date;
 
-const title = 'Predicciones Mundial 2026 hoy: probabilidades de los partidos';
+const title = 'Predicciones archivadas del Mundial 2026: probabilidades de los partidos';
 const description =
-  'Predicciones de los partidos del Mundial 2026 de hoy con probabilidades 1X2, goles esperados y marcadores más probables generados por un modelo estadístico.';
+  'Archivo de predicciones del Laboratorio Mundial 2026. Probabilidades 1X2, goles esperados y marcadores más probables generados por el modelo estadístico. Datos congelados al 4 de julio de 2026.';
 ---
 
 <BaseLayout title={title} description={description} ogImage="/og/mundial-2026.png" hideHeader>
   <WorldCupShell active="predicciones">
     <div class="predictions-page">
       <header class="page-header" data-reveal>
-        <p class="eyebrow">{todayHasMatches ? 'Predicciones de hoy' : 'Calendario de predicciones'}</p>
-        <h1>
-          {
-            todayHasMatches
-              ? `Predicciones de hoy, ${formatDateEs(todayIso)}`
-              : nextDate
-                ? `Próxima jornada: ${formatDateEs(nextDate)}`
-                : 'Predicciones del Mundial 2026'
-          }
-        </h1>
+        <p class="eyebrow">Archivo de predicciones</p>
+        <h1>Predicciones del Laboratorio Mundial 2026</h1>
         <p>
-          Probabilidades 1X2, goles esperados, escenarios de marcador y lectura del modelo para los partidos del día.
+          Probabilidades 1X2, goles esperados y escenarios de marcador generados por el modelo durante el torneo.
+          Datos congelados al <strong>4 de julio de 2026</strong> — inicio de eliminatoria directa.
         </p>
-        {!todayHasMatches && nextDate && (
-          <p class="next-day-note">Hoy no hay partidos programados. Estos son los del próximo día con partidos.</p>
-        )}
-        <strong class="notice">Estas predicciones son probabilidades, no certezas. Un equipo con 70% de probabilidad todavía puede perder.</strong>
+        <strong class="notice">Estas son predicciones archivadas, no en tiempo real. El torneo ha concluido.</strong>
       </header>
 
       {groupedMatches.length > 0 ? (
@@ -60,8 +50,8 @@ const description =
         ))
       ) : (
         <EmptyState
-          title="Sin partidos próximos"
-          text="El modelo se actualizará cuando existan partidos programados en los outputs del predictor."
+          title="Torneo finalizado"
+          text="El Mundial 2026 concluyó. Los datos del laboratorio están archivados al 4 de julio de 2026 (inicio de eliminatoria directa). No se generarán nuevas predicciones."
         />
       )}
 

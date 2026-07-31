@@ -1,0 +1,98 @@
+---
+// ArchiveBanner.astro
+// Visible en todas las páginas del laboratorio una vez terminado el Mundial.
+---
+
+<div class="archive-banner" role="note" aria-label="Laboratorio archivado">
+  <div class="archive-inner">
+    <span class="archive-icon" aria-hidden="true">⚽</span>
+    <div class="archive-text">
+      <strong>El Mundial 2026 ha terminado.</strong>
+      <span>
+        Este laboratorio está archivado en su último estado real — datos congelados al
+        <time datetime="2026-07-04">4 de julio de 2026</time>, inicio de eliminatoria directa.
+        Las métricas de auditoría son definitivas: <strong>66.0 % accuracy 1X2</strong> en 53 partidos.
+      </span>
+    </div>
+    <a href="/proyectos/laboratorio-mundial-2026" class="archive-link">Ver en portafolio</a>
+  </div>
+</div>
+
+<style>
+  .archive-banner {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    background: linear-gradient(
+      135deg,
+      rgba(0, 114, 178, 0.07) 0%,
+      rgba(0, 158, 115, 0.06) 100%
+    );
+    border-bottom: 1px solid rgba(0, 114, 178, 0.18);
+  }
+
+  .archive-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    max-width: min(var(--container), calc(100vw - 2rem));
+    margin: 0 auto;
+    padding: 0.8rem 0;
+  }
+
+  .archive-icon {
+    flex: 0 0 auto;
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
+  .archive-text {
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35em;
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--wc-soft);
+    line-height: 1.45;
+  }
+
+  .archive-text strong {
+    color: var(--wc-text);
+    font-weight: 700;
+  }
+
+  .archive-link {
+    flex: 0 0 auto;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid rgba(0, 114, 178, 0.3);
+    border-radius: 999px;
+    background: rgba(0, 114, 178, 0.06);
+    color: var(--wc-blue) !important;
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .archive-link:hover {
+    background: rgba(0, 114, 178, 0.12);
+    border-color: rgba(0, 114, 178, 0.45);
+    text-decoration: none;
+  }
+
+  @media (max-width: 600px) {
+    .archive-inner {
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .archive-link {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>

@@ -95,18 +95,12 @@ const jsonLd = [
         <div class="section-header split">
           <div>
             <p class="eyebrow">Predicciones</p>
-            <h2>
-              {sectionDate
-                ? isSectionToday
-                  ? `Partidos de hoy, ${formatDateEs(sectionDate)}`
-                  : `Próxima jornada: ${formatDateEs(sectionDate)}`
-                : 'Partidos próximos'}
-            </h2>
+            <h2>Archivo del modelo — 4 de julio de 2026</h2>
             <p>
-              Probabilidades 1X2, goles esperados y marcadores más probables generados por el modelo.
+              Probabilidades 1X2, goles esperados y marcadores generados por el modelo en su última corrida antes de la eliminatoria directa.
             </p>
           </div>
-          <a class="section-cta" href="/mundial-2026/predicciones-hoy">Ver calendario del modelo</a>
+          <a class="section-cta" href="/mundial-2026/predicciones-hoy">Ver archivo completo</a>
         </div>
 
         {featuredGroupMatches.length > 0 ? (
@@ -117,8 +111,8 @@ const jsonLd = [
           </div>
         ) : (
           <EmptyState
-            title="Sin partidos próximos"
-            text="El laboratorio mostrará nuevas predicciones cuando existan partidos programados en el JSON del predictor."
+            title="Torneo finalizado"
+            text="El laboratorio está archivado. No hay nuevas predicciones después del 4 de julio de 2026."
           />
         )}
       </section>

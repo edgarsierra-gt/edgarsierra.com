@@ -1,4 +1,5 @@
 ---
+import ArchiveBanner from './ArchiveBanner.astro';
 import LabSubnav from './LabSubnav.astro';
 
 interface Props {
@@ -11,6 +12,7 @@ const { active = 'home' } = Astro.props;
 <div class="worldcup-shell">
   <div class="stadium-glow" aria-hidden="true"></div>
   <div class="pitch-lines" aria-hidden="true"></div>
+  <ArchiveBanner />
   <div class="worldcup-inner">
     <LabSubnav active={active} />
     <slot />

@@ -1,10 +1,11 @@
 ---
 title: "Laboratorio Mundial 2026"
-summary: "Modelo probabilístico para estimar partidos, simular escenarios del Mundial 2026 y auditar resultados con outputs JSON versionados. Construido con Python, Monte Carlo, Astro y GitHub Actions."
+summary: "Experimento público de estadística aplicada: modelo probabilístico propio (Poisson + Monte Carlo) para predecir y auditar los 64 partidos del Mundial 2026. Resultado final: 66 % accuracy 1X2 en 53 partidos auditados, Brier score 0.47. Archivado con todos sus outputs JSON versionados."
 stack: ["Python", "pandas", "NumPy", "Poisson", "Monte Carlo", "Astro", "JSON estático", "GitHub Actions", "Vercel"]
 role: "Autor"
+status: "Archivado"
 links:
-  - label: "Ver laboratorio"
+  - label: "Ver laboratorio archivado"
     url: "/mundial-2026"
   - label: "Leer artículo"
     url: "/blog/como-funciona-mi-modelo-predicciones-mundial-2026"
@@ -15,6 +16,9 @@ order: 1
 caseStudy: true
 ---
 
-Experimento público de estadística aplicada durante el Mundial 2026. El pipeline genera probabilidades 1X2, goles esperados, escenarios de clasificación, simulación de rondas, auditoría del modelo y archivos JSON consumidos por el sitio.
+Experimento público de estadística aplicada durante el Mundial 2026. El pipeline generó probabilidades 1X2, goles esperados, escenarios de clasificación, simulación de rondas y auditoría del modelo, con outputs JSON versionados consumidos por el sitio.
 
-El objetivo no es vender picks ni prometer certeza. Es mostrar cómo se construye un sistema probabilístico trazable: datos normalizados, modelo Poisson, simulación Monte Carlo, outputs versionados y una capa editorial que explica incertidumbre sin lenguaje de apuestas.
+**Métricas finales del modelo (53 partidos auditados):** accuracy 1X2 de 66 %, Brier score 0.47, log loss 0.81, error medio de goles 1.30. El marcador exacto acertó en el 13.2 % de los casos — consistente con lo esperado para un modelo Poisson calibrado.
+
+El objetivo no fue vender picks ni prometer certeza, sino mostrar cómo se construye un sistema probabilístico trazable: datos normalizados, modelo Poisson, simulación Monte Carlo 10 000 iteraciones, outputs versionados y una capa editorial que explica incertidumbre sin lenguaje de apuestas.
+

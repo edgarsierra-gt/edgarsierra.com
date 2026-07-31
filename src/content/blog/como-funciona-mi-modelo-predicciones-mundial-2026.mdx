@@ -141,16 +141,22 @@ Este modelo tiene límites claros:
 
 La gracia no está en fingir que esas limitaciones no existen. La gracia está en publicarlas, medirlas y usarlas para mejorar.
 
-## Qué viene después
+## Actualización: cierre del experimento (julio 2026)
 
-La v2.0 del modelo debería mejorar tres piezas:
+El Mundial 2026 terminó. El laboratorio está archivado.
 
-- anclar fuerza global con FIFA ranking, Elo o power rankings externos;
-- calibrar mejor la simulación de campeón;
-- comparar predicciones contra resultados reales con más partidos auditados.
+**Métricas finales del modelo en 53 partidos auditados:**
 
-También quiero que el artículo técnico en Python explique con más detalle cómo se construye la matriz Poisson, cómo se simula un partido y cómo se agregan miles de escenarios.
+- Accuracy 1X2: **66.0 %**
+- Brier score: **0.47** (cuanto más bajo, mejor calibrado)
+- Log loss: **0.81**
+- Error medio de goles: **1.30**
+- Acierto de marcador exacto: **13.2 %**
 
-Por ahora, el objetivo del launch pack es simple: que el laboratorio sea entendible, compartible y honesto.
+Esos números son consistentes con lo que un modelo Poisson bien calibrado puede lograr en fútbol internacional. El accuracy por bin de confianza muestra que el modelo sí discrimina: los partidos con confianza 60–70 % se acertaron en el 100 % de los casos (3 partidos), los de 80–90 % también (4 partidos). Los de 40–50 % se acertaron en un 61.5 %, ligeramente por encima de lo esperado al azar, que es una señal de calibración razonable.
 
-Puedes ver el proyecto en el [Laboratorio Mundial 2026](/mundial-2026), revisar la [metodología pública](/mundial-2026/metodologia), explorar el [código en GitHub](https://github.com/edgarsierra-gt/mundial-2026-predictor) o suscribirte al [newsletter](/newsletter) para recibir más análisis de datos, IA y estadística aplicada.
+Lo que el experimento dejó claro es que la capa de torneo (simulación de campeón) es sensible al bracket y a los datos de inicio. Eso ya era parte del diagnóstico desde el primer MVP. Una v2.0 con un prior estructural externo mejoraría esa parte.
+
+El objetivo siempre fue simple: construir un sistema probabilístico trazable, publicarlo con sus métricas, y que cualquiera pudiera ver dónde acertó, dónde falló y por qué. Eso se cumplió.
+
+Puedes ver el laboratorio archivado en [/mundial-2026](/mundial-2026), revisar la [metodología pública](/mundial-2026/metodologia), explorar el [código en GitHub](https://github.com/edgarsierra-gt/mundial-2026-predictor) o ver el proyecto completo en [el portafolio](/proyectos/laboratorio-mundial-2026).
