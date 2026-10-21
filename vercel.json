@@ -150,5 +150,15 @@
       "destination": "/mundial-2026/predicciones-hoy/",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/analisis-cana-azucar",
+      "destination": "https://analisis-cana-azucar.vercel.app/analisis-cana-azucar"
+    },
+    {
+      "source": "/analisis-cana-azucar/:path*",
+      "destination": "https://analisis-cana-azucar.vercel.app/analisis-cana-azucar/:path*"
+    }
   ]
 }
